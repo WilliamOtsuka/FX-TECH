@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../styles/principal.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Atividades</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="../../styles/style.css">
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Usuario | Horizon</title>
+</head>
+
+<body>
+    <!-- Drawer -->
+    <div id="drawer" class="drawer">
+        <div class="drawer-header">
+            Horizon
+            <button id="drawerClose" class="close-button">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+        <nav class="drawer-nav">
+            <a href="../index.html" class="drawer-link">
+                <span class="material-icons">home</span> Inicio
+            </a>
+            <a href="../callendar/callendar.html" class="drawer-link">
+                <span class="material-icons">calendar_month</span> Calendario</a>
+            <a href="./initial-page.html" class="drawer-link">
+                <span class="material-icons">person</span> Usuario</a>
+            <div class="drawer-link-out">
+                <hr />
+
+                <a class="drawer-link">
+                    <span class="material-icons">logout</span> Sair
+                </a>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <!-- Header -->
+
+        <header class="header" style="box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.4)">
+            <div class="limit">
+                <div class="flexV3">
+                    <button id="drawerToggle" class="menu-button">
+                        <span class="material-icons" style="font-size: 32px">menu</span>
+                    </button>
+                    <img height="80px" width="100px" src="../assets/LogoHbranco.png" alt="" class="pointer logo"
+                        onclick="goTo('../initial-page/initial-page.html')" />
+                    <div class="listaMenuPrincipal">
+                        <div class="itemMenu">
+                            <a href="../about/about-horizon.html" class="link">A HORIZON</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-sm">
+                        <button class="user-btn">
+                            <i data-lucide="user" style="width: 20px"> </i>
+                            <a style="margin-left: 2px; text-decoration: none; color: white"
+                                href="../content-page/content-page.html">USUARIO</a>
+                        </button>
+                        <button class="user-logout">
+                            <i data-lucide="log-out" style="width: 20px"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="side-menu">
+                <div class="side-menu-content">
+                    <a class="side-menu-link" id="toggle-menu">
+                        <i class="material-icons">menu</i>
+                    </a>
+                    <a href="../content-page/content-page.html" class="side-menu-link">
+                        <i class="material-icons">home</i> <span>Inicio</span>
+                    </a>
+                    <a href="materias.html" class="side-menu-link">
+                        <i class="material-icons">menu_book</i> <span>Materias</span>
+                    </a>
+                    <a href="participantes.html" class="side-menu-link">
+                        <i class="material-icons">group</i> <span>Turma</span>
+                    </a>
+                    <a href="./notas-materia.html" class="side-menu-link">
+                        <i class="material-icons">grading</i> <span>Notas</span>
+                    </a>
+                </div>
+            </div>
+            <div class="main-content-area">
+                <main style="padding: 16px; width: 50%;">
+                    <div class="screenTitle" style="font-size: 2rem" id="titulo-materia">Lista de participantes</div>
+                    <hr />
+                    <div class="list-participantes">
+                        <div class="list-alunos">
+                            <h2>Alunos:</h2>
+                        </div>
+                        <div class="list-professor">
+                            <h2>Professor:</h2>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+
+        <footer id="footer" style="margin-top: 50px">
+            <div class="footer-container">
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul>
+                        <li>
+                            <a href="https://wa.me/1234567890"><i class="fab fa-whatsapp"></i> 18 99823-8756</a>
+                        </li>
+                        <li>horizon@horizon.com</li>
+                        <li>
+                            <a href="https://www.google.com/maps/place/Av.+Quatorze+de+Setembro+-+Uep1-S.2,+Pres.+Prudente+-+SP/@-22.1297365,-51.4016643,17z/data=!3m1!4b1!4m6!3m5!1s0x9493f456ea0f3baf:0x153b463d9863a2dc!8m2!3d-22.1297415!4d-51.3990894!16s%2Fg%2F1ymsh7kx5?entry=ttu"
+                                target="_blank">Rua quatorze de setembro</a>
+                        </li>
+                        <li>Parque do Povo</li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Acesso Rapido</h3>
+                    <ul>
+                        <li><a href="#new">Noticias</a></li>
+                        <li><a href="./login/index.html">Login</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Colegio Horizon</h3>
+                    <ul>
+                        <li>
+                            <a href="#"><a href="https://www.instagram.com" target="_blank"><i
+                                        class="fab fa-instagram"></i>
+                                    <span style="color: white; font-size: 1rem">Instagram</span></a></a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f">
+                                        <span style="color: white; font-size: 1rem">Facebook</span></i></a>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter">
+                                        <span style="color: white; font-size: 1rem">Twitter</span></i></a>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in">
+                                        <span style="color: white; font-size: 1rem">Linkedin</span></i></a>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-info">
+                <p>
+                    AVISO DE PRIVACIDADE • Associação Prudentina de Educação e Cultura
+                    APEC/HORIZON. TODOS OS DIREITOS RESERVADOS
+                </p>
+                <p>
+                    RELATÓRIO DE TRANSPARÊNCIA SALARIAL - Lei nº 14.611 de 03 de Julho de
+                    2023.
+                </p>
+            </div>
+        </footer>
+        <script>
+            lucide.createIcons();
+        </script>
+        <script>
+            document
+                .getElementById("drawerToggle")
+                .addEventListener("click", function () {
+                    document.getElementById("drawer").classList.toggle("open");
+                });
+
+            document
+                .getElementById("drawerClose")
+                .addEventListener("click", function () {
+                    document.getElementById("drawer").classList.remove("open");
+                });
+
+            function goTo(filePath) {
+                window.location.href = filePath;
+            }
+        </script>
+        <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+
+        <script src="../../js/Atividades/ativities.js"></script>
+        <script src="../script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="./src/styles/aside.css" />
+    <link rel="stylesheet" href="./src/styles/header.css" />
+    <link rel="stylesheet" href="./src/styles/icons.css" />
+    <link rel="stylesheet" href="./src/styles/main.css" />
+    <link rel="stylesheet" href="./src/styles/style.css" />
+    <link rel="stylesheet" href="./src/styles/drawer.css" />
+
+    <style>
+      .button-back {
+        border: none;
+        border-radius: 6px;
+        margin-right: 10px;
+        display: flex;
+        justify-content: center;
+        justify-items: center;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <button class="button-back">
+        <i data-lucide="arrow-big-left-dash"></i>
+      </button>
+      Menu de Gerenciamento
+    </header>
+
+    <div class="container">
+      <div class="navbar">
+        <ul class="navbar-nav">
+          <li class="logo">
+            <a href="#" class="nav-link">
+              <span class="link-text logo-text">Horizon</span>
+              <i data-lucide="square-menu"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i data-lucide="user"></i>
+              <span class="link-text">Cadastro aluno</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <aside class="asside-content">
+        <nav>
+          <ul>
+            <li>
+              <a href="./src/pages/register/user-register.html" class="nav-aside-link">
+                <i data-lucide="user"></i>
+                Cadastro de Aluno
+              </a>
+            </li>
+            <li>
+              <i data-lucide="graduation-cap"></i>
+              Cadastro de Professor
+            </li>
+            <li>
+              <i data-lucide="calendar"></i>
+              Lançar Evento
+            </li>
+            <li>
+              <i data-lucide="image"></i>
+              Editar Fotos
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <main>
+        <h1>Bem-vindo ao menu de gerenciamento</h1>
+      </main>
+    </div>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

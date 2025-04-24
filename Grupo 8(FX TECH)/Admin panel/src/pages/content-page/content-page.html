@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="../../styles/principal.css" />
+  <link rel="stylesheet" href="../../styles/style.css" />
+  <link rel="icon" type="image/x-icon" href="../../../favicon.ico" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>Usuario | Horizon</title>
+  <style>
+    .list-content {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .efeito-opacidade {
+      background: linear-gradient(to right,
+          rgba(255, 255, 255, 1),
+          rgba(000, 000, 000, 00.1));
+    }
+
+    .options-card {
+      max-width: 170px;
+      text-align: center;
+      border-radius: 0.5em;
+      box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.2);
+      border-left: 7px solid white;
+      transition: color 0.3s ease, border-left 0.3s ease;
+      /* Adiciona suavidade na transição */
+    }
+
+    .options-icon:hover {
+      color: #324960;
+      cursor: pointer;
+    }
+
+    .options-card:hover {
+      border-left: 7px solid #324960;
+    }
+
+    hr {
+      display: block;
+      height: 1px;
+      border: 0;
+      border-top: 1px solid #ccc;
+      margin: 1em 0;
+      padding: 0;
+    }
+
+    .img-section {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      /* Inicialmente invisível */
+      transition: opacity 0.3s ease;
+      /* Transição suave */
+    }
+
+    .sectiov2 {
+      position: relative;
+      /* Necessário para que o ícone seja posicionado relativamente à imagem */
+      display: inline-block;
+      width: 172px;
+      /* Deve corresponder ao tamanho da imagem */
+      height: 236px;
+      box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.2);
+    }
+
+    section:hover .img-section {
+      opacity: 1;
+      /* Aparece ao passar o mouse */
+      cursor: pointer;
+    }
+
+    section:hover img {
+      opacity: 0.3;
+      /* Aparece ao passar o mouse */
+    }
+
+    #fileInput {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Drawer -->
+  <div id="drawer" class="drawer">
+    <div class="drawer-header">
+      Horizon
+      <button id="drawerClose" class="close-button">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <nav class="drawer-nav">
+      <a href="../index.html" class="drawer-link">
+        <span class="material-icons">home</span> Inicio
+      </a>
+      <a href="../callendar/callendar.html" class="drawer-link">
+        <span class="material-icons">calendar_month</span> Calendario</a>
+      <a href="./initial-page.html" class="drawer-link">
+        <span class="material-icons">person</span> Usuario</a>
+      <div class="drawer-link-out">
+        <hr />
+
+        <a class="drawer-link">
+          <span class="material-icons">logout</span> Sair
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <!-- Header -->
+    <header class="header" style="box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.4)">
+      <div class="limit">
+        <div class="flexV3">
+          <button id="drawerToggle" class="menu-button">
+            <span class="material-icons" style="font-size: 32px">menu</span>
+          </button>
+          <img height="80px" width="100px" src="../assets/LogoHbranco.png" alt="" class="pointer logo"
+            onclick="goTo('../initial-page/initial-page.html')" />
+          <div class="listaMenuPrincipal">
+            <div class="itemMenu">
+              <a href="../about/about-horizon.html" class="link">A HORIZON</a>
+            </div>
+          </div>
+          <div class="flex items-center gap-sm">
+            <button class="user-btn">
+              <i data-lucide="user" style="width: 20px"> </i>
+              <a style="margin-left: 2px; text-decoration: none; color: white"
+                href="../content-page/content-page.html">USUARIO</a>
+            </button>
+            <button class="user-logout">
+              <i data-lucide="log-out" style="width: 20px"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main style="padding: 16px">
+      <div class="screenTitle" style="font-size: 2rem">Área do Aluno</div>
+      <hr />
+      <div class="q-card" style="margin-bottom: 50px; background-color: #eee">
+        <div class="q-card-section">
+          <div class="flex gap-xl" style="margin-bottom: 15px">
+            <section class="sectiov2" id="imageSection">
+              <img alt="USUARIO" src="../assets/3macaco.jpeg" id="imagePreview" style="
+                    width: 100%;
+                    height: 100%;
+                    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2),
+                      0 2px 2px rgba(0, 0, 0, 0.14),
+                      0 3px 1px -2px rgba(0, 0, 0, 0.12);
+                    object-fit: cover;
+                  " />
+              <i class="img-section" data-lucide="circle-user"></i>
+            </section>
+            <input type="file" id="fileInput" accept="image/*" />
+
+            <section style="flex: 1">
+              <div class="list-content">
+                <i data-lucide="user"></i><a class="user-name"></p>
+              </div>
+              <hr />
+              <div class="list-content">
+                <i data-lucide="graduation-cap"></i> REGISTRO ACAD. (RA):
+                <a class="user-ra"></a>
+              </div>
+              <hr />
+              <div class="list-content">
+                <i data-lucide="keyboard-music"></i> CPF: 122.903.169-38
+              </div>
+              <hr />
+              <div class="list-content">
+                <i data-lucide="book"></i> ANO: 2 TURMA: A
+              </div>
+              <hr />
+            </section>
+          </div>
+
+          <div class="list-content">
+            <i data-lucide="mail"></i> E-MAIL PESSOAL: emaltumar@gmail.com
+          </div>
+          <hr />
+          <div class="list-content">
+            <i data-lucide="phone"></i> CELULAR: (018)99129-3893
+          </div>
+          <hr />
+          <div class="list-content">
+            <i data-lucide="map-pin-house"></i> ENDEREÇO: RUA CLAUDINA OLIVIA
+            DE JESUS, 90
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 50px">
+        <div class="flex gap-xl" style="flex-wrap: wrap">
+          <div class="q-card options-card">
+            <div class="q-card-section">
+              <div>
+                <span onclick="goTo('../class-schedule/class-schedule.html')" class="material-icons options-icon"
+                  style="font-size: 60px">pending_actions</span>
+              </div>
+              <div class="options-icon" style="color: black" onclick="goTo('../class-schedule/class-schedule.html')">
+                Horario de aula
+              </div>
+            </div>
+          </div>
+          <div class="q-card options-card">
+            <div class="q-card-section">
+              <div>
+                <span class="material-icons options-icon" style="font-size: 60px"
+                  onclick="goTo('../callendar/class-callendar.html')">calendar_month</span>
+              </div>
+              <div class="options-icon" style="color: black" onclick="goTo('../callendar/class-callendar.html')">
+                Calendario de Provas
+              </div>
+            </div>
+          </div>
+          <div class="q-card options-card">
+            <div class="q-card-section">
+              <div>
+                <span class="material-icons options-icon" onclick="goTo('../subject/materias.html')"
+                  style="font-size: 60px">auto_stories</span>
+              </div>
+              <div class="options-icon" style="color: black" onclick="goTo('../subject/materias.html')">
+                Disciplinas
+              </div>
+            </div>
+          </div>
+          <div class="q-card options-card">
+            <div class="q-card-section">
+              <div>
+                <span class="material-icons options-icon" onclick="goTo('../grades/grades.html')"
+                  style="font-size: 60px">description</span>
+              </div>
+              <div class="options-icon" style="color: black" onclick="goTo('../grades/grades.html')">
+                Notas
+              </div>
+            </div>
+          </div>
+          <div class="q-card options-card">
+            <div class="q-card-section">
+              <div>
+                <span class="material-icons options-icon" onclick="goTo('../register/professional-register.html')"
+                  style="font-size: 60px">
+                  admin_panel_settings
+                </span>
+              </div>
+              <div class="options-icon" style="color: black" onclick="goTo('../register/professional-register.html')">
+                Painel
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <footer id="footer" style="margin-top: 50px">
+    <div class="footer-container">
+      <div class="footer-column">
+        <h3>Contato</h3>
+        <ul>
+          <li>
+            <a href="https://wa.me/1234567890"><i class="fab fa-whatsapp"></i> 18 99823-8756</a>
+          </li>
+          <li>horizon@horizon.com</li>
+          <li>
+            <a href="https://www.google.com/maps/place/Av.+Quatorze+de+Setembro+-+Uep1-S.2,+Pres.+Prudente+-+SP/@-22.1297365,-51.4016643,17z/data=!3m1!4b1!4m6!3m5!1s0x9493f456ea0f3baf:0x153b463d9863a2dc!8m2!3d-22.1297415!4d-51.3990894!16s%2Fg%2F1ymsh7kx5?entry=ttu"
+              target="_blank">Rua quatorze de setembro</a>
+          </li>
+          <li>Parque do Povo</li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Acesso Rapido</h3>
+        <ul>
+          <li><a href="#new">Noticias</a></li>
+          <li><a href="./login/index.html">Login</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Colegio Horizon</h3>
+        <ul>
+          <li>
+            <a href="#"><a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i>
+                <span style="color: white; font-size: 1rem">Instagram</span></a></a>
+          </li>
+          <li>
+            <a href="#">
+              <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f">
+                  <span style="color: white; font-size: 1rem">Facebook</span></i></a>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter">
+                  <span style="color: white; font-size: 1rem">Twitter</span></i></a>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in">
+                  <span style="color: white; font-size: 1rem">Linkedin</span></i></a>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-info">
+      <p>
+        AVISO DE PRIVACIDADE • Associação Prudentina de Educação e Cultura
+        APEC/HORIZON. TODOS OS DIREITOS RESERVADOS
+      </p>
+      <p>
+        RELATÓRIO DE TRANSPARÊNCIA SALARIAL - Lei nº 14.611 de 03 de Julho de
+        2023.
+      </p>
+    </div>
+  </footer>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget("https://vlibras.gov.br/app");
+  </script>
+  <script>
+    document
+      .getElementById("drawerToggle")
+      .addEventListener("click", function () {
+        document.getElementById("drawer").classList.toggle("open");
+      });
+
+    document
+      .getElementById("drawerClose")
+      .addEventListener("click", function () {
+        document.getElementById("drawer").classList.remove("open");
+      });
+
+    function goTo(filePath) {
+      window.location.href = filePath;
+    }
+    const imageSection = document.getElementById("imageSection");
+    const fileInput = document.getElementById("fileInput");
+    const imagePreview = document.getElementById("imagePreview");
+
+    imageSection.addEventListener("click", function () {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", function (event) {
+      const file = event.target.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          imagePreview.src = e.target.result;
+        };
+
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+  <script>
+    lucide.createIcons();
+  </script>
+  <script src="./content-page.js"></script>
+  <script src="../script.js"></script>
+</body>
+
+</html>

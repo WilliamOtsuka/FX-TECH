@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../styles/principal.css" />
+    <link rel="stylesheet" href="../../styles/style.css" />
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Usuario | Horizon</title>
+    <style>
+      .list-content {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .back-area {
+        background-color: rgb(158, 158, 158);
+        padding: 4.32px;
+        border-top-right-radius: 8px;
+        border-top-left-radius: 8px;
+        color: white;
+      }
+      .back-area-btn:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid #ccc;
+        margin: 1em 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Drawer -->
+    <div id="drawer" class="drawer">
+      <div class="drawer-header">
+        Horizon
+        <button id="drawerClose" class="close-button">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <nav class="drawer-nav">
+        <a href="../index.html" class="drawer-link">
+          <span class="material-icons">home</span> Inicio
+        </a>
+        <a href="../callendar/callendar.html" class="drawer-link">
+          <span class="material-icons">calendar_month</span> Calendario</a
+        >
+        <a href="./initial-page.html" class="drawer-link">
+          <span class="material-icons">person</span> Usuario</a
+        >
+        <div class="drawer-link-out">
+          <hr />
+
+          <a href="#" class="drawer-link">
+            <span class="material-icons">logout</span> Sair
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="main-content">
+      <!-- Header -->
+      <header
+        class="header"
+        style="box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.4)"
+      >
+        <div class="limit">
+          <div class="flexV3">
+            <button id="drawerToggle" class="menu-button">
+              <span class="material-icons" style="font-size: 32px">menu</span>
+            </button>
+            <img
+              height="80px"
+              width="100px"
+              src="../assets/LogoHbranco.png"
+              alt=""
+              class="pointer logo"
+              onclick="goTo('../initial-page/initial-page.html')"
+            />
+            <div class="listaMenuPrincipal">
+              <div class="itemMenu">
+                <a href="../about/about-horizon.html" class="link">A HORIZON</a>
+              </div>
+            </div>
+            <div class="flex items-center gap-sm">
+              <button class="user-btn">
+                <i data-lucide="user" style="width: 20px"> </i>
+                <a
+                  style="margin-left: 2px; text-decoration: none; color: white"
+                  href="../content-page/content-page.html"
+                  >USUARIO</a
+                >
+              </button>
+              <button class="user-logout">
+                <a href="">
+                  <i data-lucide="log-out" style="width: 20px"> </i>
+                </a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <main style="padding: 16px">
+        <div class="screenTitle" style="font-size: 2rem">Notas</div>
+        <hr />
+        <div class="back-area">
+          <div class="flex gap-sm back-area-btn">
+            <i data-lucide="arrow-left" style="width: 20px"></i>
+            <div>
+              <a href="../content-page/content-page.html">Voltar</a>
+            </div>
+          </div>
+        </div>
+        <div class="q-card" style="margin-bottom: 50px; background-color: #eee">
+          <div class="q-card-section">
+            <div class="flex gap-xl" style="margin-bottom: 15px">
+              <section
+                style="
+                  min-width: 86px;
+                  max-height: 118px;
+
+                  box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.2);
+                "
+              >
+                <img
+                  alt="USUARIO"
+                  src="../assets/3macaco.jpeg"
+                  width="172"
+                  height="236"
+                  style="
+                    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2),
+                      0 2px 2px rgba(0, 0, 0, 0.14),
+                      0 3px 1px -2px rgba(0, 0, 0, 0.12);
+                    object-fit: cover;
+                  "
+                />
+              </section>
+              <section style="flex: 1">
+                <div class="list-content">
+                  <i data-lucide="user"></i> Gustavo Althmann
+                </div>
+                <hr />
+                <div class="list-content">
+                  <i data-lucide="graduation-cap"></i> REGISTRO ACAD. (RA):
+                  10442415996
+                </div>
+                <hr />
+                <div class="list-content">
+                  <i data-lucide="keyboard-music"></i> CPF: 122.903.169-38
+                </div>
+                <hr />
+                <div class="list-content">
+                  <i data-lucide="book"></i> ANO: 2 TURMA: A
+                </div>
+                <hr />
+              </section>
+            </div>
+
+            <div class="list-content">
+              <i data-lucide="mail"></i> E-MAIL PESSOAL: emaltumar@gmail.com
+            </div>
+            <hr />
+            <div class="list-content">
+              <i data-lucide="phone"></i> CELULAR: (018)99129-3893
+            </div>
+            <hr />
+            <div class="list-content">
+              <i data-lucide="map-pin-house"></i> ENDEREÇO: RUA CLAUDINA OLIVIA
+              DE JESUS, 90
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 50px; border: 1px solid #eee; padding: 16px">
+          <div style="font-size: 20px; margin-bottom: 20px">
+            Disciplinas Cursadas
+          </div>
+          <table class="fl-table">
+            <thead>
+              <tr>
+                <th style="text-align: left">Disciplinas</th>
+                <th>1º Bim.</th>
+                <th>2º Bim.</th>
+                <th>Média</th>
+                <th>Exame</th>
+                <th>Média F.</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align: left">
+                  <div>MATEMATICA</div>
+                  <div>DODSZAO</div>
+                </td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>CURSANDO</td>
+              </tr>
+              <tr>
+                <td style="text-align: left">
+                  <div>PORTUGUES</div>
+                  <div>MIGUEL GOMES E PAO</div>
+                </td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>CURSANDO</td>
+              </tr>
+              <!-- Adicione mais linhas de disciplinas aqui, alternando a classe tabela-linha-par para linhas pares -->
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>
+                  <strong>Média das disciplinas</strong>
+                </td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>**,*</td>
+                <td>-</td>
+                <td>**,*</td>
+                <td>-</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div style="margin-top: 50px; border: 1px solid #eee; padding: 16px">
+          <div style="font-size: 20px; margin-bottom: 20px">Faltas</div>
+          <table class="fl-table">
+            <thead>
+              <tr>
+                <th style="text-align: left">Disciplinas</th>
+                <th>H. Prevista</th>
+                <th>H. Cumprida</th>
+                <th>Faltas</th>
+                <th style="background-color: #fa5555">% Falta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align: left">
+                  <div>MATEMATICA</div>
+                  <div>DODSZAO</div>
+                </td>
+                <td>120</td>
+                <td>22</td>
+                <td>4</td>
+                <td>7.5</td>
+              </tr>
+              <tr>
+                <td style="text-align: left">
+                  <div>PORTUGUES</div>
+                  <div>MIGUEL GOMES E PAO</div>
+                </td>
+                <td>80</td>
+                <td>16</td>
+                <td>2</td>
+                <td>3.3</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <footer id="footer" style="margin-top: 50px">
+      <div class="footer-container">
+        <div class="footer-column">
+          <h3>Contato</h3>
+          <ul>
+            <li>
+              <a href="https://wa.me/1234567890"
+                ><i class="fab fa-whatsapp"></i> 18 99823-8756</a
+              >
+            </li>
+            <li>horizon@horizon.com</li>
+            <li>
+              <a
+                href="https://www.google.com/maps/place/Av.+Quatorze+de+Setembro+-+Uep1-S.2,+Pres.+Prudente+-+SP/@-22.1297365,-51.4016643,17z/data=!3m1!4b1!4m6!3m5!1s0x9493f456ea0f3baf:0x153b463d9863a2dc!8m2!3d-22.1297415!4d-51.3990894!16s%2Fg%2F1ymsh7kx5?entry=ttu"
+                target="_blank"
+                >Rua quatorze de setembro</a
+              >
+            </li>
+            <li>Parque do Povo</li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Acesso Rapido</h3>
+          <ul>
+            <li><a href="#new">Noticias</a></li>
+            <li><a href="./login/index.html">Login</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Colegio Horizon</h3>
+          <ul>
+            <li>
+              <a href="#"
+                ><a href="https://www.instagram.com" target="_blank"
+                  ><i class="fab fa-instagram"></i>
+                  <span style="color: white; font-size: 1rem"
+                    >Instagram</span
+                  ></a
+                ></a
+              >
+            </li>
+            <li>
+              <a href="#">
+                <a href="https://www.facebook.com" target="_blank"
+                  ><i class="fab fa-facebook-f">
+                    <span style="color: white; font-size: 1rem"
+                      >Facebook</span
+                    ></i
+                  ></a
+                >
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <a href="https://www.twitter.com" target="_blank"
+                  ><i class="fab fa-twitter">
+                    <span style="color: white; font-size: 1rem"
+                      >Twitter</span
+                    ></i
+                  ></a
+                >
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <a href="https://www.linkedin.com" target="_blank"
+                  ><i class="fab fa-linkedin-in">
+                    <span style="color: white; font-size: 1rem"
+                      >Linkedin</span
+                    ></i
+                  ></a
+                >
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-info">
+        <p>
+          AVISO DE PRIVACIDADE • Associação Prudentina de Educação e Cultura
+          APEC/HORIZON. TODOS OS DIREITOS RESERVADOS
+        </p>
+        <p>
+          RELATÓRIO DE TRANSPARÊNCIA SALARIAL - Lei nº 14.611 de 03 de Julho de
+          2023.
+        </p>
+      </div>
+    </footer>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+    <script>
+      document
+        .getElementById("drawerToggle")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.toggle("open");
+        });
+
+      document
+        .getElementById("drawerClose")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.remove("open");
+        });
+
+      function goTo(filePath) {
+        window.location.href = filePath;
+      }
+    </script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

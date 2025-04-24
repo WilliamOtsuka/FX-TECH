@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.12/index.global.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var calendarEl = document.getElementById("calendar");
+        var initialLocaleCode = "pt-br";
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: "dayGridMonth",
+          initialDate: "2024-05-07",
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "",
+          },
+          locale: initialLocaleCode,
+          events: [
+            {
+              title: "Aula 01",
+              start: "2024-05-01",
+            },
+            {
+              title: "Trabalho XY",
+              start: "2024-05-07",
+            },
+            {
+              groupId: "999",
+              title: "Prova GB",
+              start: "2024-05-09T16:00:00",
+            },
+            {
+              groupId: "999",
+              title: "Prova 01",
+              start: "2024-05-16T16:00:00",
+            },
+            {
+              title: "Conferencia",
+              start: "2024-05-11",
+              end: "2024-05-13",
+            },
+            {
+              title: "Agenica",
+              start: "2024-05-12T10:30:00",
+              end: "2024-05-12T12:30:00",
+            },
+            {
+              title: "Almoco",
+              start: "2024-05-12T12:00:00",
+            },
+            {
+              title: "Ligacao",
+              start: "2024-05-12T14:30:00",
+            },
+            {
+              title: "Unoeste",
+              url: "https://www.unoeste.br/",
+              start: "2024-05-28",
+            },
+          ],
+        });
+        calendar.setOption("locale", "pt-br");
+        calendar.render();
+      });
+    </script>
+    <link rel="stylesheet" href="./style.css" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <title>Calendario</title>
+  </head>
+  <body>
+    <!-- Drawer -->
+    <div id="drawer" class="drawer">
+      <div class="drawer-header">
+        Horizon
+        <button id="drawerClose" class="close-button">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <nav class="drawer-nav">
+        <a href="../index.html" class="drawer-link">
+          <span class="material-icons">home</span> Inicio
+        </a>
+        <a href="./callendar.html" class="drawer-link">
+          <span class="material-icons">calendar_month</span> Calendario</a
+        >
+        <a href="../inital-page/initial-page.html" class="drawer-link">
+          <span class="material-icons">person</span> Usuario</a
+        >
+        <div class="drawer-link-out">
+          <hr />
+
+          <a href="#" class="drawer-link">
+            <span class="material-icons">logout</span> Sair
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="main-content">
+      <header class="header">
+        <div class="limit">
+          <div class="flex">
+            <button id="drawerToggle" class="menu-button">
+              <span class="material-icons" style="font-size: 32px">menu</span>
+            </button>
+            <img height="80px" width="100px" src="../LogoHbranco.png" alt="" />
+
+            <div class="listaMenuPrincipal">
+              <div class="itemMenu">
+                <a href="../index.html" class="link">HORIZON</a>
+              </div>
+              <div class="itemMenu">
+                <a href="./callendar.html" class="link"
+                  >CALENDARIO DE ATIVIDADES</a
+                >
+              </div>
+            </div>
+            <button class="user-btn">
+              <i class="material-icons" style="font-size: 20px">
+                arrow_circle_right
+              </i>
+              <a
+                href="../inital-page/initial-page.html"
+                style="margin-left: 2px"
+                >USUARIO</a
+              >
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <main class="content-area">
+        <div>
+          <h2 style="margin-bottom: 0px">Calendario Completo</h2>
+        </div>
+        <div
+          style="
+            display: flex;
+            justify-content: end;
+            flex-direction: column;
+            align-items: center;
+          "
+        >
+          <div style="width: 1000px; height: 1000px">
+            <div id="calendar"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+    <script>
+      document
+        .getElementById("drawerToggle")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.toggle("open");
+        });
+
+      document
+        .getElementById("drawerClose")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.remove("open");
+        });
+    </script>
+  </body>
+</html>
