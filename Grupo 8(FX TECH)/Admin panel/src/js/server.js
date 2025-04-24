@@ -31,6 +31,69 @@ cron.schedule('* * * * *', async () => {
     }
 });
 
+cron.schedule('* * * * *', async () => {
+    const connectDb = new ConnectioDb();
+    const db = await connectDb.connect();
+
+    try {
+        console.log('Executando cron job: atribuição de nota 0 para não entregas...');
+
+        const hoje = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
+
+        // 1. Buscar todas as atividades com prazo vencido e disponíveis
+        const [atividades] = await db.query(`
+      SELECT a.idAtividade, a.idTurma, a.idMateria
+      FROM atividade a
+      WHERE a.dataEntrega < ?
+        AND a.status = 'indisponivel'
+    `, [hoje]);
+
+        let totalInseridos = 0;
+
+        for (const atividade of atividades) {
+            // 2. Buscar todos os alunos da turma dessa atividade
+            const [alunosDaTurma] = await db.query(`
+        SELECT at.idAluno
+        FROM alunos_turma at
+        WHERE at.idTurma = ?
+      `, [atividade.idTurma]);
+
+            // 3. Para cada aluno, verificar se ele entregou
+            for (const aluno of alunosDaTurma) {
+                const [entregas] = await db.query(`
+          SELECT idEntrega
+          FROM atividades_entregues
+          WHERE idAluno = ? AND idAtividade = ?
+        `, [aluno.idAluno, atividade.idAtividade]);
+
+                // Se NÃO entregou, atribuir nota 0
+                if (entregas.length === 0) {
+                    // Verifica se já não tem correção (evita duplicatas)
+                    const [correcaoExistente] = await db.query(`
+            SELECT idCorrecao
+            FROM atividades_corrigidas
+            WHERE idAluno = ? AND idAtividade = ?
+          `, [aluno.idAluno, atividade.idAtividade]);
+
+                    if (correcaoExistente.length === 0) {
+                        await db.query(`
+              INSERT INTO atividades_corrigidas (idAluno, idAtividade, feedback, nota, entregue)
+              VALUES (?, ?, 'Não entregue', 0, 'nao')
+            `, [aluno.idAluno, atividade.idAtividade]);
+
+                        totalInseridos++;
+                    }
+                }
+            }
+        }
+
+        console.log(`✅ ${totalInseridos} correções automáticas inseridas com nota 0.`);
+    } catch (error) {
+        console.error('Erro no cron job:', error);
+    }
+});
+
+
 app.post('/login', async (req, res) => {
     try {
         const { ra, tipo, senha } = req.body;
@@ -297,15 +360,16 @@ app.post('/entregar-atividade', async (req, res) => {
 
         if (existingEntrega.length > 0) {
             const [result] = await db.query(
-                'UPDATE Atividades_Entregues SET descricao = ?, dataEntrega = ? WHERE idAluno = ? AND idAtividade = ?',
+                'UPDATE Atividades_Entregues SET descricao = ?, dataEntrega = ?WHERE idAluno = ? AND idAtividade = ?',
                 [descricao, dataEntrega, idAluno, idAtividade]
             );
 
             res.status(200).json({ message: 'Entrega atualizada com sucesso!' });
         } else {
+            const correcao = "pendente";
             const [result] = await db.query(
-                'INSERT INTO Atividades_Entregues (idAluno, idAtividade, descricao, dataEntrega) VALUES (?, ?, ?, ?)',
-                [idAluno, idAtividade, descricao, dataEntrega]
+                'INSERT INTO Atividades_Entregues (idAluno, idAtividade, descricao, dataEntrega, correcao) VALUES (?, ?, ?, ?, ?)',
+                [idAluno, idAtividade, descricao, dataEntrega, correcao]
             );
 
             res.status(200).json({ message: 'Atividade entregue com sucesso!', idEntrega: result.insertId });
@@ -374,35 +438,35 @@ app.get('/atividades/:id', async (req, res) => {
     }
 });
 
-app.put('/atividades/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { status } = req.body;
+// app.put('/atividades/:id', async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { status } = req.body;
 
-        if (!status) {
-            return res.status(400).json({ message: 'Status é obrigatório' });
-        }
+//         if (!status) {
+//             return res.status(400).json({ message: 'Status é obrigatório' });
+//         }
 
-        console.log(`Atualizando status da atividade com ID: ${id} para ${status}`);
+//         console.log(`Atualizando status da atividade com ID: ${id} para ${status}`);
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+//         const connectDb = new ConnectioDb();
+//         const db = await connectDb.connect();
 
-        const [result] = await db.query(
-            'UPDATE Atividade SET status = ? WHERE idAtividade = ?',
-            [status, id]
-        );
+//         const [result] = await db.query(
+//             'UPDATE Atividade SET status = ? WHERE idAtividade = ?',
+//             [status, id]
+//         );
 
-        if (result.affectedRows > 0) {
-            res.status(200).json({ message: 'Status da atividade atualizado com sucesso!' });
-        } else {
-            res.status(404).json({ message: 'Atividade não encontrada' });
-        }
-    } catch (error) {
-        console.error(`Erro ao atualizar status da atividade: ${error.message}`);
-        res.status(500).json({ error: 'Erro ao atualizar o status da atividade.' });
-    }
-});
+//         if (result.affectedRows > 0) {
+//             res.status(200).json({ message: 'Status da atividade atualizado com sucesso!' });
+//         } else {
+//             res.status(404).json({ message: 'Atividade não encontrada' });
+//         }
+//     } catch (error) {
+//         console.error(`Erro ao atualizar status da atividade: ${error.message}`);
+//         res.status(500).json({ error: 'Erro ao atualizar o status da atividade.' });
+//     }
+// });
 
 
 app.delete('/atividades/:id', async (req, res) => {
@@ -447,17 +511,18 @@ app.get('/atividade/:id/tarefa/alunos', async (req, res) => {
 
         const [rows] = await db.query(`
             SELECT 
-                    ta.idAluno, 
-                    ta.idTurma,
-                    al.nome AS nome,
-                    u.ra AS ra
-                FROM alunos_turma ta
-                JOIN alunos al ON ta.idAluno = al.idAluno
-                JOIN atividade a ON ta.idTurma = a.idTurma
-                JOIN usuarios u ON al.idAluno = u.idReferencia AND u.tipo = 'aluno'
-                LEFT JOIN atividades_entregues ae 
-                    ON ta.idAluno = ae.idAluno AND ae.idAtividade = a.idAtividade
-                WHERE a.idAtividade = ? AND ae.idAluno IS NULL;
+                ta.idAluno, 
+                ta.idTurma,
+                al.nome AS nome,
+                u.ra AS ra
+            FROM alunos_turma ta
+            JOIN alunos al ON ta.idAluno = al.idAluno
+            JOIN atividade a ON ta.idTurma = a.idTurma
+            JOIN usuarios u ON al.idAluno = u.idReferencia AND u.tipo = 'aluno'
+            JOIN atividades_corrigidas ac ON ta.idAluno = ac.idAluno AND a.idAtividade = ac.idAtividade
+            LEFT JOIN atividades_entregues ae 
+                ON ta.idAluno = ae.idAluno AND ae.idAtividade = a.idAtividade
+            WHERE a.idAtividade = ? AND (ae.idAluno IS NULL OR ac.entregue = 'nao');
         `, [id]);
 
         res.json(rows);
@@ -556,11 +621,11 @@ app.post('/atividade/:id/tarefa/:idAluno/corrigir', async (req, res) => {
         if (status === 'disponivel') {
             return res.status(403).json({ message: 'Não é possível corrigir uma atividade ainda disponível.' });
         }
-
+        const entregue = "sim";
         // Inserção da correção
         await db.query(
-            'INSERT INTO atividades_corrigidas (idAluno, idAtividade, feedback, nota) VALUES (?, ?, ?, ?)',
-            [idAluno, id, feedback, nota]
+            'INSERT INTO atividades_corrigidas (idAluno, idAtividade, feedback, nota, entregue) VALUES (?, ?, ?, ?, ?)',
+            [idAluno, id, feedback, nota, entregue]
         );
 
         const [result] = await db.query(
@@ -820,14 +885,14 @@ app.get('/buscar-notas/:idMateria/:idTurma/:idAluno', async (req, res) => {
                 pl.nome AS bimestre,
                 pl.data_inicio,
                 pl.data_fim
-            FROM atividades_entregues ae
-            JOIN atividade a ON ae.idAtividade = a.idAtividade
-            JOIN atividades_corrigidas ac ON ae.idAluno = ac.idAluno AND ae.idAtividade = ac.idAtividade
+            FROM atividades_corrigidas ac
+            JOIN atividade a ON ac.idAtividade = a.idAtividade
             JOIN turma_materias tm ON a.idMateria = tm.idMateria AND tm.idTurma = ?
             JOIN turmas t ON t.idTurma = tm.idTurma
             JOIN periodo_letivo pl ON pl.idAno_letivo = t.idAno_letivo
+            JOIN atividades_entregues ae ON ae.idAluno = ac.idAluno AND ae.idAtividade = ac.idAtividade
                 AND ae.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
-            WHERE a.idMateria = ? AND ae.idAluno = ? AND ae.correcao = 'corrigida'
+                WHERE a.idMateria = ? AND ac.idAluno = ?
             ORDER BY pl.data_inicio ASC
         `, [idTurma, idMateria, idAluno]);
 
@@ -847,21 +912,24 @@ app.get('/notas-aluno/:idAluno/:idMateria/:idTurma', async (req, res) => {
 
         const [notas] = await db.query(`
             SELECT 
-                ae.idAluno,
-                a.titulo AS nomeAtividade,  -- CORRIGIDO AQUI
+                ac.idAluno,
+                a.titulo AS nomeAtividade,
                 ac.nota,
                 a.peso,
                 pl.nome AS bimestre,
                 ae.dataEntrega
-            FROM atividades_entregues ae
-            JOIN atividade a ON ae.idAtividade = a.idAtividade
-            JOIN atividades_corrigidas ac ON ae.idAluno = ac.idAluno AND ae.idAtividade = ac.idAtividade
+            FROM atividades_corrigidas ac
+            JOIN atividade a ON ac.idAtividade = a.idAtividade
             JOIN turma_materias tm ON a.idMateria = tm.idMateria AND tm.idTurma = ?
             JOIN turmas t ON t.idTurma = tm.idTurma
-            JOIN periodo_letivo pl ON pl.idAno_letivo = t.idAno_letivo
-                AND ae.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
-            WHERE a.idMateria = ? AND ae.idAluno = ? AND ae.correcao = 'corrigida'
-            ORDER BY pl.data_inicio ASC
+            JOIN periodo_letivo pl 
+                ON pl.idAno_letivo = t.idAno_letivo 
+                AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
+            LEFT JOIN atividades_entregues ae 
+                ON ae.idAtividade = ac.idAtividade 
+                AND ae.idAluno = ac.idAluno
+            WHERE a.idMateria = ? AND ac.idAluno = ?
+            ORDER BY a.dataEntrega ASC;
         `, [idTurma, idMateria, idAluno]);
 
         res.json(notas);

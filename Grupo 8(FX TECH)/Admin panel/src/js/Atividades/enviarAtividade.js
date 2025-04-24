@@ -290,6 +290,17 @@ async function carregarAtividadeEntregue() {
     const idAtividade = urlParams.get('idAtividade');
     const idAluno = urlParams.get('idAluno');
 
+    const backarrow = document.querySelector('.back-area-btn');
+    if (backarrow) {
+        backarrow.addEventListener('click', function (e) {
+            e.preventDefault(); 
+            window.location.href = `./atividade.html?idA=${idAtividade}`;  
+        });
+    }
+
+    const tituloMateria = document.getElementById('titulo-materia');
+    tituloMateria.textContent = `${user.turmas[0].materias[0].nome}`; // Exemplo de como pegar o nome da matéria, ajuste conforme necessário
+
     try {
         const atividade = await carregarAtividadeAluno(idAtividade, idAluno);
         const container = document.querySelector(".atividade-enviada");
@@ -400,6 +411,13 @@ async function carregarAtividade() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    const backarrow = document.querySelector('.back-area-btn');
+    if (backarrow) {
+        backarrow.addEventListener('click', function (e) {
+            e.preventDefault(); 
+            window.location.href = `./atividadesMateria.html?idM=${user.turmas[0].materias[0].idMateria}&idT=${user.turmas[0].idTurma}`;  
+        });
+    }
 
     const atividadeEnviada = document.querySelector('.atividade-enviada');
     if (atividadeEnviada) {
