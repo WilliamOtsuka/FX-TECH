@@ -1,0 +1,53 @@
+/* Estilo do aside (drawer) */
+.asside-content {
+  background-color: #eee;
+  width: 275px;
+  min-height: 100%;
+  color: #324960;
+  padding: 20px;
+  box-sizing: border-box;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  border-right: 1px solid #ccc;
+}
+/* Estilização simples para o conteúdo do aside */
+nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+nav ul li {
+  margin: 15px 0;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 3px;
+  border-radius: 12px;
+}
+
+nav ul li:hover {
+  text-decoration: underline;
+}
+
+.nav-aside-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #324960;
+}
+
+@media only screen and (max-width: 1201px) {
+  .asside-content {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 1201px) {
+  .asside-content {
+    display: flex;
+    flex-direction: column;
+  }
+}

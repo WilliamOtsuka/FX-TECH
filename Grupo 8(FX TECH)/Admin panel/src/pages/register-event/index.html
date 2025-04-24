@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Cadastro | Horizon</title>
+  </head>
+  <body>
+    <!-- Drawer -->
+    <div id="drawer" class="drawer">
+      <div class="drawer-header">
+        Horizon
+        <button id="drawerClose" class="close-button">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <nav class="drawer-nav">
+        <a href="../index.html" class="drawer-link">
+          <span class="material-icons">home</span> Inicio
+        </a>
+        <a href="../callendar/callendar.html" class="drawer-link">
+          <span class="material-icons">calendar_month</span> Calendario</a
+        >
+        <a href="./initial-page.html" class="drawer-link">
+          <span class="material-icons">person</span> Usuario</a
+        >
+        <div class="drawer-link-out">
+          <hr />
+
+          <a href="#" class="drawer-link">
+            <span class="material-icons">logout</span> Sair
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <header class="header">
+        <div class="limit">
+          <div class="flex">
+            <button id="drawerToggle" class="menu-button">
+              <span class="material-icons" style="font-size: 32px">menu</span>
+            </button>
+            <img height="80px" width="100px" src="../LogoHbranco.png" alt="" />
+
+            <div class="listaMenuPrincipal">
+              <div class="itemMenu">
+                <a href="../index.html" class="link">HORIZON</a>
+              </div>
+              <div class="itemMenu">
+                <a href="../callendar/callendar.html" class="link"
+                  >CALENDARIO DE ATIVIDADES</a
+                >
+              </div>
+            </div>
+            <button class="user-btn">
+              <i class="material-icons" style="font-size: 20px">
+                arrow_circle_right
+              </i>
+              <a
+                href="../inital-page/initial-page.html"
+                style="margin-left: 2px"
+                >USUARIO</a
+              >
+            </button>
+          </div>
+        </div>
+      </header>
+      <main class="content-area">
+        <div style="margin-bottom: 30px" class="container">
+          <h2 class="form-title">Cadastro Evento</h2>
+          <div class="form-container">
+            <form id="school-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="nome">Titulo:</label>
+                  <input type="text" id="title" name="title" required />
+                </div>
+                <div class="form-group">
+                  <label for="matricula">Data:</label>
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    required
+                    style="width: 100%"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="nota">Descricao:</label>
+                  <textarea required></textarea>
+                </div>
+                <div class="form-group">
+                  <button type="submit">Adicionar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Titulo</th>
+                <th>Dia</th>
+                <th>Descricao</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Trabalho #1</td>
+                <td>24-06-2023</td>
+                <td>Trabalho relacionado ao conteudo passado em aula</td>
+                <td>
+                  <button class="edit-btn">✏️</button>
+                  <button class="delete-btn">🗑️</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 10%">2</td>
+                <td style="width: 30%">Trabalho #2</td>
+                <td style="width: 30%">24-06-2024</td>
+                <td style="width: 20%">
+                  Trabalho relacionado ao conteudo passado em aula
+                </td>
+                <td style="width: 10%">
+                  <button class="edit-btn">✏️</button>
+                  <button class="delete-btn">🗑️</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+  </body>
+</html>

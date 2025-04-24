@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../styles/principal.css" />
+    <link rel="stylesheet" href="../../styles/style.css" />
+    <link rel="stylesheet" href="../../styles/image-slider.css" />
+    <link rel="icon" type="image/x-icon" href="../../../favicon.ico" />
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>Usuario | Horizon</title>
+    <style>
+      p {
+        color: rgb(96, 96, 96);
+      }
+      hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: 1px solid #ccc;
+        margin: 1em 0;
+        padding: 0;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+
+      .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+
+      .dropdown-content a:hover {
+        background-color: #ddd;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+
+      .dropdown:hover .user-btn {
+        background-color: #3e8e41;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Drawer -->
+    <div id="drawer" class="drawer">
+      <div class="drawer-header">
+        Horizon
+        <button id="drawerClose" class="close-button">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <nav class="drawer-nav">
+        <a href="../index.html" class="drawer-link">
+          <span class="material-icons">home</span> Inicio
+        </a>
+        <a href="../callendar/callendar.html" class="drawer-link">
+          <span class="material-icons">calendar_month</span> Calendario</a
+        >
+        <a href="./initial-page.html" class="drawer-link">
+          <span class="material-icons">person</span> Usuario</a
+        >
+        <div class="drawer-link-out">
+          <hr />
+
+          <a href="#" class="drawer-link">
+            <span class="material-icons">logout</span> Sair
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="main-content">
+      <!-- Header -->
+      <header
+        class="header"
+        style="box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.4)"
+      >
+        <div class="limit">
+          <div class="flexV3">
+            <button id="drawerToggle" class="menu-button">
+              <span class="material-icons" style="font-size: 32px">menu</span>
+            </button>
+            <img
+              height="80px"
+              width="100px"
+              src="../assets/LogoHbranco.png"
+              alt=""
+              class="pointer logo"
+              onclick="goTo('../initial-page/initial-page.html')"
+            />
+            <div class="listaMenuPrincipal">
+              <div class="itemMenu">
+                <a href="../about/about-horizon.html" class="link">A HORIZON</a>
+              </div>
+            </div>
+            <div class="flex items-center gap-sm">
+              <button class="user-btn">
+                <i data-lucide="user" style="width: 20px"> </i>
+                <a
+                  style="margin-left: 2px; text-decoration: none; color: white"
+                  href="../content-page/content-page.html"
+                  >USUARIO</a
+                >
+              </button>
+              <button class="user-logout">
+                <a href="">
+                  <i data-lucide="log-out" style="width: 20px"> </i>
+                </a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <main style="width: 100%; overflow-x: auto">
+        <div style="padding: 16px">
+          <div class="screenTitle" style="font-size: 30px">
+            Conheça a Horizon
+          </div>
+          <hr />
+          <section>
+            <p>
+              A Escola de Ensino Médio Horizon nasceu do sonho visionário dos
+              educadores Gustavo Althmann e Miguel dods Pao, que desejavam
+              oferecer um ensino de qualidade excepcional para jovens da região
+              do Brasil. O desejo de criar um espaço de educação inovadora e de
+              ponta foi concretizado em 15 de março de 2005, com a autorização
+              do Governo Estadual para o funcionamento da instituição.
+              Inicialmente, a Horizon abriu suas portas com um corpo estudantil
+              de 280 alunos distribuídos nas turmas de primeiro, segundo e
+              terceiro anos do ensino médio.
+            </p>
+            <p>
+              A primeira aula inaugural foi realizada em uma instalação
+              provisória, no antigo prédio do Ginásio Municipal, enquanto a
+              construção do campus principal ainda estava em andamento. A
+              cerimônia de abertura contou com a presença de professores, alunos
+              e lideranças comunitárias, marcando o início de uma nova era
+              educacional na região. O que diferenciava a Horizon era o seu
+              compromisso com uma metodologia pedagógica focada em tecnologias
+              emergentes e no desenvolvimento integral dos alunos, preparando-os
+              não apenas para o vestibular, mas também para o mundo em
+              transformação.
+            </p>
+            <p>
+              Já em 2007, a Horizon inaugurou seu primeiro bloco acadêmico
+              definitivo, com salas de aula modernas, laboratórios de ciência e
+              tecnologia. Nos anos seguintes, a escola expandiu suas
+              instalações, incluindo o Centro de Inovação Tecnológica Horizon,
+              um espaço dedicado ao ensino de robótica e programação. Além
+              disso, a escola se destacou ao implementar programas de
+              intercâmbio com escolas parceiras na Europa e na Ásia, permitindo
+              que seus alunos tivessem uma visão global e conectada do
+              conhecimento.
+            </p>
+            <p>
+              Hoje, a Escola de Ensino Médio Horizon é reconhecida como uma das
+              instituições de ensino médio mais inovadoras do Brasil. Além de
+              formar estudantes para o ingresso nas melhores universidades, a
+              Horizon tem como missão desenvolver cidadãos conscientes e
+              preparados para os desafios do século XXI, sempre com foco em
+              valores como a ética, a criatividade e o espírito colaborativo.
+            </p>
+            <p>
+              Com uma equipe de professores altamente qualificados e um corpo
+              estudantil diversificado, a Horizon continua a expandir seu legado
+              de excelência e inovação, impactando a vida de milhares de jovens
+              e suas comunidades.
+            </p>
+          </section>
+          <div class="screenTitle" style="font-size: 30px">Professores</div>
+          <hr />
+          <div style="margin-top: 10px">
+            <div
+              class="slider"
+              reverse="true"
+              style="--width: 200px; --height: 200px; --quantity: 9"
+            >
+              <div class="list">
+                <div class="item" style="--position: 1">
+                  <img src="../assets/VJannseiMais.jpeg" alt="" />
+                </div>
+                <div class="item" style="--position: 2">
+                  <img src="../assets/v24.jpeg" alt="" />
+                </div>
+                <div class="item" style="--position: 3">
+                  <img src="../assets/v23.jpeg" alt="" />
+                </div>
+                <div class="item" style="--position: 4">
+                  <img src="../assets/v14.jpeg" alt="" />
+                </div>
+                <div class="item" style="--position: 5">
+                  <img src="../assets/v13.jpeg" alt="" />
+                </div>
+                <div class="item" style="--position: 6">
+                  <img src="../assets/v12.jpeg" alt="" />
+                </div>
+                <div class="item" style="--position: 7">
+                  <img src="../assets/v2.jpeg" alt="" />
+                </div>
+                <div class="item" style="--position: 8">
+                  <img src="../assets/v1.jpeg" alt="" />
+                </div>
+                <div class="item" style="--position: 9">
+                  <img src="../assets/dodzao.jpeg" alt="" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="screenTitle" style="font-size: 30px; margin-top: 20px">
+            Estrutura
+          </div>
+          <hr />
+          <section>
+            A Horizon conta com diversas instalações, incluindo salas de aula
+            interativas, auditórios equipados com tecnologias de última geração,
+            laboratórios de ciências, tecnologia e robótica, além de um complexo
+            esportivo e centros de convivência. Com uma comunidade acadêmica de
+            mais de 1.500 pessoas, entre estudantes, professores e funcionários,
+            a Horizon se dedica a promover a excelência educacional e o
+            desenvolvimento integral dos jovens. A escola disponibiliza todas as
+            suas estruturas físicas e humanas em prol da educação de qualidade,
+            inovação pedagógica e bem-estar de sua comunidade, sempre buscando
+            preparar seus alunos para os desafios acadêmicos e profissionais do
+            futuro.
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <footer id="footer" style="margin-top: 50px">
+      <div class="footer-container">
+        <div class="footer-column">
+          <h3>Contato</h3>
+          <ul>
+            <li>
+              <a href="https://wa.me/1234567890"
+                ><i class="fab fa-whatsapp"></i> 18 99823-8756</a
+              >
+            </li>
+            <li>horizon@horizon.com</li>
+            <li>
+              <a
+                href="https://www.google.com/maps/place/Av.+Quatorze+de+Setembro+-+Uep1-S.2,+Pres.+Prudente+-+SP/@-22.1297365,-51.4016643,17z/data=!3m1!4b1!4m6!3m5!1s0x9493f456ea0f3baf:0x153b463d9863a2dc!8m2!3d-22.1297415!4d-51.3990894!16s%2Fg%2F1ymsh7kx5?entry=ttu"
+                target="_blank"
+                >Rua quatorze de setembro</a
+              >
+            </li>
+            <li>Parque do Povo</li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Acesso Rapido</h3>
+          <ul>
+            <li><a href="#new">Noticias</a></li>
+            <li><a href="./login/index.html">Login</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Colegio Horizon</h3>
+          <ul>
+            <li>
+              <a href="#"
+                ><a href="https://www.instagram.com" target="_blank"
+                  ><i class="fab fa-instagram"></i>
+                  <span style="color: white; font-size: 1rem"
+                    >Instagram</span
+                  ></a
+                ></a
+              >
+            </li>
+            <li>
+              <a href="#">
+                <a href="https://www.facebook.com" target="_blank"
+                  ><i class="fab fa-facebook-f">
+                    <span style="color: white; font-size: 1rem"
+                      >Facebook</span
+                    ></i
+                  ></a
+                >
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <a href="https://www.twitter.com" target="_blank"
+                  ><i class="fab fa-twitter">
+                    <span style="color: white; font-size: 1rem"
+                      >Twitter</span
+                    ></i
+                  ></a
+                >
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <a href="https://www.linkedin.com" target="_blank"
+                  ><i class="fab fa-linkedin-in">
+                    <span style="color: white; font-size: 1rem"
+                      >Linkedin</span
+                    ></i
+                  ></a
+                >
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-info">
+        <p style="color: white">
+          AVISO DE PRIVACIDADE • Associação Prudentina de Educação e Cultura
+          APEC/HORIZON. TODOS OS DIREITOS RESERVADOS
+        </p>
+        <p style="color: white">
+          RELATÓRIO DE TRANSPARÊNCIA SALARIAL - Lei nº 14.611 de 03 de Julho de
+          2023.
+        </p>
+      </div>
+    </footer>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+    <script>
+      document
+        .getElementById("drawerToggle")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.toggle("open");
+        });
+
+      document
+        .getElementById("drawerClose")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.remove("open");
+        });
+
+      function goTo(filePath) {
+        window.location.href = filePath;
+      }
+      const imageSection = document.getElementById("imageSection");
+      const fileInput = document.getElementById("fileInput");
+      const imagePreview = document.getElementById("imagePreview");
+
+      imageSection.addEventListener("click", function () {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener("change", function (event) {
+        const file = event.target.files[0];
+
+        if (file) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            imagePreview.src = e.target.result;
+          };
+
+          reader.readAsDataURL(file);
+        }
+      });
+    </script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

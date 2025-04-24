@@ -1,0 +1,32 @@
+/* Estilização do container principal */
+.container {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  margin-top: 80px; /* Compensar a altura do header */
+}
+
+@media only screen and (max-width: 1201px) {
+  main {
+    flex: 1;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    color: black;
+    background-color: #f5f5f5;
+    margin-left: 5rem;
+    padding: 1rem;
+  }
+}
+
+@media only screen and (min-width: 1201px) {
+  main {
+    flex: 1;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    color: black;
+    background-color: #f5f5f5;
+    margin-left: 275px;
+  }
+}

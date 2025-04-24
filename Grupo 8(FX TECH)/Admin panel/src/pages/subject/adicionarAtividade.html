@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adicionar Atividade</title>
+  <link rel="stylesheet" href="../../styles/style.css">
+  <link rel="stylesheet" href="../../styles/principal.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="icon" type="image/x-icon" href="../../../favicon.ico">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+  <!-- Drawer -->
+  <div id="drawer" class="drawer">
+    <div class="drawer-header">
+      Horizon
+      <button id="drawerClose" class="close-button">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <nav class="drawer-nav">
+      <a href="../index.html" class="drawer-link">
+        <span class="material-icons">home</span> Inicio
+      </a>
+      <a href="../callendar/callendar.html" class="drawer-link">
+        <span class="material-icons">calendar_month</span> Calendário</a>
+      <a href="./initial-page.html" class="drawer-link">
+        <span class="material-icons">person</span> Usuário</a>
+      <div class="drawer-link-out">
+        <hr />
+        <a href="#" class="drawer-link">
+          <span class="material-icons">logout</span> Sair
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <!-- Header -->
+    <header class="header" style="box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.4)">
+      <div class="limit">
+        <div class="flexV3">
+          <button id="drawerToggle" class="menu-button">
+            <span class="material-icons" style="font-size: 32px">menu</span>
+          </button>
+          <img height="80px" width="100px" src="../assets/LogoHbranco.png" alt="" class="pointer logo"
+            onclick="goTo('../initial-page/initial-page.html')" />
+          <div class="listaMenuPrincipal">
+            <div class="itemMenu">
+              <a href="../about/about-horizon.html" class="link">A HORIZON</a>
+            </div>
+          </div>
+          <div class="flex items-center gap-sm">
+            <button class="user-btn">
+              <i data-lucide="user" style="width: 20px"> </i>
+              <a style="margin-left: 2px; text-decoration: none; color: white"
+                href="../content-page/content-page.html">USUARIO</a>
+            </button>
+            <button class="user-logout">
+              <i data-lucide="log-out" style="width: 20px"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+
+    <main style="padding: 16px">
+      <div class="form-container">
+        <h2>Adicionar Nova Atividade</h2>
+        <form id="atividadeForm">
+          <div class="form-group">
+            <label for="titulo">Título da Atividade:</label>
+            <input type="text" id="titulo" name="titulo" required>
+          </div>
+
+          <div class="form-group">
+            <label for="descricao">Descrição da Atividade:</label>
+            <textarea id="descricao" name="descricao"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="data">Data de Entrega:</label>
+            <input type="date" id="data" name="data" required>
+          </div>
+
+          <div class="form-group">
+            <label for="hora">Hora de Entrega:</label>
+            <input type="time" id="hora" name="hora" required>
+          </div>
+
+          <div class="form-group">
+            <label for="peso">Peso da Atividade (1-100):</label>
+            <input type="number" id="peso" name="peso" min="0" max="100" required>
+          </div>
+
+          <div class="form-group">
+            <label for="arquivo">Anexar Arquivo (ZIP ou Imagem - opcional):</label>
+            <input type="file" id="arquivo" name="arquivo" accept=".zip, .png, .jpg, .jpeg">
+          </div>
+          <button type="submit" class="submit-btn">Enviar Atividade</button>
+        </form>
+
+        <p id="error-message" style="color: red;"></p>
+      </div>
+    </main>
+    <footer id="footer" style="margin-top: 50px">
+      <div class="footer-container">
+        <div class="footer-column">
+          <h3>Contato</h3>
+          <ul>
+            <li>
+              <a href="https://wa.me/1234567890"><i class="fab fa-whatsapp"></i> 18 99823-8756</a>
+            </li>
+            <li>horizon@horizon.com</li>
+            <li>
+              <a href="https://www.google.com/maps/place/Av.+Quatorze+de+Setembro+-+Uep1-S.2,+Pres.+Prudente+-+SP/@-22.1297365,-51.4016643,17z/data=!3m1!4b1!4m6!3m5!1s0x9493f456ea0f3baf:0x153b463d9863a2dc!8m2!3d-22.1297415!4d-51.3990894!16s%2Fg%2F1ymsh7kx5?entry=ttu"
+                target="_blank">Rua quatorze de setembro</a>
+            </li>
+            <li>Parque do Povo</li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Acesso Rapido</h3>
+          <ul>
+            <li><a href="#new">Noticias</a></li>
+            <li><a href="./login/index.html">Login</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Colegio Horizon</h3>
+          <ul>
+            <li>
+              <a href="#"><a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i>
+                  <span style="color: white; font-size: 1rem">Instagram</span></a></a>
+            </li>
+            <li>
+              <a href="#">
+                <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f">
+                    <span style="color: white; font-size: 1rem">Facebook</span></i></a>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter">
+                    <span style="color: white; font-size: 1rem">Twitter</span></i></a>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in">
+                    <span style="color: white; font-size: 1rem">Linkedin</span></i></a>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-info">
+        <p>
+          AVISO DE PRIVACIDADE • Associação Prudentina de Educação e Cultura
+          APEC/HORIZON. TODOS OS DIREITOS RESERVADOS
+        </p>
+        <p>
+          RELATÓRIO DE TRANSPARÊNCIA SALARIAL - Lei nº 14.611 de 03 de Julho de
+          2023.
+        </p>
+      </div>
+    </footer>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+    <script>
+      document
+        .getElementById("drawerToggle")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.toggle("open");
+        });
+
+      document
+        .getElementById("drawerClose")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.remove("open");
+        });
+
+      function goTo(filePath) {
+        window.location.href = filePath;
+      }
+    </script>
+    <script>
+      lucide.createIcons();
+    </script>
+
+    <script type="module" src="../../js/Atividades/adicionarAtividade.js"></script>
+</body>
+
+</html>

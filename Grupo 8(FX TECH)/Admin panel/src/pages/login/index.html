@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Horizon</title>
+
+  <!-- Ícones e estilos -->
+  <script src="https://unpkg.com/lucide@latest"></script>  
+  <script src="../../js/LoginPage/login.js"></script>
+  
+  <link rel="stylesheet" href="../../styles/principal.css" />
+  <link rel="stylesheet" href="../../styles/style.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+</head>
+
+<body class="main-content">
+  <!-- Menu Lateral -->
+  <div id="drawer" class="drawer">
+    <div class="drawer-header">
+      <span class="logo-text" style="filter: grayscale(100%) opacity(0.7); transition: var(--transition-speed);">
+        Horizon
+      </span>
+      <button id="drawerClose" class="close-button">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <hr />
+    <nav class="drawer-nav">
+      <a href="../enroll/index.html" class="drawer-link">
+        <i data-lucide="user-plus" style="width: 20px"></i> Matricule-se
+      </a>
+      <a href="./login/index.html" class="drawer-link">
+        <i data-lucide="book-text" style="width: 20px"></i> Novidades
+      </a>
+      <a href="#" class="drawer-link">
+        <i data-lucide="phone" style="width: 20px"></i> Contato
+      </a>
+      <a href="#about" class="drawer-link">
+        <i data-lucide="info" style="width: 20px"></i> Sobre
+      </a>
+      <a href="#" class="drawer-link">
+        <i data-lucide="arrow-big-right-dash" style="width: 20px"></i> Entrar
+      </a>
+    </nav>
+  </div>
+
+  <!-- Cabeçalho -->
+  <header class="header" style="box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.4);">
+    <div class="limit">
+      <div class="flexV3">
+        <button id="drawerToggle" class="menu-button">
+          <span class="material-icons" style="font-size: 32px">menu</span>
+        </button>
+        <img src="../assets/LogoHbranco.png" alt="Logo Horizon" class="pointer logo" width="100" height="80"
+          onclick="goTo('../initial-page/initial-page.html')" />
+        <nav class="listaMenuPrincipal">
+          <div class="itemMenu"><a href="../enroll/index.html" class="link">MATRICULE-SE</a></div>
+          <div class="itemMenu"><a href="#new" class="link">NOVIDADES</a></div>
+          <div class="itemMenu"><a href="#footer" class="link">CONTATO</a></div>
+          <div class="itemMenu"><a href="#about" class="link">SOBRE</a></div>
+        </nav>
+        <div class="flex items-center gap-sm">
+          <button class="user-btn" onclick="goTo('./index.html')">
+            <i data-lucide="log-in" style="width: 20px"></i>
+            <a style="margin-left: 2px; text-decoration: none; color: white">ENTRAR</a>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <main style="display: flex; justify-content: center; align-items: center; padding: 16px; margin: 50px 0;">
+    <form>
+      <div class="q-card" style="max-width: 350px;">
+        <div class="q-card-section bg-grey" style="text-align: center;">
+          <span class="screenTitle">Validação de acesso</span>
+          <hr />
+        </div>
+        <div class="q-card-section">
+          <div class="row">
+            <div class="col col-xs-12">
+              <label>Tipo:</label>
+              <select name="personType" id="personType" class="input" required>
+                <option value="aluno">Estudante</option>
+                <option value="funcionario">Funcionário</option>
+              </select>
+            </div>
+            <div class="col col-xs-12">
+              <label>RA:</label>
+              <input id="ra" placeholder="RA..." class="input" required />
+            </div>
+            <div class="col col-xs-12">
+              <label>Senha:</label>
+              <div class="flex">
+                <input type="password" id="password" placeholder="Senha..." class="inputPassword" required />
+                <button type="button" onclick="showPass()" id="eye-btn" class="pointer btn-password unvisible">
+                  <i data-lucide="eye-off" style="color: #0000008a;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div class="q-card-section">
+          <button class="btn-default" style="width: 100%;" type="submit">Entrar</button>
+          <span style="font-size: small;">Cadastrar senha ou esqueci minha senha</span>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <!-- Rodapé -->
+  <footer id="footer">
+    <div class="footer-container">
+      <div class="footer-column">
+        <h3>Contato</h3>
+        <ul>
+          <li><a href="https://wa.me/1234567890"><i class="fab fa-whatsapp"></i> 18 99823-8756</a></li>
+          <li>horizon@horizon.com</li>
+          <li>
+            <a href="https://www.google.com/maps/place/..." target="_blank">
+              Rua quatorze de setembro
+            </a>
+          </li>
+          <li>Parque do Povo</li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Acesso Rápido</h3>
+        <ul>
+          <li><a href="#new">Notícias</a></li>
+          <li><a href="./login/index.html">Login</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Colégio Horizon</h3>
+        <ul>
+          <li><a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
+          <li><a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i> Facebook</a></li>
+          <li><a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i> Twitter</a></li>
+          <li><a href="https://www.linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i> Linkedin</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-info">
+      <p>AVISO DE PRIVACIDADE • Associação Prudentina de Educação e Cultura APEC/HORIZON. TODOS OS DIREITOS RESERVADOS
+      </p>
+      <p>RELATÓRIO DE TRANSPARÊNCIA SALARIAL - Lei nº 14.611 de 03 de Julho de 2023.</p>
+    </div>
+  </footer>
+
+  <!-- VLibras Plugin -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>new window.VLibras.Widget("https://vlibras.gov.br/app");</script>
+</body>
+
+</html>

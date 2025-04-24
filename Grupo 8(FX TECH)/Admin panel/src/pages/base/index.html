@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>College Initial Page</title>
+  </head>
+  <body class="flex h-screen overflow-hidden">
+    <!-- Drawer -->
+    <div id="drawer" class="drawer">
+      <div class="drawer-header">
+        Horizon
+        <button id="drawerClose" class="close-button">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <nav class="drawer-nav">
+        <a href="./index.html" class="drawer-link">
+          <span class="material-icons">help</span> Sobre
+        </a>
+        <a href="./callendar/callendar.html" class="drawer-link">
+          <span class="material-icons">app_registration</span> Matricule-se</a
+        >
+        <a href="./inital-page/initial-page.html" class="drawer-link">
+          <span class="material-icons">phone</span> Contato</a
+        >
+        <hr />
+        <div style="text-align: center; margin-top: auto">
+          <img
+            src="./LogoHbranco.png"
+            alt="LOGO ESCOLA"
+            height="250px"
+            width="250px"
+          />
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <button id="drawerToggle" class="menu-button">
+          <span class="material-icons">menu</span>
+        </button>
+        <div class="header-title">
+          <div>
+            <img
+              src="./LogoHbranco.png"
+              alt="LOGO ESCOLA"
+              height="60px"
+              width="60px"
+            />
+          </div>
+        </div>
+        <div class="header-buttons">
+          <button class="header-button">
+            <a href="./inital-page/initial-page.html">Contato</a>
+          </button>
+          <button class="header-button">
+            <a href="./inital-page/initial-page.html">Matricula</a>
+          </button>
+          <button class="header-button">
+            <a href="./login/index.html">Login</a>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <main class="content-area">
+        <div class="height">
+          <div class="parallax"></div>
+        </div>
+        <div class="middle">
+          <div class="limit1">
+            <div>
+              <button class="btn-orange">Cursos</button>
+            </div>
+            <div>
+              <button class="btn-orange">Ensino Medio</button>
+            </div>
+            <div>
+              <button class="btn-orange">Horizon</button>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="fixed-button">
+          <img
+            class="access-button"
+            data-src="assets/access_icon.svg"
+            alt="Conteúdo acessível em Libras usando o VLibras Widget com opções dos Avatares Ícaro, Hosana ou Guga."
+            src="https://vlibras.gov.br/app//assets/access_icon.svg"
+          />
+        </div> -->
+        <div class="about-new">
+          <div class="about-new-inner">
+            <div class="flex-container">
+              <div>
+                <h2 class="titleNew">Novo Ensino Medio</h2>
+                <p class="paragraph">
+                  Com um corpo docente altamente qualificado, material didático
+                  renomado e suporte individualizado, os alunos são preparados
+                  para os principais vestibulares e para aproveitar as melhores
+                  oportunidades, visando construir um futuro de sucesso.
+                </p>
+              </div>
+              <div class="happyImgBg">
+                <img
+                  class="imgHappy"
+                  src="./HorizonPI/happystudents.png"
+                  alt=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div vw class="enabled">
+          <div vw-access-button class="active"></div>
+          <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+          </div>
+        </div>
+        <!-- Add more content here as needed -->
+      </main>
+    </div>
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget("https://vlibras.gov.br/app");
+    </script>
+    <script>
+      document
+        .getElementById("drawerToggle")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.toggle("open");
+        });
+
+      document
+        .getElementById("drawerClose")
+        .addEventListener("click", function () {
+          document.getElementById("drawer").classList.remove("open");
+        });
+    </script>
+  </body>
+</html>
