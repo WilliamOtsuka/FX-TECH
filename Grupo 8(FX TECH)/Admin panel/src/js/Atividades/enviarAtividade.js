@@ -1,23 +1,22 @@
-const token = localStorage.getItem("token");
-const user = JSON.parse(localStorage.getItem("user"));
+let token = localStorage.getItem("token");
+let user = JSON.parse(localStorage.getItem("user"));
 
 console.log("Token:", token);
 console.log("User:", user);
 
-const urlParams = new URLSearchParams(window.location.search);
-const idAtividade = urlParams.get('idA'); // ID da atividade
-
+let urlParams = new URLSearchParams(window.location.search);
+let idAtividade = urlParams.get('idA'); // ID da atividade
 
 function formatarData(dataISO) {
-    const data = new Date(dataISO);
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const ano = data.getFullYear();
+    let data = new Date(dataISO);
+    let dia = String(data.getDate()).padStart(2, '0');
+    let mes = String(data.getMonth() + 1).padStart(2, '0');
+    let ano = data.getFullYear();
     return `${dia}/${mes}/${ano}`;
 }
 
 function formatarHora(horaISO) {
-    const [horas, minutos, segundos] = horaISO.split(":").map(Number);
+    let [horas, minutos, segundos] = horaISO.split(":").map(Number);
     if (isNaN(horas) || isNaN(minutos)) {
         console.error("Data inválida fornecida para formatarHora:", horaISO);
         return "Hora inválida";
@@ -26,15 +25,15 @@ function formatarHora(horaISO) {
 }
 
 async function alunosRestantes() {
-    const response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/alunos`);
+    let response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/alunos`);
     if (!response.ok) {
         throw new Error(`Erro ao buscar alunos restantes: ${response.statusText}`);
     }
 
-    const alunos = await response.json();
+    let alunos = await response.json();
     console.log("Alunos restantes:", alunos);
 
-    const alunosPendentesContainer = document.getElementById('tarefa-pendente-list');
+    let alunosPendentesContainer = document.getElementById('tarefa-pendente-list');
     if (!alunosPendentesContainer) {
         console.error("Elemento #tarefa-pendente-list não encontrado!");
         return;
@@ -48,7 +47,7 @@ async function alunosRestantes() {
     }
 
     alunos.forEach(aluno => {
-        const alunoItem = document.createElement("li");
+        let alunoItem = document.createElement("li");
         alunoItem.classList.add("aluno-item");
         alunoItem.textContent = `${aluno.nome} - ${aluno.ra}`;
         alunoItem.style.cursor = "pointer";
@@ -63,15 +62,15 @@ async function alunosRestantes() {
 }
 
 async function correcaoPendente() {
-    const response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/correcao/pendente`);
+    let response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/correcao/pendente`);
     if (!response.ok) {
         throw new Error(`Erro ao buscar correções pendentes: ${response.statusText}`);
     }
 
-    const tarefas = await response.json();
+    let tarefas = await response.json();
     console.log("Correções pendentes:", tarefas);
 
-    const tarefasEntreguesContainer = document.getElementById('tarefa-entregue-list');
+    let tarefasEntreguesContainer = document.getElementById('tarefa-entregue-list');
     if (!tarefasEntreguesContainer) {
         console.error("Elemento #tarefa-entregue-list não encontrado!");
         return;
@@ -85,7 +84,7 @@ async function correcaoPendente() {
     }
 
     tarefas.forEach(tarefa => {
-        const tarefaItem = document.createElement("li");
+        let tarefaItem = document.createElement("li");
         tarefaItem.classList.add("tarefa-item");
         tarefaItem.textContent = `${tarefa.nome} - ${tarefa.ra}`;
         tarefaItem.style.cursor = "pointer";
@@ -103,15 +102,15 @@ async function correcaoPendente() {
 }
 
 async function alunosAtividadeCorrigida() {
-    const response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/correcao/corrigida`);
+    let response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/correcao/corrigida`);
     if (!response.ok) {
         throw new Error(`Erro ao buscar atividades corrigidas: ${response.statusText}`);
     }
 
-    const tarefasCorrigidas = await response.json();
+    let tarefasCorrigidas = await response.json();
     console.log("Atividades corrigidas:", tarefasCorrigidas);
 
-    const tarefasCorrigidasContainer = document.getElementById('tarefa-corrigida-list');
+    let tarefasCorrigidasContainer = document.getElementById('tarefa-corrigida-list');
     if (!tarefasCorrigidasContainer) {
         console.error("Elemento #tarefa-corrigida-list não encontrado!");
         return;
@@ -125,7 +124,7 @@ async function alunosAtividadeCorrigida() {
     }
 
     tarefasCorrigidas.forEach(tarefa => {
-        const tarefaItem = document.createElement("li");
+        let tarefaItem = document.createElement("li");
         tarefaItem.classList.add("tarefa-item");
         tarefaItem.textContent = `${tarefa.nome} - ${tarefa.ra}`;
         tarefaItem.style.cursor = "pointer";
@@ -144,7 +143,7 @@ async function alunosAtividadeCorrigida() {
 }
 
 async function carregarAtividadeAluno(idAtividade, idAluno) {
-    const response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}`);
+    let response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}`);
     if (!response.ok) {
         throw new Error(`Erro ao buscar atividade entregue: ${response.statusText}`);
     }
@@ -154,14 +153,14 @@ async function carregarAtividadeAluno(idAtividade, idAluno) {
 async function salvarCorrecao(event) {
     event.preventDefault();
 
-    const idAtividade = urlParams.get('idAtividade');
-    const idAluno = urlParams.get('idAluno');
+    let idAtividade = urlParams.get('idAtividade');
+    let idAluno = urlParams.get('idAluno');
 
-    const nota = parseFloat(document.getElementById("nota").value);
-    const feedback = document.getElementById("feedback").value;
+    let nota = parseFloat(document.getElementById("nota").value);
+    let feedback = document.getElementById("feedback").value;
 
     try {
-        const response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}/corrigir`, {
+        let response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}/corrigir`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -169,7 +168,7 @@ async function salvarCorrecao(event) {
             body: JSON.stringify({ nota, feedback })
         });
 
-        const data = await response.json();
+        let data = await response.json();
 
         if (!response.ok) {
             // Se a atividade estiver como "disponível", o back retorna 403
@@ -223,7 +222,7 @@ function renderRespostaNota({ nota, feedback }) {
 }
 
 async function buscarResposta(idAtividade, idAluno) {
-    const resposta = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}/resposta`);
+    let resposta = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}/resposta`);
     if (!resposta.ok) throw new Error("Erro ao buscar resposta do aluno.");
     return await resposta.json();
 }
@@ -245,13 +244,13 @@ function ativarEdicao(nota, feedback) {
 }
 
 async function salvarEdicao() {
-    const nota = document.getElementById("nota").value;
-    const feedback = document.getElementById("feedback-edit").value;
-    const idAluno = urlParams.get('idAluno');
-    const idAtividade = urlParams.get('idAtividade');
+    let nota = document.getElementById("nota").value;
+    let feedback = document.getElementById("feedback-edit").value;
+    let idAluno = urlParams.get('idAluno');
+    let idAtividade = urlParams.get('idAtividade');
 
     try {
-        const response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}/corrigir`, {
+        let response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}/corrigir`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ nota, feedback })
@@ -267,13 +266,13 @@ async function salvarEdicao() {
 }
 
 async function excluirCorrecao() {
-    const idAluno = urlParams.get('idAluno');
-    const idAtividade = urlParams.get('idAtividade');
+    let idAluno = urlParams.get('idAluno');
+    let idAtividade = urlParams.get('idAtividade');
 
     if (!confirm("Tem certeza que deseja excluir esta correção?")) return;
 
     try {
-        const response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}/corrigir`, {
+        let response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}/corrigir`, {
             method: "DELETE"
         });
 
@@ -287,10 +286,10 @@ async function excluirCorrecao() {
 }
 
 async function carregarAtividadeEntregue() {
-    const idAtividade = urlParams.get('idAtividade');
-    const idAluno = urlParams.get('idAluno');
+    let idAtividade = urlParams.get('idAtividade');
+    let idAluno = urlParams.get('idAluno');
 
-    const backarrow = document.querySelector('.back-area-btn');
+    let backarrow = document.querySelector('.back-area-btn');
     if (backarrow) {
         backarrow.addEventListener('click', function (e) {
             e.preventDefault(); 
@@ -298,12 +297,16 @@ async function carregarAtividadeEntregue() {
         });
     }
 
-    const tituloMateria = document.getElementById('titulo-materia');
+    let tituloMateria = document.getElementById('titulo-materia');
     tituloMateria.textContent = `${user.turmas[0].materias[0].nome}`; // Exemplo de como pegar o nome da matéria, ajuste conforme necessário
 
     try {
-        const atividade = await carregarAtividadeAluno(idAtividade, idAluno);
-        const container = document.querySelector(".atividade-enviada");
+        let atividade = await carregarAtividadeAluno(idAtividade, idAluno);
+        let container = document.querySelector(".atividade-enviada");
+
+        if(atividade.descricaoAluno === null){
+            atividade.descricaoAluno = "Nenhuma descrição fornecida."
+        }
 
         let formHTML = `
             <form id="form-correcao" class="form-correcao">
@@ -323,11 +326,11 @@ async function carregarAtividadeEntregue() {
                     </div>
                 </div>
         `;
-        if (user.tipo === "professor") {
+        if (user.tipo === "colaborador") {
             if (atividade.correcao === 'pendente') {
                 formHTML += renderFormularioNota();
             } else {
-                const resposta = await buscarResposta(idAtividade, idAluno);
+                let resposta = await buscarResposta(idAtividade, idAluno);
                 formHTML += renderRespostaNota(resposta);
             }
 
@@ -359,21 +362,21 @@ async function carregarAtividade() {
     console.log("ID da Atividade:", idAtividade);
 
     try {
-        const response = await fetch(`http://localhost:3000/atividades/${idAtividade}/`);
+        let response = await fetch(`http://localhost:3000/atividades/${idAtividade}/`);
         if (!response.ok) {
             throw new Error(`Erro ao buscar atividade: ${response.statusText}`);
         }
 
-        const atividade = await response.json();
+        let atividade = await response.json();
         console.log("Atividade carregada:", atividade);
 
-        const materiaAtivdade = document.getElementById('titulo-materia');
-        const tituloAtividade = document.getElementById('titulo-atividade');
-        const descricaoAtividade = document.getElementById('descricao-atividade');
-        const dataEntrega = document.getElementById('data-entrega');
-        const horaEntrega = document.getElementById('hora-entrega');
+        let materiaAtivdade = document.getElementById('titulo-materia');
+        let tituloAtividade = document.getElementById('titulo-atividade');
+        let descricaoAtividade = document.getElementById('descricao-atividade');
+        let dataEntrega = document.getElementById('data-entrega');
+        let horaEntrega = document.getElementById('hora-entrega');
 
-        const materia = user.turmas.flatMap(turma => turma.materias)
+        let materia = user.turmas.flatMap(turma => turma.materias)
             .find(materia => materia.idMateria == atividade.idMateria);
         if (materia) {
             materiaAtivdade.textContent = materia.nome;
@@ -384,8 +387,12 @@ async function carregarAtividade() {
         dataEntrega.textContent = `Data de Entrega - ${formatarData(atividade.dataEntrega)}`;
         horaEntrega.textContent = `Até às ${formatarHora(atividade.hora)}`;
 
-        const resposta = await carregarAtividadeAluno(idAtividade, user.idReferencia);
-        const respostaContainer = document.getElementById('resposta-container');
+        let resposta = await carregarAtividadeAluno(idAtividade, user.idReferencia);
+        let respostaContainer = document.getElementById('resposta-container');
+        if(resposta.descricao === null){
+            resposta.descricao = "Nenhuma descrição fornecida."
+        }
+
         respostaContainer.innerHTML = resposta
             ? `
                 <h3>Resposta do Aluno:</h3>
@@ -393,11 +400,11 @@ async function carregarAtividade() {
               `
             : `<p>Nenhuma resposta encontrada.</p>`;
 
-        const btnEnviar = document.querySelector(".submit-btn");
-        const fileInput = document.querySelector("#arquivo");
-        const descricaoInput = document.querySelector("#descricao");
+        let btnEnviar = document.querySelector(".submit-btn");
+        let fileInput = document.querySelector("#arquivo");
+        let descricaoInput = document.querySelector("#descricao");
 
-        if (atividade.status === "indisponivel" || user.tipo === "professor") {
+        if (atividade.status === "indisponivel" || user.tipo === "colaborador") {
             [fileInput, descricaoInput, btnEnviar].forEach(element => {
                 element.disabled = true;
                 element.style.backgroundColor = "#cccccc52";
@@ -411,27 +418,28 @@ async function carregarAtividade() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const backarrow = document.querySelector('.back-area-btn');
+    let backarrow = document.querySelector('.back-area-btn');
     if (backarrow) {
         backarrow.addEventListener('click', function (e) {
             e.preventDefault(); 
             window.location.href = `./atividadesMateria.html?idM=${user.turmas[0].materias[0].idMateria}&idT=${user.turmas[0].idTurma}`;  
         });
     }
+    
 
-    const atividadeEnviada = document.querySelector('.atividade-enviada');
+    let atividadeEnviada = document.querySelector('.atividade-enviada');
     if (atividadeEnviada) {
         carregarAtividadeEntregue();
     }
 
-    const menuLateral = document.querySelector('.menu-lateral');
+    let menuLateral = document.querySelector('.menu-lateral');
     if (menuLateral) {
         carregarAtividade();
-        if (user.tipo == "professor") {
+        if (user.tipo == "colaborador") {
             areaProfessor();
         }
         else {
-            const professorContainer = document.querySelector(".professor-container");
+            let professorContainer = document.querySelector(".professor-container");
             if (professorContainer) {
                 professorContainer.remove();
             }
@@ -461,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             try {
-                const response = await fetch('http://localhost:3000/entregar-atividade', {
+                let response = await fetch('http://localhost:3000/entregar-atividade', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -472,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert('Atividade enviada com sucesso!');
                     document.getElementById('entregaForm').reset(); // Limpa o formulário após o envio
                 } else {
-                    const data = await response.json();
+                    let data = await response.json();
                     alert(`Erro: ${data.message}`);
                 }
             } catch (error) {

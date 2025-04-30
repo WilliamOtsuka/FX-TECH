@@ -1,13 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
     lucide.createIcons();
 
-    const isValidRa = (ra) => /^\d{5,10}$/.test(ra);
-    const isValidPassword = (pass) => /^\d{6}$/.test(pass);
-    const isValidPersonType = (type) => ["aluno", "funcionario"].includes(type);
+    let isValidRa = (ra) => /^\d{5,10}$/.test(ra);
+    let isValidPassword = (pass) => /^\d{6}$/.test(pass);
+    let isValidPersonType = (type) => ["aluno", "colaborador"].includes(type);
 
-    const addValidation = (selector, validate, message) => {
-        const input = document.querySelector(selector);
-        const errorDiv = document.createElement("div");
+    let addValidation = (selector, validate, message) => {
+        let input = document.querySelector(selector);
+        let errorDiv = document.createElement("div");
         errorDiv.style.color = "red";
         errorDiv.style.fontSize = "12px";
         errorDiv.style.marginTop = "4px";
@@ -29,9 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelector("form").addEventListener("submit", (e) => {
         e.preventDefault();
-        const ra = document.querySelector("#ra").value;
-        const tipo = document.querySelector("#personType").value;
-        const senha = document.querySelector("#password").value;
+        let ra = document.querySelector("#ra").value;
+        let tipo = document.querySelector("#personType").value;
+        let senha = document.querySelector("#password").value;
 
         if (isValidRa(ra) && isValidPassword(senha) && isValidPersonType(tipo)) {
             // window.location.href = "../content-page/content-page.html";
@@ -77,19 +77,19 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function showPass() {
-    const passwordInput = document.querySelector("#password");
-    const eyeBtn = document.querySelector("#eye-btn");
+    let passwordInput = document.querySelector("#password");
+    let eyeBtn = document.querySelector("#eye-btn");
 
     if (!passwordInput || !eyeBtn) {
         console.error("Elementos não encontrados.");
         return;
     }
 
-    const isHidden = passwordInput.type === "password";
+    let isHidden = passwordInput.type === "password";
     passwordInput.type = isHidden ? "text" : "password";
 
     // Altera o atributo data-lucide no botão (recria o conteúdo)
-    const newIcon = isHidden ? "eye" : "eye-off";
+    let newIcon = isHidden ? "eye" : "eye-off";
 
     // Atualiza o conteúdo do botão (remove o anterior e insere novo ícone)
     eyeBtn.innerHTML = `<i data-lucide="${newIcon}" style="color: #0000008a;"></i>`;

@@ -5,16 +5,17 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import cron from 'node-cron';
 
-const app = express();
+let app = express();
 app.use(cors());
 app.use(express.json());
 
-const SECRET_KEY = 'seuSegredo';
+let SECRET_KEY = 'seuSegredo';
 
+// atualiza o status da atividade para indisponivel se o prazo de entrega já tiver passado
 cron.schedule('* * * * *', async () => {
-    const agora = new Date();
-    const connectDb = new ConnectioDb();
-    const db = await connectDb.connect();
+    let agora = new Date();
+    let connectDb = new ConnectioDb();
+    let db = await connectDb.connect();
 
     console.log("Verificando atividades vencidas...");
 
@@ -31,17 +32,18 @@ cron.schedule('* * * * *', async () => {
     }
 });
 
-cron.schedule('* * * * *', async () => {
-    const connectDb = new ConnectioDb();
-    const db = await connectDb.connect();
+// Caso a atividade não tenha sido entregue, atribui nota 0
+cron.schedule('0 0 * * *', async () => {
+    let connectDb = new ConnectioDb();
+    let db = await connectDb.connect();
 
     try {
         console.log('Executando cron job: atribuição de nota 0 para não entregas...');
 
-        const hoje = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
+        let hoje = new Date().toISOString().split('T')[0]; // formato YYYY-MM-DD
 
         // 1. Buscar todas as atividades com prazo vencido e disponíveis
-        const [atividades] = await db.query(`
+        let [atividades] = await db.query(`
       SELECT a.idAtividade, a.idTurma, a.idMateria
       FROM atividade a
       WHERE a.dataEntrega < ?
@@ -50,17 +52,17 @@ cron.schedule('* * * * *', async () => {
 
         let totalInseridos = 0;
 
-        for (const atividade of atividades) {
+        for (let atividade of atividades) {
             // 2. Buscar todos os alunos da turma dessa atividade
-            const [alunosDaTurma] = await db.query(`
+            let [alunosDaTurma] = await db.query(`
         SELECT at.idAluno
         FROM alunos_turma at
         WHERE at.idTurma = ?
       `, [atividade.idTurma]);
 
             // 3. Para cada aluno, verificar se ele entregou
-            for (const aluno of alunosDaTurma) {
-                const [entregas] = await db.query(`
+            for (let aluno of alunosDaTurma) {
+                let [entregas] = await db.query(`
           SELECT idEntrega
           FROM atividades_entregues
           WHERE idAluno = ? AND idAtividade = ?
@@ -69,7 +71,7 @@ cron.schedule('* * * * *', async () => {
                 // Se NÃO entregou, atribuir nota 0
                 if (entregas.length === 0) {
                     // Verifica se já não tem correção (evita duplicatas)
-                    const [correcaoExistente] = await db.query(`
+                    let [correcaoExistente] = await db.query(`
             SELECT idCorrecao
             FROM atividades_corrigidas
             WHERE idAluno = ? AND idAtividade = ?
@@ -93,21 +95,21 @@ cron.schedule('* * * * *', async () => {
     }
 });
 
-
+// Rota de login
 app.post('/login', async (req, res) => {
     try {
-        const { ra, tipo, senha } = req.body;
+        let { ra, tipo, senha } = req.body;
         console.log(`RA: ${ra}, tipo: ${tipo}, senha: ${senha}`);
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
         let user = null;
         let perfil = null;
         let turmas = [];
 
         // Verifica se o usuário existe
-        const [rows] = await db.query('SELECT * FROM Usuarios WHERE ra = ?', [ra]);
+        let [rows] = await db.query('SELECT * FROM Usuarios WHERE ra = ?', [ra]);
         if (rows.length === 0) {
             return res.status(401).json({ message: 'Usuário não encontrado' });
         }
@@ -120,102 +122,110 @@ app.post('/login', async (req, res) => {
             console.log("Senha incorreta!");
             return res.status(401).json({ message: 'Senha incorreta' });
         }
+        if (tipo === user.tipo) {
+            if (tipo === 'aluno') {
+                let [alunoRows] = await db.query('SELECT * FROM Alunos WHERE idAluno = ?', [user.idReferencia]);
+                if (alunoRows.length === 0)
+                    return res.status(401).json({ message: 'Aluno não encontrado' });
 
-        if (tipo === 'aluno') {
-            const [alunoRows] = await db.query('SELECT * FROM Alunos WHERE idAluno = ?', [user.idReferencia]);
-            if (alunoRows.length === 0)
-                return res.status(401).json({ message: 'Aluno não encontrado' });
+                perfil = alunoRows[0];
 
-            perfil = alunoRows[0];
+                let [turmasAluno] = await db.query(`
+                    SELECT t.idTurma, t.nome, t.idAno_letivo, al.descricao AS anoLetivo
+                    FROM alunos_turma at 
+                    JOIN turmas t ON at.idTurma = t.idTurma
+                    JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
+                    WHERE at.idAluno = ?
+                `, [user.idReferencia]);
 
-            const [turmasAluno] = await db.query(`
-                SELECT t.idTurma, t.nome, t.idAno_letivo, al.descricao AS anoLetivo
-                FROM alunos_turma at 
-                JOIN turmas t ON at.idTurma = t.idTurma
-                JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
-                WHERE at.idAluno = ?
-            `, [user.idReferencia]);
+                for (let turma of turmasAluno) {
+                    let [materiasTurma] = await db.query(`
+                        SELECT m.idMateria, m.nome 
+                        FROM materia m 
+                        JOIN turma_materias tm ON m.idMateria = tm.idMateria 
+                        WHERE tm.idTurma = ?
+                    `, [turma.idTurma]);
 
-            for (const turma of turmasAluno) {
-                const [materiasTurma] = await db.query(`
-                    SELECT m.idMateria, m.nome 
-                    FROM materia m 
-                    JOIN turma_materias tm ON m.idMateria = tm.idMateria 
-                    WHERE tm.idTurma = ?
-                `, [turma.idTurma]);
-
-                turmas.push({
-                    idTurma: turma.idTurma,
-                    nome: turma.nome,
-                    idAno_letivo: turma.idAno_letivo,
-                    anoLetivo: turma.anoLetivo,
-                    materias: materiasTurma
-                });
+                    turmas.push({
+                        idTurma: turma.idTurma,
+                        nome: turma.nome,
+                        idAno_letivo: turma.idAno_letivo,
+                        anoLetivo: turma.anoLetivo,
+                        materias: materiasTurma
+                    });
+                }
             }
-        }
+            else if (tipo === 'colaborador') {
+                let [profRows] = await db.query('SELECT * FROM colaboradores WHERE idColaboradores = ?', [user.idReferencia]);
+                if (profRows.length === 0)
+                    return res.status(401).json({ message: 'Funcionário não encontrado' });
 
-        else if (tipo === 'funcionario') {
-            const [profRows] = await db.query('SELECT * FROM colaboradores WHERE idColaboradores = ?', [user.idReferencia]);
-            if (profRows.length === 0)
-                return res.status(401).json({ message: 'Funcionário não encontrado' });
+                perfil = profRows[0];
 
-            perfil = profRows[0];
+                let [turmasMaterias] = await db.query(`
+                    SELECT 
+                        t.idTurma, t.nome AS nomeTurma, t.idAno_letivo, al.descricao AS anoLetivo,
+                        m.idMateria, m.nome AS nomeMateria
+                    FROM professor_turma pt
+                    JOIN turmas t ON pt.idTurma = t.idTurma
+                    JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
+                    JOIN materia m ON pt.idMateria = m.idMateria
+                    WHERE pt.idColaboradores = ?
+                `, [user.idReferencia]);
 
-            const [turmasMaterias] = await db.query(`
-                SELECT 
-                    t.idTurma, t.nome AS nomeTurma, t.idAno_letivo, al.descricao AS anoLetivo,
-                    m.idMateria, m.nome AS nomeMateria
-                FROM professor_turma pt
-                JOIN turmas t ON pt.idTurma = t.idTurma
-                JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
-                JOIN materia m ON pt.idMateria = m.idMateria
-                WHERE pt.idColaboradores = ?
-            `, [user.idReferencia]);
+                let turmaMap = new Map();
 
-            const turmaMap = new Map();
+                for (let row of turmasMaterias) {
+                    if (!turmaMap.has(row.idTurma)) {
+                        turmaMap.set(row.idTurma, {
+                            idTurma: row.idTurma,
+                            nome: row.nomeTurma,
+                            idAno_letivo: row.idAno_letivo,
+                            anoLetivo: row.anoLetivo,
+                            materias: []
+                        });
+                    }
 
-            for (const row of turmasMaterias) {
-                if (!turmaMap.has(row.idTurma)) {
-                    turmaMap.set(row.idTurma, {
-                        idTurma: row.idTurma,
-                        nome: row.nomeTurma,
-                        idAno_letivo: row.idAno_letivo,
-                        anoLetivo: row.anoLetivo,
-                        materias: []
+                    turmaMap.get(row.idTurma).materias.push({
+                        idMateria: row.idMateria,
+                        nome: row.nomeMateria
                     });
                 }
 
-                turmaMap.get(row.idTurma).materias.push({
-                    idMateria: row.idMateria,
-                    nome: row.nomeMateria
-                });
+                turmas = Array.from(turmaMap.values());
+            }
+            else {
+                return res.status(401).json({ message: 'Tipo de usuário inválido' });
             }
 
-            turmas = Array.from(turmaMap.values());
+            // Gera o token JWT
+            let token = jwt.sign(
+                {
+                    id: user.idUsuario,
+                    tipo: user.tipo,
+                    ra: user.ra,
+                    idReferencia: user.idReferencia
+                },
+                SECRET_KEY,
+                { expiresIn: '1h' }
+            );
+
+            // Retorna o usuário logado com dados completos
+            return res.json({
+                message: 'Login bem-sucedido',
+                token,
+                user: {
+                    ...user,
+                    perfil,
+                    turmas
+                }
+            });
+
         }
-
-        // Gera o token JWT
-        const token = jwt.sign(
-            {
-                id: user.idUsuario,
-                tipo: user.tipo,
-                ra: user.ra,
-                idReferencia: user.idReferencia
-            },
-            SECRET_KEY,
-            { expiresIn: '1h' }
-        );
-
-        // Retorna o usuário logado com dados completos
-        return res.json({
-            message: 'Login bem-sucedido',
-            token,
-            user: {
-                ...user,
-                perfil,
-                turmas
-            }
-        });
+        else {
+            console.log("Tipo de usuário não corresponde ao tipo informado!");
+            return res.status(401).json({ message: 'Tipo de usuário não corresponde ao tipo informado' });
+        }
 
     } catch (error) {
         console.error('Erro no login:', error);
@@ -223,11 +233,12 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// lista todas as materias
 app.get('/materias', async (req, res) => {
     try {
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
-        const [rows] = await db.query('SELECT * FROM materia');
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+        let [rows] = await db.query('SELECT * FROM materia');
         res.json(rows);
     } catch (error) {
         console.error(error, "NO ERROR DO TRY");
@@ -235,16 +246,17 @@ app.get('/materias', async (req, res) => {
     }
 });
 
+// lista as materias de uma turma
 app.get('/materias/:id', async (req, res) => {
     try {
-        const { id } = req.params;
+        let { id } = req.params;
         if (isNaN(id)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
         console.log(`Buscando matéria com ID: ${id}`);
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
-        const [rows] = await db.query('SELECT * FROM materia WHERE idMateria = ?', [id]);
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+        let [rows] = await db.query('SELECT * FROM materia WHERE idMateria = ?', [id]);
         if (rows.length > 0) {
             res.json(rows[0]);
         } else {
@@ -256,23 +268,25 @@ app.get('/materias/:id', async (req, res) => {
     }
 });
 
+// lista as atividades de uma materia em uma turma
 app.get('/materias/:id/atividades/:idT', async (req, res) => {
     try {
-        const { id, idT } = req.params;
+        let { id, idT } = req.params;
         console.log(`Buscando atividades da matéria ${id} para a turma ${idT}`);
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
-        const [rows] = await db.query('SELECT * FROM atividade WHERE idMateria = ? AND idTurma = ?', [id, idT]);
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+        let [rows] = await db.query('SELECT * FROM atividade WHERE idMateria = ? AND idTurma = ?', [id, idT]);
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
+// lista as atividades de uma materia em uma turma
 app.get('/materias/:idMateria/atividades/:idTurma', async (req, res) => {
     try {
-        const { idMateria, idTurma } = req.params;
+        let { idMateria, idTurma } = req.params;
 
         if (isNaN(idMateria) || isNaN(idTurma)) {
             return res.status(400).json({ message: 'IDs inválidos' });
@@ -280,10 +294,10 @@ app.get('/materias/:idMateria/atividades/:idTurma', async (req, res) => {
 
         console.log(`Buscando atividades da matéria ${idMateria} na turma ${idTurma}`);
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
-        const [rows] = await db.query(`
+        let [rows] = await db.query(`
             SELECT a.*
             FROM Atividade a
             JOIN turma_materias tm ON a.idMateria = tm.idMateria
@@ -297,10 +311,142 @@ app.get('/materias/:idMateria/atividades/:idTurma', async (req, res) => {
     }
 });
 
-app.put('/atividades/edit/:id', async (req, res) => {
+// entrega a atividade
+app.post('/entregar-atividade', async (req, res) => {
     try {
-        const { id } = req.params; // ID da atividade a ser editada
-        const { titulo, descricao, dataEntrega, hora, idMateria } = req.body; // Dados enviados no corpo da requisição
+        let { idAluno, idAtividade, descricao, dataEntrega } = req.body;
+        console.log({
+            idAluno,
+            idAtividade,
+            descricao,
+            dataEntrega
+        });
+
+        if (!idAluno || !idAtividade || !descricao || !dataEntrega) {
+            return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+        }
+
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+
+        let [atividade] = await db.query(
+            'SELECT status FROM Atividade WHERE idAtividade = ?',
+            [idAtividade]
+        );
+
+        if (atividade.length === 0 || atividade[0].status === 'indisponivel') {
+            return res.status(400).json({ message: 'Não é possível entregar uma atividade indisponível' });
+        }
+
+        let [existingEntrega] = await db.query(
+            'SELECT * FROM Atividades_Entregues WHERE idAluno = ? AND idAtividade = ?',
+            [idAluno, idAtividade]
+        );
+
+        if (existingEntrega.length > 0) {
+            let [result] = await db.query(
+                'UPDATE Atividades_Entregues SET descricao = ?, dataEntrega = ?WHERE idAluno = ? AND idAtividade = ?',
+                [descricao, dataEntrega, idAluno, idAtividade]
+            );
+
+            res.status(200).json({ message: 'Entrega atualizada com sucesso!' });
+        } else {
+            let correcao = "pendente";
+            let [result] = await db.query(
+                'INSERT INTO Atividades_Entregues (idAluno, idAtividade, descricao, dataEntrega, correcao) VALUES (?, ?, ?, ?, ?)',
+                [idAluno, idAtividade, descricao, dataEntrega, correcao]
+            );
+
+            res.status(200).json({ message: 'Atividade entregue com sucesso!', idEntrega: result.insertId });
+        }
+    } catch (error) {
+        console.error(`Erro ao registrar a entrega: ${error.message}`);
+        res.status(500).json({ error: 'Erro ao registrar a entrega da atividade.' });
+    }
+});
+
+// Adiciona a atividade
+app.post('/adicionar-atividade', async (req, res) => {
+    try {
+        let { titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo } = req.body;
+
+        console.log({
+            titulo,
+            descricao,
+            dataEntrega,
+            hora,
+            peso,
+            idMateria,
+            idTurma,
+            tipo
+        });
+
+
+        if (!titulo || !descricao || !dataEntrega || !hora || !peso || !idMateria || !idTurma || !tipo) {
+            return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+        }
+
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+
+        let [result] = await db.query(
+            'INSERT INTO Atividade (titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo]
+        );
+
+        if (tipo === 'avaliativa') {
+            // O status da atividade é definido como "indisponivel" por padrão
+            await db.query(
+                'UPDATE Atividade SET status = "indisponivel" WHERE idAtividade = ?',
+                [result.insertId]
+            );
+            // todos os alunos da turma sao inseridos na tabela atividades_entregues
+            let [alunos] = await db.query('SELECT idAluno FROM alunos_turma WHERE idTurma = ?', [idTurma]);
+            for (let aluno of alunos) {
+                await db.query(
+                    'INSERT INTO atividades_entregues (idAluno, idAtividade, correcao) VALUES (?, ?, ?)',
+                    [aluno.idAluno, result.insertId, 'pendente']
+                );
+            }
+        }
+
+        res.status(200).json({ message: 'Atividade adicionada com sucesso!', idAtividade: result.insertId });
+    } catch (error) {
+        console.error(`Erro ao adicionar atividade: ${error.message}`);
+        res.status(500).json({ error: 'Erro ao adicionar a atividade.' });
+    }
+});
+
+// Lista todas as atividades
+app.get('/atividades/:id', async (req, res) => {
+    try {
+        let { id } = req.params;
+        console.log(`Buscando atividade com ID: ${id}`);
+
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
+
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+
+        let [rows] = await db.query('SELECT * FROM Atividade WHERE idAtividade = ?', [id]);
+        if (rows.length > 0) {
+            res.json(rows[0]);
+        } else {
+            res.status(404).json({ message: 'Atividade não encontrada' });
+        }
+    } catch (error) {
+        console.error(`Erro ao buscar atividade: ${error.message}`);
+        res.status(500).json({ error: 'Erro ao buscar a atividade.' });
+    }
+});
+
+// Atualiza a atividade
+app.put('/atividade/edit/:id', async (req, res) => {
+    try {
+        let { id } = req.params; // ID da atividade a ser editada
+        let { titulo, descricao, dataEntrega, hora, idMateria } = req.body; // Dados enviados no corpo da requisição
 
         if (isNaN(id)) {
             return res.status(400).json({ message: 'ID inválido' });
@@ -308,10 +454,10 @@ app.put('/atividades/edit/:id', async (req, res) => {
 
         console.log(`Atualizando atividade com ID: ${id}`);
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
-        const [result] = await db.query(
+        let [result] = await db.query(
             'UPDATE Atividade SET titulo = ?, descricao = ?, dataEntrega = ?, hora = ?, idMateria = ?, status = "disponivel" WHERE idAtividade = ? ',
             [titulo, descricao, dataEntrega, hora, idMateria, id]
         );
@@ -327,160 +473,19 @@ app.put('/atividades/edit/:id', async (req, res) => {
     }
 });
 
-app.post('/entregar-atividade', async (req, res) => {
-    try {
-        const { idAluno, idAtividade, descricao, dataEntrega } = req.body;
-        console.log({
-            idAluno,
-            idAtividade,
-            descricao,
-            dataEntrega
-        });
-
-        if (!idAluno || !idAtividade || !descricao || !dataEntrega) {
-            return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
-        }
-
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
-
-        const [atividade] = await db.query(
-            'SELECT status FROM Atividade WHERE idAtividade = ?',
-            [idAtividade]
-        );
-
-        if (atividade.length === 0 || atividade[0].status === 'indisponivel') {
-            return res.status(400).json({ message: 'Não é possível entregar uma atividade indisponível' });
-        }
-
-        const [existingEntrega] = await db.query(
-            'SELECT * FROM Atividades_Entregues WHERE idAluno = ? AND idAtividade = ?',
-            [idAluno, idAtividade]
-        );
-
-        if (existingEntrega.length > 0) {
-            const [result] = await db.query(
-                'UPDATE Atividades_Entregues SET descricao = ?, dataEntrega = ?WHERE idAluno = ? AND idAtividade = ?',
-                [descricao, dataEntrega, idAluno, idAtividade]
-            );
-
-            res.status(200).json({ message: 'Entrega atualizada com sucesso!' });
-        } else {
-            const correcao = "pendente";
-            const [result] = await db.query(
-                'INSERT INTO Atividades_Entregues (idAluno, idAtividade, descricao, dataEntrega, correcao) VALUES (?, ?, ?, ?, ?)',
-                [idAluno, idAtividade, descricao, dataEntrega, correcao]
-            );
-
-            res.status(200).json({ message: 'Atividade entregue com sucesso!', idEntrega: result.insertId });
-        }
-    } catch (error) {
-        console.error(`Erro ao registrar a entrega: ${error.message}`);
-        res.status(500).json({ error: 'Erro ao registrar a entrega da atividade.' });
-    }
-});
-
-app.post('/adicionar-atividade', async (req, res) => {
-    try {
-        const { titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma } = req.body;
-
-        console.log({
-            titulo,
-            descricao,
-            dataEntrega,
-            hora,
-            peso,
-            idMateria,
-            idTurma
-        });
-
-
-        if (!titulo || !descricao || !dataEntrega || !hora || !peso || !idMateria || !idTurma) {
-            return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
-        }
-
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
-
-        const [result] = await db.query(
-            'INSERT INTO Atividade (titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma]
-        );
-
-        res.status(200).json({ message: 'Atividade adicionada com sucesso!', idAtividade: result.insertId });
-    } catch (error) {
-        console.error(`Erro ao adicionar atividade: ${error.message}`);
-        res.status(500).json({ error: 'Erro ao adicionar a atividade.' });
-    }
-});
-
-app.get('/atividades/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        console.log(`Buscando atividade com ID: ${id}`);
-
-        if (isNaN(id)) {
-            return res.status(400).json({ message: 'ID inválido' });
-        }
-
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
-
-        const [rows] = await db.query('SELECT * FROM Atividade WHERE idAtividade = ?', [id]);
-        if (rows.length > 0) {
-            res.json(rows[0]);
-        } else {
-            res.status(404).json({ message: 'Atividade não encontrada' });
-        }
-    } catch (error) {
-        console.error(`Erro ao buscar atividade: ${error.message}`);
-        res.status(500).json({ error: 'Erro ao buscar a atividade.' });
-    }
-});
-
-// app.put('/atividades/:id', async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const { status } = req.body;
-
-//         if (!status) {
-//             return res.status(400).json({ message: 'Status é obrigatório' });
-//         }
-
-//         console.log(`Atualizando status da atividade com ID: ${id} para ${status}`);
-
-//         const connectDb = new ConnectioDb();
-//         const db = await connectDb.connect();
-
-//         const [result] = await db.query(
-//             'UPDATE Atividade SET status = ? WHERE idAtividade = ?',
-//             [status, id]
-//         );
-
-//         if (result.affectedRows > 0) {
-//             res.status(200).json({ message: 'Status da atividade atualizado com sucesso!' });
-//         } else {
-//             res.status(404).json({ message: 'Atividade não encontrada' });
-//         }
-//     } catch (error) {
-//         console.error(`Erro ao atualizar status da atividade: ${error.message}`);
-//         res.status(500).json({ error: 'Erro ao atualizar o status da atividade.' });
-//     }
-// });
-
-
+// Exclui a atividade
 app.delete('/atividades/:id', async (req, res) => {
     try {
-        const { id } = req.params;
+        let { id } = req.params;
         console.log(`Excluindo atividade com ID: ${id}`);
 
         if (isNaN(id)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
-        const [result] = await db.query('DELETE FROM Atividade WHERE idAtividade = ?', [id]);
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+        let [result] = await db.query('DELETE FROM Atividade WHERE idAtividade = ?', [id]);
 
         if (result.affectedRows > 0) {
             res.status(200).json({ message: 'Atividade excluída com sucesso!' });
@@ -499,17 +504,17 @@ app.delete('/atividades/:id', async (req, res) => {
 // lista os alunos que ainda não entregaram a atividade
 app.get('/atividade/:id/tarefa/alunos', async (req, res) => {
     try {
-        const { id } = req.params;
+        let { id } = req.params;
         console.log(`Buscando alunos que ainda não entregaram a atividade com ID: ${id}`);
 
         if (isNaN(id)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
-        const [rows] = await db.query(`
+        let [rows] = await db.query(`
             SELECT 
                 ta.idAluno, 
                 ta.idTurma,
@@ -532,19 +537,20 @@ app.get('/atividade/:id/tarefa/alunos', async (req, res) => {
     }
 });
 
+// lista os alunos que já entregaram a atividade que ainda não foram corrigidos
 app.get('/atividade/:id/tarefa/correcao/pendente', async (req, res) => {
     try {
-        const { id } = req.params;
+        let { id } = req.params;
         console.log(`Buscando correções pendentes para a atividade com ID: ${id}`);
 
         if (isNaN(id)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
-        const [rows] = await db.query(`
+        let [rows] = await db.query(`
             SELECT 
                 ae.idAluno, 
                 ae.idAtividade,
@@ -563,19 +569,20 @@ app.get('/atividade/:id/tarefa/correcao/pendente', async (req, res) => {
     }
 });
 
+// lista os alunos que já entregaram a atividade quee já foram corrigidos
 app.get('/atividade/:id/tarefa/correcao/corrigida', async (req, res) => {
     try {
-        const { id } = req.params;
+        let { id } = req.params;
         console.log(`Buscando atividades corrigidas para a atividade com ID: ${id}`);
 
         if (isNaN(id)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
-        const [rows] = await db.query(`
+        let [rows] = await db.query(`
             SELECT 
                 ae.idAluno, 
                 ae.idAtividade,
@@ -594,20 +601,21 @@ app.get('/atividade/:id/tarefa/correcao/corrigida', async (req, res) => {
     }
 });
 
+// envia a correção da atividade do aluno
 app.post('/atividade/:id/tarefa/:idAluno/corrigir', async (req, res) => {
     try {
-        const { id, idAluno } = req.params;
-        const { nota, feedback } = req.body;
+        let { id, idAluno } = req.params;
+        let { nota, feedback } = req.body;
 
         if (isNaN(id) || isNaN(idAluno)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
         // Verifica o status da atividade
-        const [atividadeRows] = await db.query(
+        let [atividadeRows] = await db.query(
             'SELECT status FROM atividade WHERE idAtividade = ?',
             [id]
         );
@@ -616,19 +624,19 @@ app.post('/atividade/:id/tarefa/:idAluno/corrigir', async (req, res) => {
             return res.status(404).json({ message: 'Atividade não encontrada' });
         }
 
-        const status = atividadeRows[0].status;
+        let status = atividadeRows[0].status;
 
         if (status === 'disponivel') {
             return res.status(403).json({ message: 'Não é possível corrigir uma atividade ainda disponível.' });
         }
-        const entregue = "sim";
+        let entregue = "sim";
         // Inserção da correção
         await db.query(
             'INSERT INTO atividades_corrigidas (idAluno, idAtividade, feedback, nota, entregue) VALUES (?, ?, ?, ?, ?)',
             [idAluno, id, feedback, nota, entregue]
         );
 
-        const [result] = await db.query(
+        let [result] = await db.query(
             'UPDATE atividades_entregues SET correcao = "corrigida" WHERE idAluno = ? AND idAtividade = ?',
             [idAluno, id]
         );
@@ -644,21 +652,21 @@ app.post('/atividade/:id/tarefa/:idAluno/corrigir', async (req, res) => {
     }
 });
 
-
+// Atualiza a correção da atividade para o aluno
 app.put('/atividade/:id/tarefa/:idAluno/corrigir', async (req, res) => {
     try {
-        const { id, idAluno } = req.params;
-        const { nota, feedback } = req.body;
+        let { id, idAluno } = req.params;
+        let { nota, feedback } = req.body;
         console.log(`Atualizando correção da atividade ${id} para o aluno ${idAluno}`);
 
         if (isNaN(id) || isNaN(idAluno)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
-        const [result] = await db.query(
+        let [result] = await db.query(
             'UPDATE atividades_corrigidas SET feedback = ?, nota = ? WHERE idAluno = ? AND idAtividade = ?',
             [feedback, nota, idAluno, id]
         );
@@ -674,17 +682,18 @@ app.put('/atividade/:id/tarefa/:idAluno/corrigir', async (req, res) => {
     }
 });
 
+// Exclui a correção da atividade para o aluno
 app.delete('/atividade/:id/tarefa/:idAluno/corrigir', async (req, res) => {
     try {
-        const { id, idAluno } = req.params;
+        let { id, idAluno } = req.params;
         console.log(`Excluindo correção da atividade ${id} para o aluno ${idAluno}`);
 
         if (isNaN(id) || isNaN(idAluno)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
         // Dividindo as queries para evitar erros de sintaxe
         await db.query(
@@ -692,7 +701,7 @@ app.delete('/atividade/:id/tarefa/:idAluno/corrigir', async (req, res) => {
             [idAluno, id]
         );
 
-        const [result] = await db.query(
+        let [result] = await db.query(
             'UPDATE atividades_entregues SET correcao = "pendente" WHERE idAluno = ? AND idAtividade = ?',
             [idAluno, id]
         );
@@ -708,19 +717,20 @@ app.delete('/atividade/:id/tarefa/:idAluno/corrigir', async (req, res) => {
     }
 });
 
+// Busca a resposta da atividade para o aluno
 app.get('/atividade/:id/tarefa/:idAluno/resposta', async (req, res) => {
     try {
-        const { id, idAluno } = req.params;
+        let { id, idAluno } = req.params;
         console.log(`Buscando resposta da atividade ${id} para o aluno ${idAluno}`);
 
         if (isNaN(id) || isNaN(idAluno)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
-        const [rows] = await db.query(`
+        let [rows] = await db.query(`
             SELECT 
                 ac.idAluno,
                 ac.idAtividade,
@@ -741,20 +751,20 @@ app.get('/atividade/:id/tarefa/:idAluno/resposta', async (req, res) => {
     }
 });
 
-
+// Busca a correção da atividade para o aluno
 app.get('/atividade/:id/tarefa/:idAluno', async (req, res) => {
     try {
-        const { id, idAluno } = req.params;
+        let { id, idAluno } = req.params;
         console.log(`Buscando correção da atividade ${id} para o aluno ${idAluno}`);
 
         if (isNaN(id) || isNaN(idAluno)) {
             return res.status(400).json({ message: 'ID inválido' });
         }
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
-        const [rows] = await db.query(`
+        let [rows] = await db.query(`
             SELECT 
                 ae.idAluno, 
                 ae.idAtividade,
@@ -784,15 +794,16 @@ app.get('/atividade/:id/tarefa/:idAluno', async (req, res) => {
     }
 });
 
+// Busca os períodos letivos de uma turma
 app.get('/turmas/:idTurma/periodos', async (req, res) => {
-    const { idTurma } = req.params;
+    let { idTurma } = req.params;
 
     try {
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
         // Busca o ano letivo da turma
-        const [turmaRows] = await db.query(
+        let [turmaRows] = await db.query(
             'SELECT idAno_letivo FROM turmas WHERE idTurma = ?',
             [idTurma]
         );
@@ -801,10 +812,10 @@ app.get('/turmas/:idTurma/periodos', async (req, res) => {
             return res.status(404).json({ message: 'Turma não encontrada' });
         }
 
-        const idAnoLetivo = turmaRows[0].idAno_letivo;
+        let idAnoLetivo = turmaRows[0].idAno_letivo;
 
         // Busca os períodos letivos desse ano
-        const [periodos] = await db.query(
+        let [periodos] = await db.query(
             'SELECT * FROM periodo_letivo WHERE idAno_letivo = ? ORDER BY data_inicio',
             [idAnoLetivo]
         );
@@ -815,10 +826,12 @@ app.get('/turmas/:idTurma/periodos', async (req, res) => {
         res.status(500).json({ message: 'Erro interno no servidor' });
     }
 });
+ 
 
+// Busca os participantes de uma matéria em uma turma
 app.get('/materias/:idMateria/participantes/:idTurma', async (req, res) => {
     try {
-        const { idMateria, idTurma } = req.params;
+        let { idMateria, idTurma } = req.params;
 
         if (isNaN(idMateria) || isNaN(idTurma)) {
             return res.status(400).json({ message: 'IDs inválidos' });
@@ -826,15 +839,16 @@ app.get('/materias/:idMateria/participantes/:idTurma', async (req, res) => {
 
         console.log(`Buscando participantes da matéria ${idMateria} na turma ${idTurma}`);
 
-        const connectDb = new ConnectioDb();
-        const db = await connectDb.connect();
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
 
         // Busca os alunos da turma
-        const [alunos] = await db.query(`
+        let [alunos] = await db.query(`
             SELECT 
                 a.idAluno AS id, 
                 a.nome, 
-                u.email_pessoal, 
+                u.email_pessoal,
+                u.ra AS ra, 
                 'aluno' AS tipo
             FROM alunos_turma at
             JOIN alunos a ON at.idAluno = a.idAluno
@@ -844,20 +858,21 @@ app.get('/materias/:idMateria/participantes/:idTurma', async (req, res) => {
         `, [idTurma]);
 
         // Busca os professores da matéria na turma
-        const [professores] = await db.query(`
+        let [professores] = await db.query(`
             SELECT 
                 c.idColaboradores AS id, 
                 c.nome, 
                 u.email_pessoal, 
-                'professor' AS tipo
+                u.ra AS ra,
+                'colaborador' AS tipo
             FROM professor_turma pt
             JOIN colaboradores c ON pt.idColaboradores = c.idColaboradores
-            JOIN usuarios u ON c.idColaboradores = u.idReferencia AND u.tipo = 'professor'
+            JOIN usuarios u ON c.idColaboradores = u.idReferencia AND u.tipo = 'colaborador'
             WHERE pt.idTurma = ? AND pt.idMateria = ?
             ORDER BY c.nome ASC;
         `, [idTurma, idMateria]);
 
-        const participantes = [...alunos, ...professores];
+        let participantes = [...alunos, ...professores];
 
         res.json(participantes);
     } catch (error) {
@@ -866,51 +881,55 @@ app.get('/materias/:idMateria/participantes/:idTurma', async (req, res) => {
     }
 });
 
-app.get('/buscar-notas/:idMateria/:idTurma/:idAluno', async (req, res) => {
-    const { idMateria, idTurma, idAluno } = req.params;
+// Busca as notas de um aluno em uma matéria e turma específicas
+// app.get('/buscar-notas/:idMateria/:idTurma/:idAluno', async (req, res) => {
+//     let { idMateria, idTurma, idAluno } = req.params;
 
-    try {
-        const connectDb = new ConnectioDb(); // Inicializa a conexão com o banco de dados
-        const db = await connectDb.connect(); // Conecta ao banco de dados
+//     try {
+//         let connectDb = new ConnectioDb();
+//         let db = await connectDb.connect(); 
 
-        const [notas] = await db.query(`
-            SELECT 
-                ae.idAluno,
-                t.idTurma,
-                a.titulo AS nomeAtividade,
-                ac.nota,
-                a.peso,
-                a.dataEntrega,
-                ae.correcao as status,
-                pl.nome AS bimestre,
-                pl.data_inicio,
-                pl.data_fim
-            FROM atividades_corrigidas ac
-            JOIN atividade a ON ac.idAtividade = a.idAtividade
-            JOIN turma_materias tm ON a.idMateria = tm.idMateria AND tm.idTurma = ?
-            JOIN turmas t ON t.idTurma = tm.idTurma
-            JOIN periodo_letivo pl ON pl.idAno_letivo = t.idAno_letivo
-            JOIN atividades_entregues ae ON ae.idAluno = ac.idAluno AND ae.idAtividade = ac.idAtividade
-                AND ae.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
-                WHERE a.idMateria = ? AND ac.idAluno = ?
-            ORDER BY pl.data_inicio ASC
-        `, [idTurma, idMateria, idAluno]);
+//         let [notas] = await db.query(`
+//             SELECT 
+//                 ae.idAluno,
+//                 t.idTurma,
+//                 a.titulo AS nomeAtividade,
+//                 ac.nota,
+//                 a.peso,
+//                 a.dataEntrega,
+//                 ae.correcao as status,
+//                 pl.nome AS bimestre,
+//                 pl.data_inicio,
+//                 pl.data_fim
+//             FROM atividades_corrigidas ac
+//             JOIN atividade a ON ac.idAtividade = a.idAtividade
+//             JOIN turma_materias tm ON a.idMateria = tm.idMateria AND tm.idTurma = ?
+//             JOIN turmas t ON t.idTurma = tm.idTurma
+//             JOIN periodo_letivo pl ON pl.idAno_letivo = t.idAno_letivo
+//             JOIN atividades_entregues ae ON ae.idAluno = ac.idAluno AND ae.idAtividade = ac.idAtividade
+//                 AND ae.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
+//                 WHERE a.idMateria = ? AND ac.idAluno = ?
+//             ORDER BY pl.data_inicio ASC
+//         `, [idTurma, idMateria, idAluno]);
 
-        res.json(notas);
-    } catch (error) {
-        console.error("Erro ao buscar notas:", error);
-        res.status(500).json({ error: 'Erro ao buscar notas do aluno' });
-    }
-});
+//         console.log("Notas do aluno:", notas);
 
+//         res.json(notas);
+//     } catch (error) {
+//         console.log("Erro ao buscar notas:", error);
+//         res.status(500).json({ error: 'Erro ao buscar notas do aluno' });
+//     }
+// });
+
+// Busca as notas de um aluno em uma matéria e turma específicas
 app.get('/notas-aluno/:idAluno/:idMateria/:idTurma', async (req, res) => {
-    const { idAluno, idMateria, idTurma } = req.params;
+    let { idAluno, idMateria, idTurma } = req.params;
 
     try {
-        const connectDb = new ConnectioDb(); // Inicializa a conexão com o banco de dados
-        const db = await connectDb.connect(); // Conecta ao banco de dados
+        let connectDb = new ConnectioDb(); // Inicializa a conexão com o banco de dados
+        let db = await connectDb.connect(); // Conecta ao banco de dados
 
-        const [notas] = await db.query(`
+        let [notas] = await db.query(`
             SELECT 
                 ac.idAluno,
                 a.titulo AS nomeAtividade,
@@ -939,16 +958,53 @@ app.get('/notas-aluno/:idAluno/:idMateria/:idTurma', async (req, res) => {
     }
 });
 
-app.get('/materias/:idMateria/participantes/:idTurma', async (req, res) => {
-    const { idMateria, idTurma } = req.params;
+// Busca as notas de um aluno em turma específicas
+app.get('/notas-aluno/:idAluno/:idTurma', async (req, res) => {
+    let { idAluno, idTurma } = req.params;
 
     try {
-        const connectDb = new ConnectioDb(); // Inicializa a conexão com o banco de dados
-        const db = await connectDb.connect(); // Conecta ao banco de dados
-        const [participantes] = await db.query(`
-            SELECT p.idAluno, p.nome, p.tipo, p.email_pessoal
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+
+        let [notas] = await db.query(`
+            SELECT 
+                tm.idMateria,
+                m.nome AS nomeMateria,
+                pl.nome AS bimestre,
+                COALESCE(SUM(ac.nota * (a.peso / 100)), 0) AS nota
+            FROM turma_materias tm
+            JOIN materia m ON m.idMateria = tm.idMateria
+            JOIN turmas t ON t.idTurma = tm.idTurma
+            LEFT JOIN atividade a ON a.idMateria = tm.idMateria
+            LEFT JOIN periodo_letivo pl 
+                ON pl.idAno_letivo = t.idAno_letivo 
+                AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
+            LEFT JOIN atividades_corrigidas ac 
+                ON ac.idAtividade = a.idAtividade AND ac.idAluno = ?
+            WHERE tm.idTurma = ?
+            GROUP BY tm.idMateria, m.nome, pl.nome
+            ORDER BY nomeMateria, bimestre;
+        `, [idAluno, idTurma]);
+
+        res.json(notas);
+    } catch (error) {
+        console.error("Erro ao buscar notas do aluno:", error);
+        res.status(500).json({ error: 'Erro ao buscar notas do aluno' });
+    }
+});
+
+// Busca os participantes de uma matéria em uma turma específicas
+app.get('/materias/:idMateria/participantes/:idTurma', async (req, res) => {
+    let { idMateria, idTurma } = req.params;
+
+    try {
+        let connectDb = new ConnectioDb(); // Inicializa a conexão com o banco de dados
+        let db = await connectDb.connect(); // Conecta ao banco de dados
+        let [participantes] = await db.query(`
+            SELECT p.idAluno, p.nome, p.tipo, p.email_pessoal, m.nome AS nomeMateria
             FROM alunos_turma at
             JOIN alunos p ON at.idAluno = p.idAluno
+            JOIN materia m ON at.idMateria = m.idMateria
             WHERE at.idTurma = ? AND at.idMateria = ?
         `, [idTurma, idMateria]);
 

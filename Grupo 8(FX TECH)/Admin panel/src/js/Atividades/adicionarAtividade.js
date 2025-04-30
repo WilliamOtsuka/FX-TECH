@@ -1,28 +1,90 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const dataInput = document.getElementById("data");
-    const horaInput = document.getElementById("hora");
-    const errorMessage = document.getElementById("error-message");
+function ajustarCamposPorTipo(tipoSelecionado) {
+    let dataInput = document.getElementById("data");
+    let horaInput = document.getElementById("hora");
 
-    // Configura o campo de data para impedir a seleção de datas passadas
-    const hoje = new Date().toISOString().split("T")[0];
-    dataInput.setAttribute("min", hoje);
+    let hoje = new Date().toISOString().split("T")[0];
 
-    // Atualiza o horário mínimo se a data for hoje
-    dataInput.addEventListener("change", function () {
-        if (dataInput.value === hoje) {
-            const agora = new Date();
-            let horas = agora.getHours().toString().padStart(2, "0");
-            let minutos = agora.getMinutes().toString().padStart(2, "0");
-            horaInput.setAttribute("min", `${horas}:${minutos}`);
-        } else {
-            horaInput.removeAttribute("min"); // Se não for hoje, permite qualquer horário
+    if (tipoSelecionado === "atividade") {
+        // Remove todo valor do campo de data
+        dataInput.value = ""; // Limpa o campo de data
+        horaInput.value = ""; // Limpa o campo de hora
+        // Para "atividade", restringe a data mínima para hoje
+        dataInput.setAttribute("min", hoje);
+
+        dataInput.addEventListener("change", function () {
+            if (dataInput.value === hoje) {
+                let agora = new Date();
+                let horas = agora.getHours().toString().padStart(2, "0");
+                let minutos = agora.getMinutes().toString().padStart(2, "0");
+                horaInput.setAttribute("min", `${horas}:${minutos}`);
+            } else {
+                horaInput.removeAttribute("min");
+            }
+        });
+    } else if (tipoSelecionado === "avaliativa") {
+        // Para "avaliativa", permite qualquer data e hora
+        dataInput.removeAttribute("min");
+        horaInput.removeAttribute("min");
+    }
+}
+
+function carregarTipos() {
+    let tipos = ["atividade", "avaliativa"];
+    let tipoContainer = document.querySelector('.tipo-container');
+    if (!tipoContainer) {
+        console.error("Elemento #tipo-container não encontrado!");
+        return;
+    }
+
+    let wrapper = document.createElement('div');
+    wrapper.classList.add('dropdown-tipos-wrapper');
+
+    let selected = document.createElement('div');
+    selected.classList.add('dropdown-tipos-selected');
+    selected.textContent = tipos[0]; // Define o primeiro valor como selecionado inicialmente
+
+    let list = document.createElement('ul');
+    list.classList.add('dropdown-tipos-list');
+    list.style.display = 'none';
+
+    tipos.forEach(tipo => {
+        let item = document.createElement('li');
+        item.textContent = tipo;
+        item.addEventListener('click', () => {
+            selected.textContent = tipo;
+            list.style.display = 'none';
+            ajustarCamposPorTipo(tipo); 
+        });
+        list.appendChild(item);
+    });
+
+    selected.addEventListener('click', () => {
+        list.style.display = list.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Fecha o dropdown ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) {
+            list.style.display = 'none';
         }
     });
+
+    wrapper.appendChild(selected);
+    wrapper.appendChild(list);
+    tipoContainer.appendChild(wrapper);
+
+    ajustarCamposPorTipo(tipos[0]);
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    carregarTipos();
+
     // Evita com que o usuario possa digitar um peso maior que 100 ou menor que 1
-    const pesoSelect = document.getElementById("peso");
+    let pesoSelect = document.getElementById("peso");
 
     pesoSelect.addEventListener("input", function () {
-        const valor = parseInt(pesoSelect.value, 10);
+        let valor = parseInt(pesoSelect.value, 10);
         if (valor < 1 || valor > 100) {
             // impede o usuário de selecionar um valor fora do intervalo
             pesoSelect.value = ""; // Limpa o campo se o valor for inválido
@@ -36,9 +98,10 @@ document.addEventListener("DOMContentLoaded", function () {
         // Captura dos valores dos campos
         let titulo = document.getElementById("titulo").value.trim();
         let descricao = document.getElementById("descricao").value.trim();
-        let dataEntrega = dataInput.value;
-        let hora = horaInput.value;
+        let dataEntrega = document.getElementById("data").value;
+        let hora = document.getElementById("hora").value;
         let peso = pesoSelect.value;
+        let tipo = document.querySelector('.dropdown-tipos-selected').textContent;
         let arquivo = document.getElementById("arquivo").files[0];
 
         // Validações
@@ -67,26 +130,29 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        errorMessage.textContent = "";
+        if (!tipo) {
+            errorMessage.textContent = "O tipo da atividade é obrigatório.";
+            return;
+        }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const idMateria = urlParams.get('id');
-        const idTurma = urlParams.get('idT');
+        let urlParams = new URLSearchParams(window.location.search);
+        let idMateria = urlParams.get('id');
+        let idTurma = urlParams.get('idT');
 
         try {
-            const response = await fetch('http://localhost:3000/adicionar-atividade', {
+            let response = await fetch('http://localhost:3000/adicionar-atividade', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma }) // Envia o idMateria também
+                body: JSON.stringify({ titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo }) // Envia o idMateria também
             });
 
             if (response.ok) {
                 alert('Atividade adicionada com sucesso!');
                 document.getElementById('atividadeForm').reset(); // Limpa o formulário após o envio
             } else {
-                const data = await response.json();
+                let data = await response.json();
                 alert(`Erro: ${data.message}`);
             }
         } catch (error) {

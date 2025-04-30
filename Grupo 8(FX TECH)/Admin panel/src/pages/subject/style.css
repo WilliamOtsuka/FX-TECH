@@ -55,7 +55,7 @@
 
 .form-container {
     min-width: 500px;
-    max-width: 600px;
+    max-width: 500px;
     margin: 0 auto;
     padding: 20px;
     background-color: #2733a713;
@@ -66,6 +66,19 @@
     margin-bottom: 16px;
 }
 
+.form-group-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-group option {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
 .form-group label {
     display: block;
     font-weight: bold;
@@ -74,7 +87,7 @@
 
 .form-group input,
 .form-group textarea {
-    width: 90%;
+    width: 100%;
     padding: 7px;
     border-radius: 4px;
     border: 1px solid #ccc;
@@ -375,7 +388,21 @@ textarea {
     height: 50px;
 }
 
+.tipo-container {
+    display: flex;
+    height: 35px;
+    margin-top: 9px;
+}
+
 .list-turmas p {
+    font-size: 18px;
+    margin: 0;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+}
+
+.tipo-container p {
     font-size: 18px;
     margin: 0;
     padding: 0 10px;
@@ -389,6 +416,12 @@ textarea {
     font-size: 1rem;
 }
 
+.dropdown-tipos-wrapper {
+    position: relative;
+    display: inline-block;
+    font-size: 1rem;
+}
+
 .dropdown-turmas-selected {
     padding: 0.675em 1em;
     background-color: #fff;
@@ -397,10 +430,35 @@ textarea {
     cursor: pointer;
     min-width: 200px;
     position: relative;
-    padding-right: 2em; /* espaço para a seta */
+    padding-right: 2em;  
+}
+
+.dropdown-tipos-selected {
+    padding: 7px 1em;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    min-width: 200px;
+    position: relative;
+    padding-right: 2em;  
 }
 
 .dropdown-turmas-selected::after {
+    content: "";
+    position: absolute;
+    right: 1em;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #333; /* cor da seta */
+    pointer-events: none;
+}
+
+.dropdown-tipos-selected::after {
     content: "";
     position: absolute;
     right: 1em;
@@ -436,6 +494,31 @@ textarea {
 }
 
 .dropdown-turmas-list li:hover {
+    background-color: #f0f0f0;
+}
+
+.dropdown-tipos-list {
+    position: absolute;
+    z-index: 1000;
+    top: 97%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0 0 0.25rem 0.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-tipos-list li {
+    padding: 0.675em 1em;
+    cursor: pointer;
+}
+
+.dropdown-tipos-list li:hover {
     background-color: #f0f0f0;
 }
 

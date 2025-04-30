@@ -1,25 +1,25 @@
 // Obtém o ID da matéria ou atividade da URL
-const urlParams = new URLSearchParams(window.location.search);
-const idMateria = urlParams.get('idM'); // ID da matéria
-const idTurma = urlParams.get('idT');
+let urlParams = new URLSearchParams(window.location.search);
+let idMateria = urlParams.get('idM'); // ID da matéria
+let idTurma = urlParams.get('idT');
 
 
-const token = localStorage.getItem("token");
-const user = JSON.parse(localStorage.getItem("user"));
+let token = localStorage.getItem("token");
+let user = JSON.parse(localStorage.getItem("user"));
 
 console.log("Token:", token);
 console.log("User:", user);
 
 function formatarData(dataISO) {
-    const data = new Date(dataISO);
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const ano = data.getFullYear();
+    let data = new Date(dataISO);
+    let dia = String(data.getDate()).padStart(2, '0');
+    let mes = String(data.getMonth() + 1).padStart(2, '0');
+    let ano = data.getFullYear();
     return `${dia}/${mes}/${ano}`;
 }
 
 function formatarHora(horaISO) {
-    const [horas, minutos, segundos] = horaISO.split(":").map(Number);
+    let [horas, minutos, segundos] = horaISO.split(":").map(Number);
     if (isNaN(horas) || isNaN(minutos)) {
         console.error("Data inválida fornecida para formatarHora:", horaISO);
         return "Hora inválida";
@@ -30,16 +30,16 @@ function formatarHora(horaISO) {
 async function carregarAtividades() {
     try {
         // Busca as atividades da turma e matéria
-        const response = await fetch(`http://localhost:3000/materias/${idMateria}/atividades/${idTurma}`);
+        let response = await fetch(`http://localhost:3000/materias/${idMateria}/atividades/${idTurma}`);
         if (!response.ok) throw new Error(`Erro ao buscar atividades: ${response.statusText}`);
-        const atividades = await response.json();
+        let atividades = await response.json();
 
         // Busca os períodos letivos (bimestres) da turma
-        const resPeriodo = await fetch(`http://localhost:3000/turmas/${idTurma}/periodos`);
+        let resPeriodo = await fetch(`http://localhost:3000/turmas/${idTurma}/periodos`);
         if (!resPeriodo.ok) throw new Error(`Erro ao buscar períodos: ${resPeriodo.statusText}`);
-        const periodos = await resPeriodo.json();
+        let periodos = await resPeriodo.json();
 
-        const listaAtividades = document.querySelector('.list-atividades');
+        let listaAtividades = document.querySelector('.list-atividades');
         if (!listaAtividades) return console.error("Elemento .list-atividades não encontrado!");
 
         listaAtividades.innerHTML = "";
@@ -50,19 +50,19 @@ async function carregarAtividades() {
         }
 
         // Organiza as atividades por bimestre
-        const atividadesPorPeriodo = {};
+        let atividadesPorPeriodo = {};
 
         periodos.forEach(periodo => {
             atividadesPorPeriodo[periodo.nome] = [];
         });
 
         atividades.forEach(atividade => {
-            const dataEntrega = new Date(atividade.dataEntrega);
-            const periodoCorrespondente = periodos.find(p => {
+            let dataEntrega = new Date(atividade.dataEntrega);
+            let periodoCorrespondente = periodos.find(p => {
                 return new Date(p.data_inicio) <= dataEntrega && dataEntrega <= new Date(p.data_fim);
             });
 
-            const nomePeriodo = periodoCorrespondente ? periodoCorrespondente.nome : 'Fora do período';
+            let nomePeriodo = periodoCorrespondente ? periodoCorrespondente.nome : 'Fora do período';
             if (!atividadesPorPeriodo[nomePeriodo]) {
                 atividadesPorPeriodo[nomePeriodo] = [];
             }
@@ -70,18 +70,18 @@ async function carregarAtividades() {
             atividadesPorPeriodo[nomePeriodo].push(atividade);
         });
 
-        for (const [nomePeriodo, atividadesPeriodo] of Object.entries(atividadesPorPeriodo)) {
+        for (let [nomePeriodo, atividadesPeriodo] of Object.entries(atividadesPorPeriodo)) {
             if (atividadesPeriodo.length === 0) continue;
 
-            const titulo = document.createElement('h3');
+            let titulo = document.createElement('h3');
             titulo.textContent = nomePeriodo;
             listaAtividades.appendChild(titulo);
 
             atividadesPeriodo.forEach(atividade => {
-                const divAtividade = document.createElement("div");
+                let divAtividade = document.createElement("div");
                 divAtividade.classList.add("div-atividade");
 
-                const link = document.createElement("a");
+                let link = document.createElement("a");
                 link.classList.add("atividade", "botao-atividade");
                 link.classList.add(atividade.status === "indisponivel" ? "indisponivel" : "disponivel");
 
@@ -92,16 +92,16 @@ async function carregarAtividades() {
 
                 // Exibe os botões apenas se o usuário for professor
                 if (user.perfil.cargo === "professor") {
-                    const divBotoes = document.createElement("div");
+                    let divBotoes = document.createElement("div");
                     divBotoes.classList.add("div-botao");
 
-                    const botaoExcluir = document.createElement("a");
+                    let botaoExcluir = document.createElement("a");
                     botaoExcluir.classList.add("atividade", "botao-excluir");
                     botaoExcluir.textContent = "Excluir";
                     botaoExcluir.onclick = async () => {
                         if (confirm("Você tem certeza que deseja excluir esta atividade?")) {
                             try {
-                                const deleteResponse = await fetch(`http://localhost:3000/atividades/${atividade.idAtividade}`, {
+                                let deleteResponse = await fetch(`http://localhost:3000/atividades/${atividade.idAtividade}`, {
                                     method: 'DELETE',
                                     headers: { 'Content-Type': 'application/json' }
                                 });
@@ -117,7 +117,7 @@ async function carregarAtividades() {
                         }
                     };
 
-                    const botaoEditar = document.createElement("a");
+                    let botaoEditar = document.createElement("a");
                     botaoEditar.classList.add("atividade", "botao-editar");
                     botaoEditar.textContent = "Editar";
                     botaoEditar.onclick = () => criarFormularioEdicao(atividade);
@@ -136,10 +136,10 @@ async function carregarAtividades() {
         alert("Erro ao carregar atividades. Verifique sua conexão ou tente novamente mais tarde.");
     }
 }
-const modal = document.querySelector(".modal-container");
+let modal = document.querySelector(".modal-container");
 
 function closeModal() {
-    const modalContainer = document.querySelector(".modal-container");
+    let modalContainer = document.querySelector(".modal-container");
     if (modalContainer) {
         modalContainer.classList.add("closing");
 
@@ -151,24 +151,24 @@ function closeModal() {
 
 async function criarFormularioEdicao(atividade) {
     // Remove o modal anterior, se existir
-    const modalExistente = document.querySelector(".modal-container");
+    let modalExistente = document.querySelector(".modal-container");
     if (modalExistente) {
         modalExistente.remove();
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/materias/${atividade.idMateria}`);
+        let response = await fetch(`http://localhost:3000/materias/${atividade.idMateria}`);
         if (!response.ok) throw new Error(`Erro ao buscar matéria: ${response.statusText}`);
 
-        const materia = await response.json();
-        const nomeMateria = materia.nome;
-        const data = atividade.dataEntrega.split("T")[0];
+        let materia = await response.json();
+        let nomeMateria = materia.nome;
+        let data = atividade.dataEntrega.split("T")[0];
 
         // Criando a estrutura do modal
-        const modalContainer = document.createElement("div");
+        let modalContainer = document.createElement("div");
         modalContainer.classList.add("modal-container");
 
-        const modal = document.createElement("div");
+        let modal = document.createElement("div");
         modal.classList.add("modal");
 
         modal.innerHTML = `
@@ -202,17 +202,17 @@ async function criarFormularioEdicao(atividade) {
         modalContainer.classList.add("active");
 
         // Validação de data e hora ao carregar o formulário
-        const dueDateInput = modal.querySelector("#dueDate");
-        const dueTimeInput = modal.querySelector("#dueTime");
+        let dueDateInput = modal.querySelector("#dueDate");
+        let dueTimeInput = modal.querySelector("#dueTime");
 
-        const hoje = new Date().toISOString().split("T")[0];
+        let hoje = new Date().toISOString().split("T")[0];
         dueDateInput.setAttribute("min", hoje);
 
         dueDateInput.addEventListener("change", () => {
             if (dueDateInput.value === hoje) {
-                const agora = new Date();
-                const horas = agora.getHours().toString().padStart(2, "0");
-                const minutos = agora.getMinutes().toString().padStart(2, "0");
+                let agora = new Date();
+                let horas = agora.getHours().toString().padStart(2, "0");
+                let minutos = agora.getMinutes().toString().padStart(2, "0");
                 dueTimeInput.setAttribute("min", `${horas}:${minutos}`);
             } else {
                 dueTimeInput.removeAttribute("min");
@@ -220,7 +220,7 @@ async function criarFormularioEdicao(atividade) {
         });
 
         // Ao clicar em salvar
-        const btnOK = modal.querySelector(".btnOK");
+        let btnOK = modal.querySelector(".btnOK");
         btnOK.addEventListener("click", () => salvarEdicao(atividade));
 
     } catch (error) {
@@ -231,10 +231,10 @@ async function criarFormularioEdicao(atividade) {
 async function salvarEdicao(atividade) {
     console.log(atividade);
 
-    const form = document.getElementById("editTaskForm");
-    const formData = new FormData(form);
+    let form = document.getElementById("editTaskForm");
+    let formData = new FormData(form);
 
-    const atividadeAtualizada = {
+    let atividadeAtualizada = {
         idAtividade: atividade.idAtividade,
         idMateria: idMateria,
         titulo: formData.get("title"),
@@ -244,7 +244,7 @@ async function salvarEdicao(atividade) {
     };
 
     try {
-        const response = await fetch(`http://localhost:3000/atividades/edit/${atividade.idAtividade}`, {
+        let response = await fetch(`http://localhost:3000/atividade/edit/${atividade.idAtividade}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -266,14 +266,14 @@ async function salvarEdicao(atividade) {
 
 async function carregarParticipantes() {
     try {
-        const response = await fetch(`http://localhost:3000/materias/${idMateria}/participantes/${idTurma}`);
+        let response = await fetch(`http://localhost:3000/materias/${idMateria}/participantes/${idTurma}`);
         if (!response.ok) throw new Error(`Erro ao buscar participantes: ${response.statusText}`);
-        const participantes = await response.json();
+        let participantes = await response.json();
 
         console.log("Participantes:", participantes);
 
-        const listaAlunos = document.querySelector('.list-alunos');
-        const listaProfessores = document.querySelector('.list-professor');
+        let listaAlunos = document.querySelector('.list-alunos');
+        let listaProfessores = document.querySelector('.list-professor');
 
         if (!listaAlunos || !listaProfessores) {
             console.error("Elementos .list-alunos ou .list-professor não encontrados!"); 
@@ -283,21 +283,21 @@ async function carregarParticipantes() {
         let contadorAlunos = 1; // Inicializa o contador para os alunos
 
         participantes.forEach(participante => {
-            const divParticipante = document.createElement("div");
+            let divParticipante = document.createElement("div");
             divParticipante.classList.add("participante");
 
-            const nomeDiv = document.createElement("div");
+            let nomeDiv = document.createElement("div");
             nomeDiv.classList.add("nome");
 
             // A contagem será inserida antes do nome do aluno
             if (participante.tipo === "aluno") {
                 nomeDiv.textContent = `${contadorAlunos} - ${participante.nome}`;
                 contadorAlunos++; // Incrementa o contador para alunos
-            } else if (participante.tipo === "professor") {
+            } else if (participante.tipo === "colaborador") {
                 nomeDiv.textContent = participante.nome;
             }
 
-            const emailDiv = document.createElement("div");
+            let emailDiv = document.createElement("div");
             emailDiv.classList.add("email");
             emailDiv.textContent = participante.email_pessoal;
 
@@ -307,7 +307,7 @@ async function carregarParticipantes() {
             // Adiciona à lista de alunos ou professores
             if (participante.tipo === "aluno") {
                 listaAlunos.appendChild(divParticipante);
-            } else if (participante.tipo === "professor") {
+            } else if (participante.tipo === "colaborador") {
                 listaProfessores.appendChild(divParticipante);
             }
         });
@@ -324,20 +324,21 @@ async function carregarParticipantes() {
 // Evento para carregar as atividades ou uma atividade específica ao carregar a página
 document.addEventListener('DOMContentLoaded', function () {
 
-    const containerAtividades = document.querySelector('.list-atividades');
+    let containerAtividades = document.querySelector('.list-atividades');
     if (containerAtividades)
         carregarAtividades();
     else
         console.error("Elemento .list-atividades não encontrado!");
 
-    const containerParticipantes = document.querySelector('.list-participantes');
+    let containerParticipantes = document.querySelector('.list-participantes');
     if (containerParticipantes) {
         carregarParticipantes();
+        
     }
 
-    if (containerAtividades && user.tipo === "professor") {
+    if (containerAtividades && user.tipo === "colaborador") {
         // Cria o link para adicionar atividades
-        const link = document.createElement("a");
+        let link = document.createElement("a");
         link.classList.add("adicionarAtividade");
         link.href = `adicionarAtividade.html?id=${idMateria}&idT=${urlParams.get('idT')}`; // Adiciona o idTurma aqui
         link.textContent = `Adicionar Atividades +`;
@@ -348,6 +349,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 document.getElementById('toggle-menu').addEventListener('click', () => {
-    const sidebar = document.querySelector('.side-menu');
+    let sidebar = document.querySelector('.side-menu');
     sidebar.classList.toggle('collapsed');
   });

@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const idMateria = urlParams.get('idM'); // ID da matéria
     const idTurma = urlParams.get('idT');
 
+    console.log("ID da matéria:", idMateria); // Exibe o ID da matéria no console
+    console.log("ID da turma:", idTurma); // Exibe o ID da turma no console
 
     const linkTurma = document.querySelector('a[href="participantes.html"]'); // Seleciona o link da turma
     if (linkTurma && idTurma && idMateria) {

@@ -1,10 +1,10 @@
 import { MateriaRepository } from './materiaRepository.js';
 
-const materiaRepo = new MateriaRepository();
+let materiaRepo = new MateriaRepository();
 
 document.addEventListener('DOMContentLoaded', function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const idMateria = parseInt(urlParams.get('id'));
+    let urlParams = new URLSearchParams(window.location.search);
+    let idMateria = parseInt(urlParams.get('id'));
 
     if (isNaN(idMateria)) {
         console.error("Erro: ID da matéria inválido ou não informado.");
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     console.log("ID da Matéria:", idMateria);
 
-    const materia = materiaRepo.buscarPorId(idMateria);
+    let materia = materiaRepo.buscarPorId(idMateria);
 
     if (!materia) {
         console.error("Erro: Matéria não encontrada.");

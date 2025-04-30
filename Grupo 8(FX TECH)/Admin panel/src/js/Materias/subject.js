@@ -1,27 +1,27 @@
-const token = localStorage.getItem("token");
-const user = JSON.parse(localStorage.getItem("user"));
+let token = localStorage.getItem("token");
+let user = JSON.parse(localStorage.getItem("user"));
 
 async function carregarTurmas() {
-    const turmas = user.turmas;
-    const listaTurmas = document.querySelector('.list-turmas');
+    let turmas = user.turmas;
+    let listaTurmas = document.querySelector('.list-turmas');
     if (!listaTurmas) {
         console.error("Elemento .list-turmas não encontrado!");
         return;
     }
 
-    const wrapper = document.createElement('div');
+    let wrapper = document.createElement('div');
     wrapper.classList.add('dropdown-turmas-wrapper');
 
-    const selected = document.createElement('div');
+    let selected = document.createElement('div');
     selected.classList.add('dropdown-turmas-selected');
     selected.textContent = `${turmas[0].nome} - ${turmas[0].anoLetivo}`;
 
-    const list = document.createElement('ul');
+    let list = document.createElement('ul');
     list.classList.add('dropdown-turmas-list');
     list.style.display = 'none';
 
     turmas.forEach(turma => {
-        const item = document.createElement('li');
+        let item = document.createElement('li');
         item.textContent = `${turma.nome} - ${turma.anoLetivo}`;
         item.id = turma.idTurma;
         item.addEventListener('click', () => {
@@ -54,7 +54,7 @@ async function carregarTurmas() {
 
 function carregarMateriasTurma(materias, idTurma) {
     console.log("ID da turma:", idTurma);
-    const listaDisciplinas = document.querySelector('.list-disciplinas');
+    let listaDisciplinas = document.querySelector('.list-disciplinas');
     if (!listaDisciplinas) {
         console.error("Elemento .list-disciplinas não encontrado!");
         return;
@@ -63,7 +63,7 @@ function carregarMateriasTurma(materias, idTurma) {
     listaDisciplinas.innerHTML = ""; // Limpa antes
 
     materias.forEach(materia => {
-        const link = document.createElement("a");
+        let link = document.createElement("a");
         link.classList.add("disciplinas");
         link.id = materia.idMateria;
         link.href = `atividadesMateria.html?idM=${materia.idMateria}&idT=${idTurma}`;
@@ -86,11 +86,11 @@ function carregarMateriasTurma(materias, idTurma) {
 //             console.log("Esto noe DADIMADAUDUW")
 //             throw new Error(`HTTP error! Status: ${response}`);
 //         }
-//         const materias = await response.json();
+//         let materias = await response.json();
 
 //         console.log("Lista de todas as matérias:", materias);
 
-//         const listaDisciplinas = document.querySelector('.list-disciplinas');
+//         let listaDisciplinas = document.querySelector('.list-disciplinas');
 //         if (!listaDisciplinas) {
 //             console.error("Elemento .list-disciplinas não encontrado!");
 //             return;
@@ -99,7 +99,7 @@ function carregarMateriasTurma(materias, idTurma) {
 //         listaDisciplinas.innerHTML = ""; // Limpa a lista antes de adicionar os elementos
 
 //         materias.forEach(materia => {
-//             const link = document.createElement("a");
+//             let link = document.createElement("a");
 //             link.classList.add("disciplinas");
 //             link.id = materia.idMateria;
 //             link.href = `atividadesMateria.html?idM=${materia.idMateria}&idT=${materia.idTurma}`; // Adicione o idTurma aqui se necessário
