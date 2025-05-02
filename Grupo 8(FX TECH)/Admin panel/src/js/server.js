@@ -165,10 +165,11 @@ app.post('/login', async (req, res) => {
                 let [turmasMaterias] = await db.query(`
                     SELECT 
                         t.idTurma, t.nome AS nomeTurma, t.idAno_letivo, al.descricao AS anoLetivo,
-                        m.idMateria, m.nome AS nomeMateria
+                        m.idMateria, m.nome AS nomeMateria, c.cargo AS cargo, c.permition as permition
                     FROM professor_turma pt
                     JOIN turmas t ON pt.idTurma = t.idTurma
                     JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
+                    JOIN colaboradores c ON pt.idColaboradores = c.idColaboradores
                     JOIN materia m ON pt.idMateria = m.idMateria
                     WHERE pt.idColaboradores = ?
                 `, [user.idReferencia]);
@@ -1015,6 +1016,110 @@ app.get('/materias/:idMateria/participantes/:idTurma', async (req, res) => {
     }
 });
 
+// lista os funcionarios
+app.get('/funcionarios', async (req, res) => {
+    try {
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+        let [rows] = await db.query(`
+            SELECT u.email_pessoal, c.idColaboradores, c.nome, c.cargo, u.RA, u.cpf, u.contato, u.idUsuario
+            FROM colaboradores c
+            JOIN usuarios u ON c.idColaboradores = u.idReferencia AND u.tipo = 'colaborador'
+            ORDER BY c.nome ASC`);
+        res.json(rows);
+    } catch (error) {
+        console.error(error, "NO ERROR DO TRY");
+        res.status(500).json({ error: error.message });
+    }
+}
+);
+
+// Editar funcionario
+app.put('/funcionarios/:id', async (req, res) => {
+    try {
+        let { id } = req.params;
+        let { nome, cargo, email_pessoal, RA, cpf, contato } = req.body;
+        console.log({
+            id,
+            nome,
+            cargo,
+            email_pessoal,
+            RA,
+            cpf,
+            contato
+        });
+
+        console.log(`Atualizando funcionário com ID: ${id}`);
+
+        if (!nome || !cargo || !email_pessoal || !RA || !cpf || !contato) {
+            return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+        }
+
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+
+        let [result] = await db.query(
+            `UPDATE usuarios u
+             JOIN colaboradores c ON u.idReferencia = c.idColaboradores AND u.tipo = 'colaborador'
+             SET c.nome = ?, c.cargo = ?, u.ra = ?, u.email_pessoal = ?, u.contato = ?, u.cpf = ?
+             WHERE u.idUsuario = ?`,
+            [nome, cargo, RA, email_pessoal, contato, cpf, id]
+        );
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: 'Funcionário atualizado com sucesso!' });
+        } else {
+            console.log(`Funcionário com ID ${id} não encontrado.`);
+            res.status(404).json({ message: 'Funcionário não encontrado' });
+        }
+    } catch (error) {
+        console.error(`Erro ao atualizar funcionário: ${error.message}`);
+        res.status(500).json({ error: 'Erro ao atualizar o funcionário.' });
+    }
+});
+
+// Deletar funcionario
+app.delete('/funcionarios/:id', async (req, res) => {
+    try {
+        let { id } = req.params;
+        console.log(`Excluindo funcionário com ID: ${id}`);
+
+        if (isNaN(id)) {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
+
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+
+        // Verifica se o colaborador está associado a alguma turma como professor
+        let [associacoes] = await db.query(
+            `SELECT * FROM professor_turma WHERE idColaboradores = ?`,
+            [id]
+        );
+
+        if (associacoes.length > 0) {
+            return res.status(400).json({ message: 'Não é possível excluir o funcionário, pois ele está associado a uma ou mais turmas.' });
+        }
+
+        let [result] = await db.query(
+            `DELETE u, c FROM usuarios u
+             JOIN colaboradores c ON u.idReferencia = c.idColaboradores AND u.tipo = 'colaborador'
+             WHERE u.idUsuario = ?`,
+            [id]
+        );
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: 'Funcionário excluído com sucesso!' });
+            console.log(`Funcionário com ID ${id} excluído com sucesso!`);
+        } else {
+            console.log(`Funcionário com ID ${id} não encontrado.`);
+            res.status(404).json({ message: 'Funcionário não encontrado' });
+        }
+    } catch (error) {
+        console.error(`Erro ao excluir funcionário: ${error.message}`);
+        res.status(500).json({ error: 'Erro ao excluir o funcionário.' });
+    }
+});
 
 app.listen(3000, () => {
     console.log('Servidor rodando em http://localhost:3000');

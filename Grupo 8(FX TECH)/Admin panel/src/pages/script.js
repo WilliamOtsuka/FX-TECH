@@ -5,19 +5,24 @@ document.querySelector(".user-logout").addEventListener("click", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const idMateria = urlParams.get('idM'); // ID da matéria
-    const idTurma = urlParams.get('idT');
-
-    console.log("ID da matéria:", idMateria); // Exibe o ID da matéria no console
-    console.log("ID da turma:", idTurma); // Exibe o ID da turma no console
-
-    const linkTurma = document.querySelector('a[href="participantes.html"]'); // Seleciona o link da turma
-    if (linkTurma && idTurma && idMateria) {
-        linkTurma.href = `participantes.html?idT=${idTurma}&idM=${idMateria}`; // Adiciona os parâmetros ao href
-    }
-    const linkMateria = document.querySelector('a[href="notas-materia.html"]'); // Seleciona o link da materia
-    if (linkMateria && idTurma && idMateria) {
-        linkMateria.href = `notas-materia.html?idT=${idTurma}&idM=${idMateria}`; // Adiciona os parâmetros ao href
-    }
+    if (user.perfil.permition > 1) {
+      let container = document.querySelector(".container-card-section");
+      if (container) {
+        let card = document.createElement("div");
+        card.className = "q-card options-card";
+        card.innerHTML = `
+          <div class="q-card-section">
+            <div>
+              <span class="material-icons options-icon" onclick="goTo('../register/professional-register.html')" style="font-size: 60px">
+                admin_panel_settings
+              </span>
+            </div>
+            <div class="options-icon" style="color: black" onclick="goTo('../register/professional-register.html')">
+              Painel
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    }    
 });

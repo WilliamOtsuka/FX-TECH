@@ -1,217 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Horizon</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="../../styles/aside.css" />
-    <link rel="stylesheet" href="../../styles/header.css" />
-    <link rel="stylesheet" href="../../styles/icons.css" />
-    <link rel="stylesheet" href="../../styles/main.css" />
-    <link rel="stylesheet" href="../../styles/style.css" />
-    <link rel="stylesheet" href="../../styles/drawer.css" />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
 
-    <style>
-      .button-back {
-        border: none;
-        border-radius: 6px;
-        margin-right: 10px;
-        display: flex;
-        justify-content: center;
-        justify-items: center;
-        cursor: pointer;
-        color: #324960;
-      }
-      .button-back:hover {
-        opacity: 0.5; /* Ajuste a opacidade para 50% ao passar o mouse */
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <button
-        class="button-back"
-        onclick="goTo('../content-page/content-page.html')"
-      >
-        <i data-lucide="arrow-big-left-dash"></i>
-      </button>
-      Painel de Gerenciamento
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Horizon</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="../../styles/aside.css" />
+  <link rel="stylesheet" href="../../styles/header.css" />
+  <link rel="stylesheet" href="../../styles/icons.css" />
+  <link rel="stylesheet" href="../../styles/main.css" />
+  <link rel="stylesheet" href="../../styles/style.css" />
+  <link rel="stylesheet" href="../../styles/drawer.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
-    <div class="container">
-      <div class="navbar">
-        <ul class="navbar-nav">
-          <li class="logo">
-            <a href="#" class="nav-link">
-              <span class="link-text logo-text">Horizon</span>
-              <i data-lucide="square-menu"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
+  <style>
+    .button-back {
+      border: none;
+      border-radius: 6px;
+      margin-right: 10px;
+      display: flex;
+      justify-content: center;
+      justify-items: center;
+      cursor: pointer;
+      color: #324960;
+    }
+
+    .button-back:hover {
+      opacity: 0.5;
+      /* Ajuste a opacidade para 50% ao passar o mouse */
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <button class="button-back" onclick="goTo('../content-page/content-page.html')">
+      <i data-lucide="arrow-big-left-dash"></i>
+    </button>
+    Painel de Gerenciamento
+  </header>
+
+  <div class="container">
+    <div class="navbar">
+      <ul class="navbar-nav">
+        <li class="logo">
+          <a href="#" class="nav-link">
+            <span class="link-text logo-text">Horizon</span>
+            <i data-lucide="square-menu"></i>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i data-lucide="user"></i>
+            <span class="link-text">Cadastro de alunos</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i data-lucide="briefcase"></i>
+            <span class="link-text">Cadastro profissionais</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <aside class="asside-content">
+      <nav>
+        <ul>
+          <li>
+            <a href="./user-register.html" class="nav-aside-link">
               <i data-lucide="user"></i>
-              <span class="link-text">Cadastro de alunos</span>
+              Cadastro de Aluno
             </a>
           </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i data-lucide="briefcase"></i>
-              <span class="link-text">Cadastro profissionais</span>
+          <li>
+            <a href="./professional-register.html" class="nav-aside-link">
+              <i data-lucide="graduation-cap"></i>
+              Cadastro de Profissional
             </a>
           </li>
         </ul>
-      </div>
-      <aside class="asside-content">
-        <nav>
-          <ul>
-            <li>
-              <a href="./user-register.html" class="nav-aside-link">
-                <i data-lucide="user"></i>
-                Cadastro de Aluno
-              </a>
-            </li>
-            <li>
-              <a href="./professional-register.html" class="nav-aside-link">
-                <i data-lucide="graduation-cap"></i>
-                Cadastro de Profissional
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </aside>
-      <main>
-        <div class="q-card">
-          <div class="q-card-section bg-grey">
-            <span class="screenTitle">Listagem de profissionais</span>
-            <hr />
-          </div>
-          <div class="q-card-section">
-            <div class="row">
-              <div class="col col-xs-6 col-md-6 col-lg-6">
-                <div class="flex column">
-                  <label>Ra:</label>
-                  <input placeholder="Ra..." class="input" />
-                </div>
+      </nav>
+    </aside>
+    <main>
+      <div class="q-card">
+        <div class="q-card-section bg-grey">
+          <span class="screenTitle">Listagem de profissionais</span>
+          <hr />
+        </div>
+        <div class="q-card-section">
+          <div class="row">
+            <div class="col col-xs-6 col-md-6 col-lg-6 filter-table">
+              <div class="flex column">
+                <label>Ra:</label>
+                <input id="raInput" placeholder="Ra..." class="input" />
               </div>
-              <div
-                class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end"
-              >
-                <button
-                  class="btn"
-                  style="margin-right: 5px"
-                  id="addProfessional"
-                >
-                  <i data-lucide="plus"></i>
-                </button>
-                <button class="btn" type="button">
-                  <i data-lucide="search"></i>
-                </button>
+              <div class="flex column">
+                <label>Nome:</label>
+                <input id="nameInput" placeholder="Nome..." class="input" />
+              </div>
+              <div class="flex column">
+                <label>Profissao:</label>
+                <select id="jobInput" class="jobSelect">
+                  <option value="">Selecione...</option>
+                  <option value="professor">Professor</option>
+                  <option value="coordenador">Coordenador</option>
+                </select>
+              </div>
+            <!-- <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
+              <button class="btn" style="margin-right: 5px" id="addProfessional">
+                <i data-lucide="plus"></i>
+              </button>
+              <button class="btn" type="button">
+                <i data-lucide="search"></i>
+              </button>
+            </div> -->
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 10px">
+        <table class="fl-table" id="userTable">
+          <thead>
+            <tr>
+              <th>RA</th>
+              <th>PROFISSAO</th>
+              <th>NOME</th>
+              <th>CPF</th>
+              <th>EMAIL</th>
+              <th>CONTATO</th>
+              <th>OPÇÕES</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot id="tableFootContent"></tfoot>
+        </table>
+      </div>
+    </main>
+    <div id="saveDialog" class="dialog-overlay">
+      <div class="dialog-box" style="min-width: 90%; min-height: auto">
+        <div class="q-card-section bg-grey">
+          <span class="screenTitle">Cadastrar novo Profissional</span>
+          <hr />
+        </div>
+        <div class="q-card-section">
+          <div class="row">
+            <div class="col col-xs-6 col-md-4 col-lg-4">
+              <div class="flex column">
+                <label for="professionalName">Nome:</label>
+                <input placeholder="Nome..." class="input" id="professionalName" />
               </div>
             </div>
-          </div>
-        </div>
-        <div style="margin-top: 10px">
-          <table class="fl-table" id="userTable">
-            <thead>
-              <tr>
-                <th>RA</th>
-                <th>PROFISSAO</th>
-                <th>NOME</th>
-                <th>CPF</th>
-                <th>EMAIL</th>
-                <th>CONTATO</th>
-                <th>OPÇÕES</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot id="tableFootContent"></tfoot>
-          </table>
-        </div>
-      </main>
-      <div id="saveDialog" class="dialog-overlay">
-        <div class="dialog-box" style="min-width: 90%; min-height: auto">
-          <div class="q-card-section bg-grey">
-            <span class="screenTitle">Cadastrar novo Profissional</span>
-            <hr />
-          </div>
-          <div class="q-card-section">
-            <div class="row">
-              <div class="col col-xs-6 col-md-4 col-lg-4">
-                <div class="flex column">
-                  <label for="professionalName">Nome:</label>
-                  <input
-                    placeholder="Nome..."
-                    class="input"
-                    id="professionalName"
-                  />
-                </div>
+            <div class="col col-xs-6 col-md-4 col-lg-4">
+              <div class="flex column">
+                <label for="professionalJobName">Profissao:</label>
+                <input placeholder="Profissao..." class="input" id="professionalJobName" />
               </div>
-              <div class="col col-xs-6 col-md-4 col-lg-4">
-                <div class="flex column">
-                  <label for="professionalJobName">Profissao:</label>
-                  <input
-                    placeholder="Profissao..."
-                    class="input"
-                    id="professionalJobName"
-                  />
-                </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-4">
+              <div class="flex column">
+                <label for="professionalEmail">E-mail:</label>
+                <input placeholder="E-mail..." class="input" type="email" id="professionalEmail" />
               </div>
-              <div class="col col-xs-6 col-md-4 col-lg-4">
-                <div class="flex column">
-                  <label for="professionalEmail">E-mail:</label>
-                  <input
-                    placeholder="E-mail..."
-                    class="input"
-                    type="email"
-                    id="professionalEmail"
-                  />
-                </div>
+            </div>
+            <div class="col col-xs-6 col-md-6 col-lg-6">
+              <div class="flex column">
+                <label for="professionalContact">Contato:</label>
+                <input placeholder="Contato..." class="input" id="professionalContact" maxlength="15" />
               </div>
-              <div class="col col-xs-6 col-md-6 col-lg-6">
-                <div class="flex column">
-                  <label for="professionalContact">Contato:</label>
-                  <input
-                    placeholder="Contato..."
-                    class="input"
-                    id="professionalContact"
-                    maxlength="15"
-                  />
-                </div>
+            </div>
+            <div class="col col-xs-12 col-md-6 col-lg-6">
+              <div class="flex column">
+                <label for="professionalCPF">CPF:</label>
+                <input placeholder="CPF..." class="input" id="professionalCPF" maxlength="14" />
               </div>
-              <div class="col col-xs-12 col-md-6 col-lg-6">
-                <div class="flex column">
-                  <label for="professionalCpf">Cpf:</label>
-                  <input
-                    placeholder="Cpf..."
-                    class="input"
-                    id="professionalCpf"
-                    maxlength="14"
-                  />
-                </div>
+            </div>
+            <div class="col col-xs-12 col-md-6 col-lg-6">
+              <div class="flex column">
+                <label for="professionalRA">RA:</label>
+                <input placeholder="RA..." class="input" id="professionalRA" maxlength="9" />
               </div>
             </div>
           </div>
           <hr />
           <div class="q-card-section flex justify-between">
             <div>
-              <button
-                class="btn-danger flex items-center gap-sm"
-                id="closeSaveDialog"
-              >
+              <button class="btn-danger flex items-center gap-sm" id="closeSaveDialog">
                 <i data-lucide="ban" style="width: 20px"></i>
                 Cancelar
               </button>
             </div>
             <div>
-              <button
-                class="btn-success flex items-center gap-sm"
-                id="saveForm"
-              >
+              <button class="btn-success flex items-center gap-sm" id="saveForm">
                 <i data-lucide="save" style="width: 20px"></i>
                 Salvar
               </button>
@@ -233,56 +212,31 @@
             <div class="col col-xs-6 col-md-4 col-lg-4">
               <div class="flex column">
                 <label for="editProfessionalName">Nome:</label>
-                <input
-                  placeholder="Nome..."
-                  class="input"
-                  id="editProfessionalName"
-                  disabled
-                />
+                <input placeholder="Nome..." class="input" id="editProfessionalName" disabled />
               </div>
             </div>
             <div class="col col-xs-6 col-md-4 col-lg-4">
               <div class="flex column">
                 <label for="editProfessionalJobName">Profissao:</label>
-                <input
-                  placeholder="Endereço..."
-                  class="input"
-                  id="editProfessionalJobName"
-                />
+                <input placeholder="Endereço..." class="input" id="editProfessionalJobName" />
               </div>
             </div>
             <div class="col col-xs-6 col-md-4 col-lg-4">
               <div class="flex column">
                 <label for="editProfessionalEmail">E-mail:</label>
-                <input
-                  placeholder="E-mail..."
-                  class="input"
-                  type="email"
-                  id="editProfessionalEmail"
-                />
+                <input placeholder="E-mail..." class="input" type="email" id="editProfessionalEmail" />
               </div>
             </div>
             <div class="col col-xs-6 col-md-6 col-lg-6">
               <div class="flex column">
                 <label for="editProfessionalContact">Contato:</label>
-                <input
-                  placeholder="Contato..."
-                  class="input"
-                  id="editProfessionalContact"
-                  maxlength="15"
-                />
+                <input placeholder="Contato..." class="input" id="editProfessionalContact" maxlength="15" />
               </div>
             </div>
             <div class="col col-xs-12 col-md-6 col-lg-6">
               <div class="flex column">
                 <label for="editProfessionalCpf">Cpf:</label>
-                <input
-                  placeholder="Cpf..."
-                  class="input"
-                  id="editProfessionalCpf"
-                  maxlength="14"
-                  disabled
-                />
+                <input placeholder="Cpf..." class="input" id="editProfessionalCpf" maxlength="14" disabled />
               </div>
             </div>
           </div>
@@ -290,19 +244,13 @@
         <hr />
         <div class="q-card-section flex justify-between">
           <div>
-            <button
-              class="btn-danger flex items-center gap-sm"
-              id="closeEditDialog"
-            >
+            <button class="btn-danger flex items-center gap-sm" id="closeEditDialog">
               <i data-lucide="ban" style="width: 20px"></i>
               Cancelar
             </button>
           </div>
           <div>
-            <button
-              class="btn-success flex items-center gap-sm"
-              id="confirmEdit"
-            >
+            <button class="btn-success flex items-center gap-sm" id="confirmEdit">
               <i data-lucide="save" style="width: 20px"></i>
               Salvar
             </button>
@@ -310,246 +258,7 @@
         </div>
       </div>
     </div>
-    <script>
-      lucide.createIcons();
-      const confirmAddBtn = document.getElementById("saveForm");
-      const nameTable = document
-        .getElementById("userTable")
-        .querySelector("tbody");
+    <script src="../../js/Relatorios/relatorios.js"></script>
+</body>
 
-      /*
-       *  Dialog de inserir usuario
-       */
-      document
-        .getElementById("addProfessional")
-        .addEventListener("click", () => {
-          clearForm();
-          openSaveDialog();
-        });
-      function openSaveDialog(row) {
-        document.getElementById("saveDialog").style.display = "flex";
-        document.getElementById("saveDialog").classList.add("fade-in");
-      }
-      document
-        .getElementById("closeSaveDialog")
-        .addEventListener("click", () => {
-          closeSaveDialog();
-        });
-      function closeSaveDialog() {
-        document.getElementById("saveDialog").style.display = "none";
-      }
-      confirmAddBtn.addEventListener("click", () => {
-        if (validateForm()) {
-          addNameToTable();
-        }
-      });
-
-      function addNameToTable() {
-        const name = document.getElementById("professionalName").value;
-        const job = document.getElementById("professionalJobName").value;
-        const email = document.getElementById("professionalEmail").value;
-        const contact = document.getElementById("professionalContact").value;
-        const cpf = document.getElementById("professionalCpf").value;
-        const ra = generateRA();
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${ra}</td>
-            <td>${job}</td>
-            <td>${name}</td>
-            <td>${cpf}</td>
-            <td>${email}</td>
-            <td>${contact}</td>
-            <td>
-            <button class="btn-edit editBtn"><i class="material-icons">edit</i></button>
-            <button class="btn-delete deleteBtn"><i class="material-icons">delete</i></button>
-            </td>
-        `;
-        row.querySelector(".deleteBtn").addEventListener("click", () => {
-          if (confirm("Confirma exclusao ?")) {
-            row.remove();
-            checkTbody();
-          } else {
-            return;
-          }
-        });
-        row.querySelector(".editBtn").addEventListener("click", () => {
-          openEditDialog(row);
-          row.classList.add("editing");
-        });
-        nameTable.appendChild(row);
-        checkTbody();
-        clearForm();
-      }
-      function clearForm() {
-        document.getElementById("professionalName").value = "";
-        document.getElementById("professionalEmail").value = "";
-        document.getElementById("professionalJobName").value = "";
-        document.getElementById("professionalContact").value = "";
-        document.getElementById("professionalCpf").value = "";
-      }
-
-      function checkTbody() {
-        const tbody = document
-          .getElementById("userTable")
-          .querySelector("tbody");
-        if (tbody.children.length !== 0) {
-          document.getElementById("tableFootContent").innerHTML = "";
-        } else {
-          document.getElementById("tableFootContent").innerHTML = `
-            <tr>
-                <td colspan="10">
-                    <div class="flex items-center" style="gap: 5px; margin-left: 10px">
-                        <span style="font-weight: bold" class="flex items-center gap-sm"><i class="material-icons">warning</i> Nenhum registro encontrado!</span>
-                    </div>
-                 </td>
-            </tr>`;
-        }
-      }
-      function validateForm() {
-        const name = document.getElementById("professionalName").value;
-        const job = document.getElementById("professionalJobName").value;
-        const email = document.getElementById("professionalEmail").value;
-        const contact = document.getElementById("professionalContact").value;
-        const cpf = document.getElementById("professionalCpf").value;
-
-        if (!name || !email || !job || !contact || !cpf) {
-          alert("Todos os campos são obrigatórios!");
-          return false;
-        }
-        return true;
-      }
-      document
-        .getElementById("professionalCpf")
-        .addEventListener("input", function (e) {
-          let value = this.value.replace(/\D/g, "");
-          value = value.replace(/(\d{3})(\d)/, "$1.$2");
-          value = value.replace(/(\d{3})(\d)/, "$1.$2");
-          value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-          this.value = value;
-        });
-
-      document
-        .getElementById("professionalContact")
-        .addEventListener("input", function (e) {
-          let value = this.value.replace(/\D/g, "");
-          if (value.length > 10) {
-            value = value.replace(
-              /^(\d{2})(\d{1})(\d{4})(\d{4})$/,
-              "($1) $2 $3-$4"
-            );
-          } else {
-            value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
-          }
-          this.value = value;
-        });
-      /*
-       *  Dialog de editar usuario
-       */
-      function openEditDialog(row) {
-        const cells = row.cells;
-        document.getElementById("editProfessionalJobName").value =
-          cells[1].textContent;
-        document.getElementById("editProfessionalName").value =
-          cells[2].textContent;
-        document.getElementById("editProfessionalCpf").value =
-          cells[3].textContent;
-        document.getElementById("editProfessionalEmail").value =
-          cells[4].textContent;
-        document.getElementById("editProfessionalContact").value =
-          cells[5].textContent;
-        document.getElementById("editDialog").style.display = "flex";
-        document.getElementById("editDialog").classList.add("fade-in");
-      }
-
-      document
-        .getElementById("closeEditDialog")
-        .addEventListener("click", () => {
-          document.getElementById("editDialog").style.display = "none";
-        });
-
-      document.getElementById("confirmEdit").addEventListener("click", () => {
-        if (validateEditForm()) {
-          if (confirm("Confirma alteracao ?")) {
-            updateTableRow();
-            document.getElementById("editDialog").style.display = "none";
-          } else {
-            return;
-          }
-        }
-      });
-      function validateEditForm() {
-        const name = document.getElementById("editProfessionalName").value;
-        const email = document.getElementById("editProfessionalEmail").value;
-        const contact = document.getElementById(
-          "editProfessionalContact"
-        ).value;
-        const cpf = document.getElementById("editProfessionalCpf").value;
-        const job = document.getElementById("editProfessionalJobName").value;
-
-        if (!name || !email || !job || !contact || !cpf) {
-          alert("Todos os campos são obrigatórios!");
-          return false;
-        }
-        return true;
-      }
-
-      function goTo(filePath) {
-        window.location.href = filePath;
-      }
-
-      function updateTableRow() {
-        const editedRow = document.querySelector("#userTable tbody tr.editing");
-        if (editedRow) {
-          editedRow.cells[1].textContent = document.getElementById(
-            "editProfessionalJobName"
-          ).value;
-          editedRow.cells[2].textContent = document.getElementById(
-            "editProfessionalName"
-          ).value;
-          editedRow.cells[3].textContent = document.getElementById(
-            "editProfessionalCpf"
-          ).value;
-          editedRow.cells[4].textContent = document.getElementById(
-            "editProfessionalEmail"
-          ).value;
-          editedRow.cells[5].textContent = document.getElementById(
-            "editProfessionalContact"
-          ).value;
-
-          editedRow.classList.remove("editing");
-        }
-      }
-
-      document
-        .getElementById("editProfessionalCpf")
-        .addEventListener("input", function (e) {
-          let value = this.value.replace(/\D/g, "");
-          value = value.replace(/(\d{3})(\d)/, "$1.$2");
-          value = value.replace(/(\d{3})(\d)/, "$1.$2");
-          value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-          this.value = value;
-        });
-
-      document
-        .getElementById("editProfessionalContact")
-        .addEventListener("input", function (e) {
-          let value = this.value.replace(/\D/g, "");
-          if (value.length > 10) {
-            value = value.replace(
-              /^(\d{2})(\d{1})(\d{4})(\d{4})$/,
-              "($1) $2 $3-$4"
-            );
-          } else {
-            value = value.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
-          }
-          this.value = value;
-        });
-
-      function generateRA() {
-        let ra = Math.floor(Math.random() * 100000000000);
-        return ra;
-      }
-      checkTbody();
-    </script>
-  </body>
 </html>

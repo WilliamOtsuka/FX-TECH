@@ -39,7 +39,16 @@
   display: flex; /* Usamos flexbox para o layout de linhas */
   margin: 0 -15px; /* Margem negativa para compensar o padding das colunas */
   flex-wrap: wrap;
+  justify-content: center;
   color: black;
+}
+
+.filter-table {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 .pointer {
@@ -47,7 +56,7 @@
 }
 
 .col {
-  padding: 15px; /* Espaçamento interno das colunas */
+  padding: 15px 15px 15px 5px; /* Espaçamento interno das colunas */
   box-sizing: border-box; /* Inclui padding e border no cálculo da largura total */
 }
 
@@ -64,7 +73,7 @@
   flex: 0 0 25%;
 }
 
-@media (min-width: 576px) {
+@media (min-width: 9px) {
   /* Small devices (sm) */
   .col-sm-12 {
     flex: 0 0 100%;
@@ -138,6 +147,19 @@
 }
 
 .input {
+  font-weight: 500;
+  letter-spacing: 0.00937em;
+  border: none;
+  background: #eeeeee;
+  color: rgba(0, 0, 0, 0.87);
+  padding: 12px 0px;
+  padding-left: 10px;
+  width: 100%;
+  outline: 0 !important;
+  border-radius: 8px;
+}
+
+.jobSelect {
   font-weight: 500;
   letter-spacing: 0.00937em;
   border: none;
@@ -258,6 +280,7 @@
   border-radius: 8px;
   color: white;
   padding: 6px;
+  height: 36px;
   cursor: pointer;
 }
 
@@ -267,6 +290,7 @@
   border-radius: 8px;
   color: white;
   padding: 6px;
+  height: 36px;
   cursor: pointer;
 }
 
