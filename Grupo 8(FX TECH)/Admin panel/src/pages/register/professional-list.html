@@ -40,8 +40,7 @@
     </button>
     Painel de Gerenciamento
   </header>
-
-  <div class="container">
+  <div class="container register">
     <div class="navbar">
       <ul class="navbar-nav">
         <li class="logo">
@@ -51,15 +50,15 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="/user-register.html" class="nav-link">
             <i data-lucide="user"></i>
-            <span class="link-text">Cadastro de alunos</span>
+            <span class="link-text">Cadastro de Usuarios</span>
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="/professional-register.html" class="nav-link">
             <i data-lucide="briefcase"></i>
-            <span class="link-text">Cadastro profissionais</span>
+            <span class="link-text">Listagem de Profissionais</span>
           </a>
         </li>
       </ul>
@@ -70,13 +69,13 @@
           <li>
             <a href="./user-register.html" class="nav-aside-link">
               <i data-lucide="user"></i>
-              Cadastro de Aluno
+              Cadastro de Usuarios
             </a>
           </li>
           <li>
             <a href="./professional-register.html" class="nav-aside-link">
-              <i data-lucide="graduation-cap"></i>
-              Cadastro de Profissional
+              <i data-lucide="briefcase"></i>
+              Listagem de Profissionais
             </a>
           </li>
         </ul>
@@ -107,7 +106,7 @@
                   <option value="coordenador">Coordenador</option>
                 </select>
               </div>
-            <!-- <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
+              <!-- <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
               <button class="btn" style="margin-right: 5px" id="addProfessional">
                 <i data-lucide="plus"></i>
               </button>
@@ -115,91 +114,27 @@
                 <i data-lucide="search"></i>
               </button>
             </div> -->
+            </div>
           </div>
         </div>
-      </div>
-      <div style="margin-top: 10px">
-        <table class="fl-table" id="userTable">
-          <thead>
-            <tr>
-              <th>RA</th>
-              <th>PROFISSAO</th>
-              <th>NOME</th>
-              <th>CPF</th>
-              <th>EMAIL</th>
-              <th>CONTATO</th>
-              <th>OPÇÕES</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-          <tfoot id="tableFootContent"></tfoot>
-        </table>
-      </div>
+        <div style="margin-top: 10px">
+          <table class="fl-table" id="userTable">
+            <thead>
+              <tr>
+                <th>RA</th>
+                <th>PROFISSAO</th>
+                <th>NOME</th>
+                <th>CPF</th>
+                <th>EMAIL</th>
+                <th>CONTATO</th>
+                <th>OPÇÕES</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot id="tableFootContent"></tfoot>
+          </table>
+        </div>
     </main>
-    <div id="saveDialog" class="dialog-overlay">
-      <div class="dialog-box" style="min-width: 90%; min-height: auto">
-        <div class="q-card-section bg-grey">
-          <span class="screenTitle">Cadastrar novo Profissional</span>
-          <hr />
-        </div>
-        <div class="q-card-section">
-          <div class="row">
-            <div class="col col-xs-6 col-md-4 col-lg-4">
-              <div class="flex column">
-                <label for="professionalName">Nome:</label>
-                <input placeholder="Nome..." class="input" id="professionalName" />
-              </div>
-            </div>
-            <div class="col col-xs-6 col-md-4 col-lg-4">
-              <div class="flex column">
-                <label for="professionalJobName">Profissao:</label>
-                <input placeholder="Profissao..." class="input" id="professionalJobName" />
-              </div>
-            </div>
-            <div class="col col-xs-6 col-md-4 col-lg-4">
-              <div class="flex column">
-                <label for="professionalEmail">E-mail:</label>
-                <input placeholder="E-mail..." class="input" type="email" id="professionalEmail" />
-              </div>
-            </div>
-            <div class="col col-xs-6 col-md-6 col-lg-6">
-              <div class="flex column">
-                <label for="professionalContact">Contato:</label>
-                <input placeholder="Contato..." class="input" id="professionalContact" maxlength="15" />
-              </div>
-            </div>
-            <div class="col col-xs-12 col-md-6 col-lg-6">
-              <div class="flex column">
-                <label for="professionalCPF">CPF:</label>
-                <input placeholder="CPF..." class="input" id="professionalCPF" maxlength="14" />
-              </div>
-            </div>
-            <div class="col col-xs-12 col-md-6 col-lg-6">
-              <div class="flex column">
-                <label for="professionalRA">RA:</label>
-                <input placeholder="RA..." class="input" id="professionalRA" maxlength="9" />
-              </div>
-            </div>
-          </div>
-          <hr />
-          <div class="q-card-section flex justify-between">
-            <div>
-              <button class="btn-danger flex items-center gap-sm" id="closeSaveDialog">
-                <i data-lucide="ban" style="width: 20px"></i>
-                Cancelar
-              </button>
-            </div>
-            <div>
-              <button class="btn-success flex items-center gap-sm" id="saveForm">
-                <i data-lucide="save" style="width: 20px"></i>
-                Salvar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Diálogo completo para edição -->
     <div id="editDialog" class="dialog-overlay">
       <div class="dialog-box" style="min-width: 90%; min-height: auto">
@@ -212,13 +147,13 @@
             <div class="col col-xs-6 col-md-4 col-lg-4">
               <div class="flex column">
                 <label for="editProfessionalName">Nome:</label>
-                <input placeholder="Nome..." class="input" id="editProfessionalName" disabled />
+                <input placeholder="Nome..." class="input" id="editProfessionalName" />
               </div>
             </div>
             <div class="col col-xs-6 col-md-4 col-lg-4">
               <div class="flex column">
                 <label for="editProfessionalJobName">Profissao:</label>
-                <input placeholder="Endereço..." class="input" id="editProfessionalJobName" />
+                <input placeholder="Profissão..." class="input" id="editProfessionalJobName" />
               </div>
             </div>
             <div class="col col-xs-6 col-md-4 col-lg-4">
@@ -236,29 +171,34 @@
             <div class="col col-xs-12 col-md-6 col-lg-6">
               <div class="flex column">
                 <label for="editProfessionalCpf">Cpf:</label>
-                <input placeholder="Cpf..." class="input" id="editProfessionalCpf" maxlength="14" disabled />
+                <input placeholder="Cpf..." class="input" id="editProfessionalCpf" maxlength="14" />
+              </div>
+            </div>
+            <div class="col col-xs-12 col-md-6 col-lg-6">
+              <div class="flex column">
+                <label for="editProfessionalRa">Ra:</label>
+                <input placeholder="Ra..." class="input" id="editProfessionalRa" maxlength="10" />
               </div>
             </div>
           </div>
-        </div>
-        <hr />
-        <div class="q-card-section flex justify-between">
-          <div>
-            <button class="btn-danger flex items-center gap-sm" id="closeEditDialog">
-              <i data-lucide="ban" style="width: 20px"></i>
-              Cancelar
-            </button>
-          </div>
-          <div>
-            <button class="btn-success flex items-center gap-sm" id="confirmEdit">
-              <i data-lucide="save" style="width: 20px"></i>
-              Salvar
-            </button>
+          <hr />
+          <div class="q-card-section flex justify-between">
+            <div>
+              <button class="btn-danger flex items-center gap-sm closebBtn" id="closeEditDialog">
+                <i data-lucide="ban" style="width: 20px"></i>
+                Cancelar
+              </button>
+            </div>
+            <div>
+              <button class="btn-success flex items-center gap-sm" id="confirmEdit">
+                <i data-lucide="save" style="width: 20px"></i>
+                Salvar
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <script src="../../js/Relatorios/relatorios.js"></script>
+      <script src="../../js/view/usuario.js"></script>
 </body>
 
 </html>

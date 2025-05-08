@@ -66,52 +66,12 @@ function carregarMateriasTurma(materias, idTurma) {
         let link = document.createElement("a");
         link.classList.add("disciplinas");
         link.id = materia.idMateria;
-        link.href = `atividadesMateria.html?idM=${materia.idMateria}&idT=${idTurma}`;
+        link.href = `atividades-materia.html?idM=${materia.idMateria}&idT=${idTurma}`;
         link.textContent = materia.nome;
 
         listaDisciplinas.appendChild(link);
     });
 }
-
-// async function carregarMaterias() {
-//     try {
-//         let response;
-//         try {
-//             response = await fetch('http://localhost:3000/materias');
-//             console.log(response.data, "DATA")
-//         } catch (err) {
-//             console.error(err, "NO TRU ADAMDAMId")
-//         }
-//         if (!response.ok) {
-//             console.log("Esto noe DADIMADAUDUW")
-//             throw new Error(`HTTP error! Status: ${response}`);
-//         }
-//         let materias = await response.json();
-
-//         console.log("Lista de todas as matérias:", materias);
-
-//         let listaDisciplinas = document.querySelector('.list-disciplinas');
-//         if (!listaDisciplinas) {
-//             console.error("Elemento .list-disciplinas não encontrado!");
-//             return;
-//         }
-
-//         listaDisciplinas.innerHTML = ""; // Limpa a lista antes de adicionar os elementos
-
-//         materias.forEach(materia => {
-//             let link = document.createElement("a");
-//             link.classList.add("disciplinas");
-//             link.id = materia.idMateria;
-//             link.href = `atividadesMateria.html?idM=${materia.idMateria}&idT=${materia.idTurma}`; // Adicione o idTurma aqui se necessário
-//             link.textContent = materia.nome;
-
-//             listaDisciplinas.appendChild(link);
-//         });
-//     } catch (error) {
-//         console.error('Erro ao carregar matérias: o error', error);
-//         alert('Erro ao carregar matérias. Verifique sua conexão ou tente novamente mais tarde.');
-//     }
-// }
 
 document.addEventListener("DOMContentLoaded", () => {
     carregarTurmas();

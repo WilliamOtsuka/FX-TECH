@@ -90,7 +90,7 @@
                 href="../content-page/content-page.html">USUARIO</a>
             </button>
             <button class="user-logout">
-                <i data-lucide="log-out" style="width: 20px"> </i>
+              <i data-lucide="log-out" style="width: 20px"> </i>
             </button>
           </div>
         </div>
@@ -127,43 +127,61 @@
             </section>
             <section style="flex: 1">
               <div class="list-content">
-                <i data-lucide="user"></i>
+                <i data-lucide="user"></i>NOME:
+                <a class="user-name"></a>
               </div>
               <hr />
               <div class="list-content">
                 <i data-lucide="graduation-cap"></i> REGISTRO ACAD. (RA):
-
+                <a class="user-ra"></a>
               </div>
               <hr />
               <div class="list-content">
                 <i data-lucide="keyboard-music"></i> CPF:
+                <a class="user-cpf"></a>
               </div>
               <hr />
               <div class="list-content">
-                <i data-lucide="book"></i> ANO:
+                <i data-lucide="keyboard-music"></i> RG:
+                <a class="user-rg"></a>
               </div>
               <hr />
-            </section>
           </div>
+          </section>
 
           <div class="list-content">
             <i data-lucide="mail"></i> E-MAIL PESSOAL:
+            <a class="user-email"></a>
+          </div>
+          <hr />
+          <div class="list-content">
+            <i data-lucide="mail"></i> E-MAIL EDUCACIONAL:
+            <a class="user-emailEducacional"></a>
           </div>
           <hr />
           <div class="list-content">
             <i data-lucide="phone"></i> CELULAR:
+            <a class="user-contato"></a>
           </div>
           <hr />
           <div class="list-content">
             <i data-lucide="map-pin-house"></i> ENDEREÇO:
+            <a class="user-endereco"></a>
           </div>
         </div>
       </div>
 
       <div style="margin-top: 50px; border: 1px solid #eee; padding: 16px">
-        <div class="list-turmas" style="margin-bottom: 20px"></div>
+        <div class="list-turmas" style="margin-bottom: 20px">
+            <div class="dropdown"></div>
+          <label for="turmaSelect">Selecione a turma: </label>
+          <select id="turmaSelect">
+              <option value="">-- Selecione uma Turma --</option>
+          </select>
+            </div>
+        </div>
         <div style="font-size: 20px; margin-bottom: 20px">Notas</div>
-        <table class="fl-table">
+        <table class="fl-table" style="display: none;">
           <thead>
             <tr>
               <th style="text-align: left">Disciplina</th>
@@ -319,8 +337,9 @@
   <script>
     lucide.createIcons();
   </script>
-  <script src="../../js/Materias/notas.js"></script>
-  <script src="../script.js"></script>
+  <script src="../../js/view/notas.js"></script>
+  <script src="../../js/view/usuario.js"></script>
+  <script src="../content-page/content-page.js"></script>
 </body>
 
 </html>
