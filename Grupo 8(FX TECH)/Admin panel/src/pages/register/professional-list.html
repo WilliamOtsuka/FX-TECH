@@ -35,12 +35,12 @@
 
 <body>
   <header>
-    <button class="button-back" onclick="goTo('../content-page/content-page.html')">
+    <button class="button-back" onclick="window.location.href='../content-page/content-page.html'">
       <i data-lucide="arrow-big-left-dash"></i>
     </button>
     Painel de Gerenciamento
   </header>
-  <div class="container register">
+  <div class="container" id="professional-list">
     <div class="navbar">
       <ul class="navbar-nav">
         <li class="logo">
@@ -50,13 +50,13 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="/user-register.html" class="nav-link">
+          <a href="/user-list.html" class="nav-link">
             <i data-lucide="user"></i>
-            <span class="link-text">Cadastro de Usuarios</span>
+            <span class="link-text">Listagem de Alunos</span>
           </a>
         </li>
         <li class="nav-item">
-          <a href="/professional-register.html" class="nav-link">
+          <a href="/professional-list.html" class="nav-link">
             <i data-lucide="briefcase"></i>
             <span class="link-text">Listagem de Profissionais</span>
           </a>
@@ -67,13 +67,13 @@
       <nav>
         <ul>
           <li>
-            <a href="./user-register.html" class="nav-aside-link">
+            <a href="./user-list.html" class="nav-aside-link">
               <i data-lucide="user"></i>
-              Cadastro de Usuarios
+              Listagem de Alunos
             </a>
           </li>
           <li>
-            <a href="./professional-register.html" class="nav-aside-link">
+            <a href="./professional-list.html" class="nav-aside-link">
               <i data-lucide="briefcase"></i>
               Listagem de Profissionais
             </a>
@@ -126,6 +126,7 @@
                 <th>NOME</th>
                 <th>CPF</th>
                 <th>EMAIL</th>
+                <th>EMAIL EDUCACIONAL</th>
                 <th>CONTATO</th>
                 <th>OPÇÕES</th>
               </tr>
@@ -162,6 +163,12 @@
                 <input placeholder="E-mail..." class="input" type="email" id="editProfessionalEmail" />
               </div>
             </div>
+            <div class="col col-xs-6 col-md-4 col-lg-4">
+              <div class="flex column">
+                <label for="editProfessionalEducationalEmail">E-mail educacional:</label>
+                <input placeholder="E-mail educacional..." class="input" type="email" id="editProfessionalEducationalEmail" />
+              </div>
+            </div>
             <div class="col col-xs-6 col-md-6 col-lg-6">
               <div class="flex column">
                 <label for="editProfessionalContact">Contato:</label>
@@ -184,7 +191,7 @@
           <hr />
           <div class="q-card-section flex justify-between">
             <div>
-              <button class="btn-danger flex items-center gap-sm closebBtn" id="closeEditDialog">
+              <button class="btn-danger flex items-center gap-sm closeBtn" id="closeEditDialog">
                 <i data-lucide="ban" style="width: 20px"></i>
                 Cancelar
               </button>

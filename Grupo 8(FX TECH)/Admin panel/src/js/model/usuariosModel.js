@@ -124,7 +124,7 @@ class Usuarios {
         let connectDb = new ConnectioDb();
         let db = await connectDb.connect();
         let [rows] = await db.query(`
-            SELECT u.email_pessoal, c.idColaboradores, u.nome, c.cargo, u.RA, u.cpf, u.contato, u.idUsuario
+            SELECT u.email_pessoal, u.email_educacional, c.idColaboradores, u.nome, c.cargo, u.RA, u.cpf, u.contato, u.idUsuario
             FROM colaboradores c
             JOIN usuarios u ON c.idColaboradores = u.idReferencia AND u.tipo = 'colaborador'
             ORDER BY u.nome ASC
@@ -132,19 +132,19 @@ class Usuarios {
         return rows;
     }
 
-    static async atualizarFuncionario(id, { nome, cargo, email_pessoal, RA, cpf, contato }) {
+    static async atualizarFuncionario(id, { nome, cargo, email_pessoal, email_educacional, RA, cpf, contato }) {
         let connectDb = new ConnectioDb();
         let db = await connectDb.connect();
         let [result] = await db.query(`
             UPDATE usuarios u
             JOIN colaboradores c ON u.idReferencia = c.idColaboradores AND u.tipo = 'colaborador'
-            SET u.nome = ?, c.cargo = ?, u.ra = ?, u.email_pessoal = ?, u.contato = ?, u.cpf = ?
+            SET u.nome = ?, c.cargo = ?, u.ra = ?, u.email_pessoal = ?, u.email_educacional = ?, u.contato = ?, u.cpf = ?
             WHERE u.idUsuario = ?
-        `, [nome, cargo, RA, email_pessoal, contato, cpf, id]);
+        `, [nome, cargo, RA, email_pessoal, email_educacional, contato, cpf, id]);
         return result.affectedRows > 0;
     }
 
-    static async verificarAssociacaoTurma(id) {
+    static async verificarAssociacaoTurmaProfessor(id) {
         let connectDb = new ConnectioDb();
         let db = await connectDb.connect();
         let [rows] = await db.query(`
@@ -159,6 +159,50 @@ class Usuarios {
         let [result] = await db.query(`
             DELETE u, c FROM usuarios u
             JOIN colaboradores c ON u.idReferencia = c.idColaboradores AND u.tipo = 'colaborador'
+            WHERE u.idUsuario = ?
+        `, [id]);
+        return result.affectedRows > 0;
+    }
+
+    static async listarAlunos() {
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+        let [rows] = await db.query(`
+            SELECT u.email_pessoal, u.email_educacional, a.idAluno, u.nome, u.ra, u.cpf, u.contato, u.idUsuario
+            FROM alunos a
+            JOIN usuarios u ON a.idAluno = u.idReferencia AND u.tipo = 'aluno'
+            ORDER BY u.nome ASC
+        `);
+        return rows;
+    }
+
+    static async atualizarAluno(id, { nome, RA, email_pessoal, cpf, contato }) {
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+        let [result] = await db.query(`
+            UPDATE usuarios u
+            JOIN alunos a ON u.idReferencia = a.idAluno AND u.tipo = 'aluno'
+            SET u.nome = ?, u.ra = ?, u.email_pessoal = ?, u.contato = ?, u.cpf = ?
+            WHERE u.idUsuario = ?
+        `, [nome, RA, email_pessoal, contato, cpf, id]);
+        return result.affectedRows > 0;
+    }
+
+    static async verificarAssociacaoTurmaAluno(id) {
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+        let [rows] = await db.query(`
+            SELECT * FROM alunos_turma WHERE idAluno = ?
+        `, [id]);
+        return rows.length > 0;
+    }
+
+    static async excluirAluno(id) {
+        let connectDb = new ConnectioDb();
+        let db = await connectDb.connect();
+        let [result] = await db.query(`
+            DELETE u, a FROM usuarios u
+            JOIN alunos a ON u.idReferencia = a.idAluno AND u.tipo = 'aluno'
             WHERE u.idUsuario = ?
         `, [id]);
         return result.affectedRows > 0;
