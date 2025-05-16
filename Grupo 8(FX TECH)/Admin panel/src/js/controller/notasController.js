@@ -1,14 +1,14 @@
 import Notas from '../model/notasModel.js';
 
 class NotasController {
-    static async getNotasAlunoPorMateriaETurma(req, res) {
+    static async getNotasAlunoPorDisciplinaETurma(req, res) {
         try {
-            let { idAluno, idMateria, idTurma } = req.params;
-            let notas = await Notas.buscarNotasPorAlunoMateriaETurma(idAluno, idMateria, idTurma);
+            let { idAluno, idDisciplina, idTurma } = req.params;
+            let notas = await Notas.buscarNotasPorAlunoDisciplinaETurma(idAluno, idDisciplina, idTurma);
             res.json(notas);
         } catch (error) {
-            console.error("Erro ao buscar notas por matéria e turma:", error);
-            res.status(500).json({ error: 'Erro ao buscar notas por matéria e turma' });
+            console.error("Erro ao buscar notas por disciplina e turma:", error);
+            res.status(500).json({ error: 'Erro ao buscar notas por disciplina e turma' });
         }
     }
 

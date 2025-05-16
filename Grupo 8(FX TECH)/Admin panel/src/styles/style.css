@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
 * {
   font-family: "Poppins", sans-serif;
 }
@@ -16,6 +17,7 @@
   --border-radius: 8px;
   --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
+
 .q-card {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14),
     0 3px 1px -2px rgba(0, 0, 0, 0.12);
@@ -23,24 +25,59 @@
   background: #fff;
   width: 100%;
 }
+
 .q-card-section {
+  margin: 8px;
   padding: 16px;
 }
+
 .screenTitle {
   font-size: 24px;
   font-weight: bold;
   color: #324960;
 }
+
 .bg-grey {
   background: #eeeeee !important;
 }
+
 /* Sistema de grid responsivo */
 .row {
-  display: flex; /* Usamos flexbox para o layout de linhas */
-  margin: 0 -15px; /* Margem negativa para compensar o padding das colunas */
+  display: flex;
+  /* Usamos flexbox para o layout de linhas */
+  margin: 0 -15px;
+  /* Margem negativa para compensar o padding das colunas */
   flex-wrap: wrap;
   justify-content: center;
   color: black;
+}
+
+.row-disciplinas {
+  flex-wrap: nowrap;
+  margin: 0 50px 0 50px;
+}
+
+.disc-lista {
+  /* estiliza lista */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  user-select: none;
+}
+
+.disc-lista li {
+  width: 50%;
+}
+
+.disc-lista li:hover {
+  color: #324960;
+  cursor: pointer;
+}
+
+.btn-disciplina-modal {
+  position: absolute;
+  right: 27px;
+  bottom: 120px;
 }
 
 .filter-table {
@@ -56,72 +93,91 @@
 }
 
 .col {
-  padding: 15px 15px 15px 5px; /* Espaçamento interno das colunas */
-  box-sizing: border-box; /* Inclui padding e border no cálculo da largura total */
+  padding: 15px 15px 15px 5px;
+  /* Espaçamento interno das colunas */
+  box-sizing: border-box;
+  /* Inclui padding e border no cálculo da largura total */
 }
 
 .col-xs-12 {
   flex: 0 0 100%;
 }
+
 .col-xs-6 {
   flex: 0 0 50%;
 }
+
 .col-xs-4 {
   flex: 0 0 33.33%;
 }
+
 .col-xs-3 {
   flex: 0 0 25%;
 }
 
 @media (min-width: 9px) {
+
   /* Small devices (sm) */
   .col-sm-12 {
     flex: 0 0 100%;
   }
+
   .col-sm-6 {
     flex: 0 0 50%;
   }
+
   .col-sm-4 {
     flex: 0 0 33.33%;
   }
+
   .col-sm-3 {
     flex: 0 0 25%;
   }
 }
 
 @media (min-width: 768px) {
+
   /* Medium devices (md) */
   .col-md-12 {
     flex: 0 0 100%;
   }
+
   .col-md-6 {
     flex: 0 0 50%;
   }
+
   .col-md-4 {
     flex: 0 0 33.33%;
   }
+
   .col-md-3 {
     flex: 0 0 25%;
   }
 }
 
 @media (min-width: 992px) {
+
   /* Large devices (lg) */
   .col-lg-12 {
     flex: 0 0 100%;
   }
+
   .col-lg-6 {
     flex: 0 0 50%;
   }
+
   .col-lg-4 {
     flex: 0 0 33.33%;
   }
+
   .col-lg-3 {
     flex: 0 0 25%;
   }
+
   .col-lg-2 {
     flex: 0 0 16.66%;
   }
+
   .col-lg-2 {
     flex: 0 0 8.33%;
   }
@@ -130,18 +186,23 @@
 .flex {
   display: flex;
 }
+
 .items-center {
   align-items: center;
 }
+
 .items-end {
   align-items: end;
 }
+
 .justify-between {
   justify-content: space-between;
 }
+
 .justify-end {
   justify-content: end;
 }
+
 .column {
   flex-direction: column;
 }
@@ -201,7 +262,8 @@
 }
 
 .btn:hover {
-  opacity: 0.5; /* Ajuste a opacidade para 50% ao passar o mouse */
+  opacity: 0.5;
+  /* Ajuste a opacidade para 50% ao passar o mouse */
 }
 
 /* Estilo do overlay do dialog */
@@ -217,18 +279,22 @@
   justify-content: center;
   z-index: 1000;
 }
+
 /* Animações */
 .dialog-overlay.fade-in {
   animation: fadeIn 0.3s ease-out;
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
+
 /* Caixa de diálogo */
 .dialog-box {
   background-color: var(--dialog-bg-color);
@@ -268,12 +334,15 @@
   padding: 12px;
   cursor: pointer;
 }
+
 .btn-danger:hover,
 .btn-success:hover,
 .btn-edit:hover,
 .btn-delete:hover {
-  opacity: 0.5; /* Ajuste a opacidade para 50% ao passar o mouse */
+  opacity: 0.5;
+  /* Ajuste a opacidade para 50% ao passar o mouse */
 }
+
 .btn-edit {
   background-color: #324960;
   border: none;
@@ -297,6 +366,7 @@
 table {
   width: 100%;
 }
+
 .fl-table {
   border-radius: 5px;
   font-size: 12px;
@@ -318,6 +388,7 @@ table {
 .fl-table th {
   border-right: 1px solid #ccc;
 }
+
 .fl-table th:last-child {
   border: none;
 }
@@ -362,6 +433,21 @@ table {
 .entrega-verde {
   color: green;
 }
+
 .entrega-vermelha {
   color: red;
+}
+
+.btn-disciplinas, .btn-participantes {
+  border-radius: 8px;
+  border: none;
+  background-color: #324960;
+  color: #ffffff;
+  padding: 6px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.btn-disciplinas:hover, .btn-participantes:hover {
+  background-color: #2a3b4d;
 }

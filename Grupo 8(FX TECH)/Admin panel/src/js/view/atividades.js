@@ -1,5 +1,5 @@
 let urlParams = new URLSearchParams(window.location.search);
-let idMateria = urlParams.get('idM');
+let idDisciplina = urlParams.get('idD');
 let idTurma = urlParams.get('idT');
 
 let user = JSON.parse(localStorage.getItem("user"));
@@ -130,7 +130,7 @@ async function enviarFormulario(event) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo }) // Envia o idMateria também
+            body: JSON.stringify({ titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo }) // Envia o idDisciplina também
         });
 
         if (response.ok) {
@@ -144,7 +144,7 @@ async function enviarFormulario(event) {
         console.error('Erro ao adicionar a atividade:', error);
         alert('Erro de conexão. Tente novamente.');
     }
-    window.location.replace('./atividades-materia.html?idM=' + idMateria + '&idT=' + idTurma); // Redireciona para a página de atividades com idMateria e idTurma
+    window.location.replace('./atividades-disciplina.html?idD=' + idDisciplina + '&idT=' + idTurma); // Redireciona para a página de atividades com idDisciplina e idTurma
 }
 
 function formatarData(dataISO) {
@@ -166,9 +166,9 @@ function formatarHora(horaISO) {
 
 async function carregarAtividades() {
     try {
-        // Busca as atividades da turma e matéria
-        // let response = await fetch(`http://localhost:3000/materias/${idMateria}/atividades/${idTurma}`);
-        let response = await fetch(`http://localhost:3000/atividades/materia/${idMateria}/turma/${idTurma}`);
+        // Busca as atividades da turma e disciplina
+        // let response = await fetch(`http://localhost:3000/disciplinas/${idDisciplina}/atividades/${idTurma}`);
+        let response = await fetch(`http://localhost:3000/atividades/disciplina/${idDisciplina}/turma/${idTurma}`);
 
         if (!response.ok) throw new Error(`Erro ao buscar atividades: ${response.statusText}`);
         let atividades = await response.json();
@@ -183,7 +183,7 @@ async function carregarAtividades() {
         listaAtividades.innerHTML = "";
 
         if (atividades.length === 0) {
-            listaAtividades.innerHTML = "<p>Nenhuma atividade encontrada para esta matéria.</p>";
+            listaAtividades.innerHTML = "<p>Nenhuma atividade encontrada para esta disciplina.</p>";
             return;
         }
 
@@ -297,10 +297,10 @@ async function criarFormularioEdicao(atividade) {
 
     try {
         let response = await fetch(`http://localhost:3000/atividades/${atividade.idAtividade}`);
-        if (!response.ok) throw new Error(`Erro ao buscar matéria: ${response.statusText}`);
+        if (!response.ok) throw new Error(`Erro ao buscar disciplina: ${response.statusText}`);
 
-        let materia = await response.json();
-        let nomeMateria = materia.nome;
+        let disciplina = await response.json();
+        let nomeDisciplina = disciplina.nome;
         let data = atividade.dataEntrega.split("T")[0];
 
         // Criando a estrutura do modal
@@ -314,8 +314,8 @@ async function criarFormularioEdicao(atividade) {
             <h2>Editar Tarefa</h2>
             <hr />
             <form id="editTaskForm">
-                <label for="subject">Matéria:</label>
-                <input type="text" id="subject" name="subject" readonly value="${nomeMateria}">	
+                <label for="subject">Disciplina:</label>
+                <input type="text" id="subject" name="subject" readonly value="${nomeDisciplina}">	
                 
                 <label for="title">Título:</label>
                 <input type="text" id="title" name="title" value="${atividade.titulo}">
@@ -381,7 +381,7 @@ async function salvarEdicao(atividade) {
 
     let atividadeAtualizada = {
         idAtividade: atividade.idAtividade,
-        idMateria: idMateria,
+        idDisciplina: idDisciplina,
         titulo: formData.get("title"),
         descricao: formData.get("description"),
         dataEntrega: formData.get("dueDate"),
@@ -704,8 +704,8 @@ async function carregarAtividadeEntregue() {
         });
     }
 
-    let tituloMateria = document.getElementById('titulo-materia');
-    tituloMateria.textContent = `${user.turmas[0].materias[0].nome}`;
+    let tituloDisciplina = document.getElementById('titulo-disciplina');
+    tituloDisciplina.textContent = `${user.turmas[0].disciplinas[0].nome}`;
 
     try {
         let atividade = await carregarAtividadeAluno(idAtividade, idAluno);
@@ -770,16 +770,16 @@ async function carregarAtividade(idAtividade) {
         let atividade = await response.json();
         console.log("Atividade carregada:", atividade);
 
-        let materiaAtivdade = document.getElementById('titulo-materia');
+        let disciplinaAtivdade = document.getElementById('titulo-disciplina');
         let tituloAtividade = document.getElementById('titulo-atividade');
         let descricaoAtividade = document.getElementById('descricao-atividade');
         let dataEntrega = document.getElementById('data-entrega');
         let horaEntrega = document.getElementById('hora-entrega');
 
-        let materia = user.turmas.flatMap(turma => turma.materias)
-            .find(materia => materia.idMateria == atividade.idMateria);
-        if (materia) {
-            materiaAtivdade.textContent = materia.nome;
+        let disciplina = user.turmas.flatMap(turma => turma.disciplinas)
+            .find(disciplina => disciplina.idDisciplina == atividade.idDisciplina);
+        if (disciplina) {
+            disciplinaAtivdade.textContent = disciplina.nome;
         }
 
         tituloAtividade.textContent = atividade.titulo;
@@ -872,7 +872,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Cria o link para adicionar atividades
         let link = document.createElement("a");
         link.classList.add("adicionarAtividade");
-        link.href = `cadastro-atividade.html?idM=${idMateria}&idT=${idTurma}`; // Adiciona o idTurma aqui
+        link.href = `cadastro-atividade.html?idD=${idDisciplina}&idT=${idTurma}`; // Adiciona o idTurma aqui
         link.textContent = `Adicionar Atividades +`;
 
         // Insere o link antes da lista de atividades
@@ -885,7 +885,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (backarrow) {
         backarrow.addEventListener('click', function (e) {
             e.preventDefault();
-            window.location.href = `./atividades-materia.html?idM=${user.turmas[0].materias[0].idMateria}&idT=${user.turmas[0].idTurma}`;
+            window.location.href = `./atividades-disciplina.html?idD=${user.turmas[0].disciplinas[0].idDisciplina}&idT=${user.turmas[0].idTurma}`;
         });
     }
 

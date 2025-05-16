@@ -1,22 +1,18 @@
-import ConnectioDb from '../../../connection-db.js';
+import db from '../../../connection-db.js';
 
 class Atividades {
-    static async buscarAtividades(idMateria, idTurma) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
+    static async buscarAtividades(idDisciplina, idTurma) {
         let [rows] = await db.query(
-            'SELECT * FROM atividade WHERE idMateria = ? AND idTurma = ?',
-            [idMateria, idTurma]
+            'SELECT * FROM atividades WHERE idDisciplina = ? AND idTurma = ?',
+            [idDisciplina, idTurma]
         );
         return rows;
     }
 
     static async buscarAtividadePorId(idAtividade) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
         let [rows] = await db.query(
             `SELECT 
-            m.nome,
+            d.nome,
             a.titulo,
             a.descricao,
             a.dataEntrega,
@@ -24,8 +20,8 @@ class Atividades {
             a.peso,
             a.tipo,
             a.status
-            FROM atividade a
-            JOIN materia m ON a.idMateria = m.idMateria
+            FROM atividades a
+            JOIN disciplinas d ON a.idDisciplina = d.idDisciplina
             WHERE a.idAtividade = ?`,
             [idAtividade]
         );
@@ -33,8 +29,6 @@ class Atividades {
     }
 
     static async excluirAtividade(idAtividade) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
         await db.query(
             'DELETE FROM atividades_corrigidas WHERE idAtividade = ?',
             [idAtividade]
@@ -44,25 +38,21 @@ class Atividades {
             [idAtividade]
         );
         let [result] = await db.query(
-            'DELETE FROM atividade WHERE idAtividade = ?',
+            'DELETE FROM atividades WHERE idAtividade = ?',
             [idAtividade]
         );
         return result.affectedRows > 0;
     }
 
     static async atualizarAtividade(idAtividade, { titulo, descricao, dataEntrega, hora, peso }) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
         let [result] = await db.query(
-            'UPDATE atividade SET titulo = ?, descricao = ?, dataEntrega = ?, hora = ?, status = "disponivel", peso = ? WHERE idAtividade = ?',
+            'UPDATE atividades SET titulo = ?, descricao = ?, dataEntrega = ?, hora = ?, status = "disponivel", peso = ? WHERE idAtividade = ?',
             [titulo, descricao, dataEntrega, hora, peso, idAtividade]
         );
         return result.affectedRows > 0;
     }
 
     static async buscarNaoEntregues(idAtividade) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
         let [rows] = await db.query(`
             SELECT 
                 ta.idAluno, 
@@ -71,7 +61,7 @@ class Atividades {
                 u.ra AS ra
             FROM alunos_turma ta
             JOIN alunos al ON ta.idAluno = al.idAluno
-            JOIN atividade a ON ta.idTurma = a.idTurma
+            JOIN atividades a ON ta.idTurma = a.idTurma
             JOIN usuarios u ON al.idAluno = u.idReferencia AND u.tipo = 'aluno'
             WHERE a.idAtividade = ?
               AND NOT EXISTS (
@@ -96,8 +86,6 @@ class Atividades {
     }
 
     static async buscarNaoCorrigidas(idAtividade) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
         let [rows] = await db.query(` 
             SELECT 
                 ae.idAluno, 
@@ -113,8 +101,6 @@ class Atividades {
     }
 
     static async buscarCorrigidas(idAtividade) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
         let [rows] = await db.query(`
             SELECT 
                 ae.idAluno, 
@@ -130,12 +116,10 @@ class Atividades {
     }
 
     static async enviarCorrecao(idAtividade, idAluno, { nota, feedback }) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
 
         // Verifica o status da atividade
         let [atividadeRows] = await db.query(
-            'SELECT status FROM atividade WHERE idAtividade = ?',
+            'SELECT status FROM atividades WHERE idAtividade = ?',
             [idAtividade]
         );
 
@@ -167,8 +151,6 @@ class Atividades {
     }
 
     static async atualizarCorrecao(idAtividade, idAluno, { nota, feedback }) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
 
         // Verifica se a correção existe
         let [existingCorrecao] = await db.query(`
@@ -190,8 +172,6 @@ class Atividades {
         return result.affectedRows > 0;
     }
     static async excluirCorrecao(idAtividade, idAluno) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
 
         // Exclui a correção da tabela atividades_corrigidas
         let [deleteResult] = await db.query(`
@@ -209,8 +189,6 @@ class Atividades {
         return deleteResult.affectedRows > 0 || updateResult.affectedRows > 0;
     }
     static async buscarCorrecao(idAtividade, idAluno) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
         let [rows] = await db.query(`
             SELECT idAluno, idAtividade, feedback, nota
             FROM atividades_corrigidas
@@ -220,8 +198,6 @@ class Atividades {
     }
 
     static async buscarResposta(idAtividade, idAluno) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
         let [rows] = await db.query(`
             SELECT 
                 ae.idAluno, 
@@ -236,25 +212,23 @@ class Atividades {
                 at.peso
             FROM atividades_entregues ae
             JOIN alunos al ON ae.idAluno = al.idAluno
-            JOIN atividade at ON ae.idAtividade = at.idAtividade
+            JOIN atividades at ON ae.idAtividade = at.idAtividade
             JOIN usuarios u ON al.idAluno = u.idReferencia AND u.tipo = 'aluno'
             WHERE ae.idAtividade = ? AND ae.idAluno = ?;
         `, [idAtividade, idAluno]);
         return rows.length > 0 ? rows[0] : null;
     }
 
-    static async cadastrarAtividade(titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
+    static async cadastrarAtividade(titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo) {
         let [result] = await db.query(`
-            INSERT INTO atividade (titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo, status)
+            INSERT INTO atividades (titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo, tipo === 'avaliativa' ? 'indisponivel' : 'disponivel']);
+        `, [titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo, tipo === 'avaliativa' ? 'indisponivel' : 'disponivel']);
 
         if (tipo === 'avaliativa') {
             // Define o status da atividade como "indisponivel" por padrão
             await db.query(
-                'UPDATE atividade SET status = "indisponivel" WHERE idAtividade = ?',
+                'UPDATE atividades SET status = "indisponivel" WHERE idAtividade = ?',
                 [result.insertId]
             );
 
@@ -272,11 +246,9 @@ class Atividades {
     }
 
     static async enviarAtividade(idAluno, idAtividade, descricao, dataEntrega) {
-        let connectDb = new ConnectioDb();
-        let db = await connectDb.connect();
 
         let [atividade] = await db.query(
-            'SELECT status FROM atividade WHERE idAtividade = ?',
+            'SELECT status FROM atividades WHERE idAtividade = ?',
             [idAtividade]
         );
 

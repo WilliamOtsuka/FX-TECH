@@ -19,8 +19,8 @@ class AtividadesController {
 
     static async cadastrarAtividade(req, res) {
         try {
-            const { titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo } = req.body;
-            const atividade = await Atividades.cadastrarAtividade(titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo);
+            const { titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo } = req.body;
+            const atividade = await Atividades.cadastrarAtividade(titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo);
             if (atividade) {
                 res.status(201).json({ message: 'Atividade cadastrada com sucesso', atividade });
             } else {
@@ -32,10 +32,10 @@ class AtividadesController {
         }
     }
 
-    static async buscarAtividadesMateriasTurmas(req, res) {
+    static async buscarAtividadesDisciplinasTurmas(req, res) {
         try {
-            const { idMateria, idT } = req.params;
-            const atividades = await Atividades.buscarAtividades(idMateria, idT);
+            const { idDisciplina, idT } = req.params;
+            const atividades = await Atividades.buscarAtividades(idDisciplina, idT);
             res.json(atividades);
         } catch (error) {
             console.error('Erro ao buscar atividades:', error);

@@ -3,8 +3,12 @@ import TurmasController from '../controller/turmasController.js';
 
 let router = express.Router();
 
+router.get('/turmas', TurmasController.listarTurmas);
+router.put('/turmas/:id', TurmasController.atualizarTurma);
+router.delete('/turmas/:id', TurmasController.deletarTurma);
 router.get('/turmas/:id/periodos', TurmasController.listarPeriodosPorTurma);
-router.get('/turmas/:idT/materia/:idMateria/', TurmasController.buscarMateriaPorTurma);
-router.get('/turmas/:idT/materia/:idMateria/participantes', TurmasController.listarAlunosPorMateriaTurma);
+router.get('/turmas/:idT/disciplinas', TurmasController.listarDisciplinasPorTurma);
+router.get('/turmas/:idT/disciplina/participantes', TurmasController.listarParticipantesPorTurma);
+router.get('/turmas/:idT/disciplina/:idDisciplina/participantes', TurmasController.listarAlunosTurma);
 
 export default router;

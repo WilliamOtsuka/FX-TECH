@@ -5,8 +5,9 @@ import ConnectioDb from '../../connection-db.js';
 import usuariosRoutes from './route/usuariosRoutes.js';
 import atividadesRoutes from './route/atividadesRoutes.js';
 import turmasRoutes from './route/turmasRoutes.js';
-import materiasRoutes from './route/materiasRoutes.js';
+import disciplinasRoutes from './route/disciplinasRoutes.js';
 import notasRouter from './route/notasRoutes.js';
+import anoLetivoRoutes from './route/anoLetivoRoutes.js';
 // import jwt from 'jsonwebtoken';
 // import bcrypt from 'bcrypt';
 import cron from 'node-cron';
@@ -18,9 +19,9 @@ app.use(express.json());
 app.use('/', usuariosRoutes);
 app.use('/', atividadesRoutes);
 app.use('/', turmasRoutes);
-app.use('/', materiasRoutes);
+app.use('/', disciplinasRoutes);
 app.use('/', notasRouter);
-
+app.use('/', anoLetivoRoutes);
 
 
 // let SECRET_KEY = 'seuSegredo';
@@ -58,7 +59,7 @@ cron.schedule('* * * * *', async () => {
         let dataHoraAtual = agora.toISOString().replace('T', ' ').split('.')[0]; // formato YYYY-MM-DD HH:MM:SS
         // 1. Buscar todas as atividades com prazo vencido e indisponíveis
         let [atividades] = await db.query(`
-          SELECT a.idAtividade, a.idTurma, a.idMateria
+          SELECT a.idAtividade, a.idTurma, a.idDisciplina
           FROM atividade a
           WHERE CONCAT(a.dataEntrega, ' ', a.hora) < ?
         AND a.status = 'indisponivel' AND a.tipo = 'atividade'
@@ -158,11 +159,11 @@ cron.schedule('* * * * *', async () => {
 //                 `, [user.idReferencia]);
 
 //                 for (let turma of turmasAluno) {
-//                     let [materiasTurma] = await db.query(`
-//                         SELECT m.idMateria, m.nome 
-//                         FROM materia m 
-//                         JOIN turma_materias tm ON m.idMateria = tm.idMateria 
-//                         WHERE tm.idTurma = ?
+//                     let [disciplinasTurma] = await db.query(`
+//                         SELECT d.idDisciplina, d.nome 
+//                         FROM disciplina d 
+//                         JOIN turma_disciplinas td ON d.idDisciplina = td.idDisciplina 
+//                         WHERE td.idTurma = ?
 //                     `, [turma.idTurma]);
 
 //                     turmas.push({
@@ -170,7 +171,7 @@ cron.schedule('* * * * *', async () => {
 //                         nome: turma.nome,
 //                         idAno_letivo: turma.idAno_letivo,
 //                         anoLetivo: turma.anoLetivo,
-//                         materias: materiasTurma
+//                         disciplinas: disciplinasTurma
 //                     });
 //                 }
 //             }
@@ -181,34 +182,34 @@ cron.schedule('* * * * *', async () => {
 
 //                 perfil = profRows[0];
 
-//                 let [turmasMaterias] = await db.query(`
+//                 let [turmasDisciplinas] = await db.query(`
 //                     SELECT 
 //                         t.idTurma, t.nome AS nomeTurma, t.idAno_letivo, al.descricao AS anoLetivo,
-//                         m.idMateria, m.nome AS nomeMateria, c.cargo AS cargo, c.permition as permition
+//                         d.idDisciplina, d.nome AS nomeDisciplina, c.cargo AS cargo, c.permition as permition
 //                     FROM professor_turma pt
 //                     JOIN turmas t ON pt.idTurma = t.idTurma
 //                     JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
 //                     JOIN colaboradores c ON pt.idColaboradores = c.idColaboradores
-//                     JOIN materia m ON pt.idMateria = m.idMateria
+//                     JOIN disciplina d ON pt.idDisciplina = d.idDisciplina
 //                     WHERE pt.idColaboradores = ?
 //                 `, [user.idReferencia]);
 
 //                 let turmaMap = new Map();
 
-//                 for (let row of turmasMaterias) {
+//                 for (let row of turmasDisciplinas) {
 //                     if (!turmaMap.has(row.idTurma)) {
 //                         turmaMap.set(row.idTurma, {
 //                             idTurma: row.idTurma,
 //                             nome: row.nomeTurma,
 //                             idAno_letivo: row.idAno_letivo,
 //                             anoLetivo: row.anoLetivo,
-//                             materias: []
+//                             disciplinas: []
 //                         });
 //                     }
 
-//                     turmaMap.get(row.idTurma).materias.push({
-//                         idMateria: row.idMateria,
-//                         nome: row.nomeMateria
+//                     turmaMap.get(row.idTurma).disciplinas.push({
+//                         idDisciplina: row.idDisciplina,
+//                         nome: row.nomeDisciplina
 //                     });
 //                 }
 
@@ -253,12 +254,12 @@ cron.schedule('* * * * *', async () => {
 //     }
 // });
 
-// // lista todas as materias
-// app.get('/materias', async (req, res) => {
+// // lista todas as disciplinas
+// app.get('/disciplinas', async (req, res) => {
 //     try {
 //         let connectDb = new ConnectioDb();
 //         let db = await connectDb.connect();
-//         let [rows] = await db.query('SELECT * FROM materia');
+//         let [rows] = await db.query('SELECT * FROM disciplina');
 //         res.json(rows);
 //     } catch (error) {
 //         console.error(error, "NO ERROR DO TRY");
@@ -266,40 +267,40 @@ cron.schedule('* * * * *', async () => {
 //     }
 // });
 
-// // lista as materias
-// // app.get('/materias/:id', async (req, res) => {
-// app.get('/materias/turma/:id', async (req, res) => {
+// // lista as disciplinas
+// // app.get('/disciplinas/:id', async (req, res) => {
+// app.get('/disciplinas/turma/:id', async (req, res) => {
 //     try {
 //         let { id } = req.params;
 //         if (isNaN(id)) {
 //             return res.status(400).json({ message: 'ID inválido' });
 //         }
-//         console.log(`Buscando matéria com ID: ${id}`);
+//         console.log(`Buscando disciplina com ID: ${id}`);
 //         let connectDb = new ConnectioDb();
 //         let db = await connectDb.connect();
-//         let [rows] = await db.query('SELECT * FROM materia WHERE idMateria = ?', [id]);
+//         let [rows] = await db.query('SELECT * FROM disciplina WHERE idDisciplina = ?', [id]);
 //         if (rows.length > 0) {
 //             res.json(rows[0]);
 //         } else {
-//             res.status(404).json({ message: 'Matéria não encontrada' });
+//             res.status(404).json({ message: 'Disciplina não encontrada' });
 //         }
 //     } catch (error) {
-//         console.error(`Erro ao buscar matéria: ${error.message}`);
+//         console.error(`Erro ao buscar disciplina: ${error.message}`);
 //         res.status(500).json({ error: error.message });
 //     }
 // });
 
 
-// lista as atividades de uma materia em uma turma
-// // app.get('/materias/:id/atividades/:idT', async (req, res) => {
-// app.get('/atividades/materia/:idMateria/turma/:idT', async (req, res) => {
+// lista as atividades de uma disciplina em uma turma
+// // app.get('/disciplinas/:id/atividades/:idT', async (req, res) => {
+// app.get('/atividades/disciplina/:idDisciplina/turma/:idT', async (req, res) => {
 //     try {
 //         let { id, idT } = req.params;
-//         console.log(`Buscando atividades da matéria ${id} para a turma ${idT}`);
+//         console.log(`Buscando atividades da disciplina ${id} para a turma ${idT}`);
 
 //         let connectDb = new ConnectioDb();
 //         let db = await connectDb.connect();
-//         let [rows] = await db.query('SELECT * FROM atividade WHERE idMateria = ? AND idTurma = ?', [id, idT]);
+//         let [rows] = await db.query('SELECT * FROM atividade WHERE idDisciplina = ? AND idTurma = ?', [id, idT]);
 //         res.json(rows);
 //     } catch (error) {
 //         res.status(500).json({ error: error.message });
@@ -308,17 +309,17 @@ cron.schedule('* * * * *', async () => {
 
 // Atividades
 // ------------------------------------- IRRELEVANTE ----------------------------
-// lista as atividades de uma materia em uma turma 
-// app.get('/materias/:idMateria/atividades/:idTurma', async (req, res) => {
-// app.get('atividades/:idMateria/turma/:idT', async (req, res) => {
+// lista as atividades de uma disciplina em uma turma 
+// app.get('/disciplinas/:idDisciplina/atividades/:idTurma', async (req, res) => {
+// app.get('atividades/:idDisciplina/turma/:idT', async (req, res) => {
 //     try {
-//         let { idMateria, idTurma } = req.params;
+//         let { idDisciplina, idTurma } = req.params;
 
-//         if (isNaN(idMateria) || isNaN(idTurma)) {
+//         if (isNaN(idDisciplina) || isNaN(idTurma)) {
 //             return res.status(400).json({ message: 'IDs inválidos' });
 //         }
 
-//         console.log(`Buscando atividades da matéria ${idMateria} na turma ${idTurma}`);
+//         console.log(`Buscando atividades da disciplina ${idDisciplina} na turma ${idTurma}`);
 
 //         let connectDb = new ConnectioDb();
 //         let db = await connectDb.connect();
@@ -326,9 +327,9 @@ cron.schedule('* * * * *', async () => {
 //         let [rows] = await db.query(`
 //             SELECT a.*
 //             FROM Atividade a
-//             JOIN turma_materias tm ON a.idMateria = tm.idMateria
-//             WHERE a.idMateria = ? AND tm.idTurma = ?
-//         `, [idMateria, idTurma]);
+//             JOIN turma_disciplinas td ON a.idDisciplina = td.idDisciplina
+//             WHERE a.idDisciplina = ? AND td.idTurma = ?
+//         `, [idDisciplina, idTurma]);
 
 //         res.json(rows);
 //     } catch (error) {
@@ -398,7 +399,7 @@ cron.schedule('* * * * *', async () => {
 // app.post('/adicionar-atividade', async (req, res) => {
 // app.post('/atividades', async (req, res) => {
 //     try {
-//         let { titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo } = req.body;
+//         let { titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo } = req.body;
 
 //         console.log({
 //             titulo,
@@ -406,13 +407,13 @@ cron.schedule('* * * * *', async () => {
 //             dataEntrega,
 //             hora,
 //             peso,
-//             idMateria,
+//             idDisciplina,
 //             idTurma,
 //             tipo
 //         });
 
 
-//         if (!titulo || !descricao || !dataEntrega || !hora || !peso || !idMateria || !idTurma || !tipo) {
+//         if (!titulo || !descricao || !dataEntrega || !hora || !peso || !idDisciplina || !idTurma || !tipo) {
 //             return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
 //         }
 
@@ -420,8 +421,8 @@ cron.schedule('* * * * *', async () => {
 //         let db = await connectDb.connect();
 
 //         let [result] = await db.query(
-//             'INSERT INTO Atividade (titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-//             [titulo, descricao, dataEntrega, hora, peso, idMateria, idTurma, tipo]
+//             'INSERT INTO Atividade (titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+//             [titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo]
 //         );
 
 //         if (tipo === 'avaliativa') {
@@ -477,7 +478,7 @@ cron.schedule('* * * * *', async () => {
 // app.put('/atividades/:id', async (req, res) => {
 //     try {
 //         let { id } = req.params; // ID da atividade a ser editada
-//         let { titulo, descricao, dataEntrega, hora, idMateria } = req.body; // Dados enviados no corpo da requisição
+//         let { titulo, descricao, dataEntrega, hora, idDisciplina } = req.body; // Dados enviados no corpo da requisição
 
 //         if (isNaN(id)) {
 //             return res.status(400).json({ message: 'ID inválido' });
@@ -489,8 +490,8 @@ cron.schedule('* * * * *', async () => {
 //         let db = await connectDb.connect();
 
 //         let [result] = await db.query(
-//             'UPDATE Atividade SET titulo = ?, descricao = ?, dataEntrega = ?, hora = ?, idMateria = ?, status = "disponivel" WHERE idAtividade = ? ',
-//             [titulo, descricao, dataEntrega, hora, idMateria, id]
+//             'UPDATE Atividade SET titulo = ?, descricao = ?, dataEntrega = ?, hora = ?, idDisciplina = ?, status = "disponivel" WHERE idAtividade = ? ',
+//             [titulo, descricao, dataEntrega, hora, idDisciplina, id]
 //         );
 
 //         if (result.affectedRows > 0) {
@@ -868,17 +869,17 @@ cron.schedule('* * * * *', async () => {
 
 
 // TURMA
-// Busca os participantes de uma matéria em uma turma
-// app.get('/materias/:idMateria/participantes/:idTurma', async (req, res) => {
-// app.get('/turmas/:idT/materia/:idMateria/participantes', async (req, res) => {
+// Busca os participantes de uma disciplina em uma turma
+// app.get('/disciplinas/:idDisciplina/participantes/:idTurma', async (req, res) => {
+// app.get('/turmas/:idT/disciplina/:idDisciplina/participantes', async (req, res) => {
 //     try {
-//         let { idMateria, idTurma } = req.params;
+//         let { idDisciplina, idTurma } = req.params;
 
-//         if (isNaN(idMateria) || isNaN(idTurma)) {
+//         if (isNaN(idDisciplina) || isNaN(idTurma)) {
 //             return res.status(400).json({ message: 'IDs inválidos' });
 //         }
 
-//         console.log(`Buscando participantes da matéria ${idMateria} na turma ${idTurma}`);
+//         console.log(`Buscando participantes da disciplina ${idDisciplina} na turma ${idTurma}`);
 
 //         let connectDb = new ConnectioDb();
 //         let db = await connectDb.connect();
@@ -898,7 +899,7 @@ cron.schedule('* * * * *', async () => {
 //             ORDER BY a.nome ASC;
 //         `, [idTurma]);
 
-//         // Busca os professores da matéria na turma
+//         // Busca os professores da disciplina na turma
 //         let [professores] = await db.query(`
 //             SELECT 
 //                 c.idColaboradores AS id, 
@@ -909,9 +910,9 @@ cron.schedule('* * * * *', async () => {
 //             FROM professor_turma pt
 //             JOIN colaboradores c ON pt.idColaboradores = c.idColaboradores
 //             JOIN usuarios u ON c.idColaboradores = u.idReferencia AND u.tipo = 'colaborador'
-//             WHERE pt.idTurma = ? AND pt.idMateria = ?
+//             WHERE pt.idTurma = ? AND pt.idDisciplina = ?
 //             ORDER BY c.nome ASC;
-//         `, [idTurma, idMateria]);
+//         `, [idTurma, idDisciplina]);
 
 //         let participantes = [...alunos, ...professores];
 
@@ -922,10 +923,10 @@ cron.schedule('* * * * *', async () => {
 //     }
 // });
 
-// Busca as notas de um aluno em uma matéria e turma específicas
-// // app.get('/notas-aluno/:idAluno/:idMateria/:idTurma', async (req, res) => {
-// app.get('/notas/aluno/:idAluno/materia/:idMateria/turma/:idTurma', async (req, res) => {
-//     let { idAluno, idMateria, idTurma } = req.params;
+// Busca as notas de um aluno em uma disciplina e turma específicas
+// // app.get('/notas-aluno/:idAluno/:idDisciplina/:idTurma', async (req, res) => {
+// app.get('/notas/aluno/:idAluno/disciplina/:idDisciplina/turma/:idTurma', async (req, res) => {
+//     let { idAluno, idDisciplina, idTurma } = req.params;
 
 //     try {
 //         let connectDb = new ConnectioDb(); // Inicializa a conexão com o banco de dados
@@ -941,17 +942,17 @@ cron.schedule('* * * * *', async () => {
 //                 ae.dataEntrega
 //             FROM atividades_corrigidas ac
 //             JOIN atividade a ON ac.idAtividade = a.idAtividade
-//             JOIN turma_materias tm ON a.idMateria = tm.idMateria AND tm.idTurma = ?
-//             JOIN turmas t ON t.idTurma = tm.idTurma
+//             JOIN turma_disciplinas td ON a.idDisciplina = td.idDisciplina AND td.idTurma = ?
+//             JOIN turmas t ON t.idTurma = td.idTurma
 //             JOIN periodo_letivo pl 
 //                 ON pl.idAno_letivo = t.idAno_letivo 
 //                 AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
 //             LEFT JOIN atividades_entregues ae 
 //                 ON ae.idAtividade = ac.idAtividade 
 //                 AND ae.idAluno = ac.idAluno
-//             WHERE a.idMateria = ? AND ac.idAluno = ?
+//             WHERE a.idDisciplina = ? AND ac.idAluno = ?
 //             ORDER BY a.dataEntrega ASC;
-//         `, [idTurma, idMateria, idAluno]);
+//         `, [idTurma, idDisciplina, idAluno]);
 
 //         res.json(notas);
 //     } catch (error) {
@@ -972,22 +973,22 @@ cron.schedule('* * * * *', async () => {
 
 //         let [notas] = await db.query(`
 //             SELECT 
-//                 tm.idMateria,
-//                 m.nome AS nomeMateria,
+//                 td.idDisciplina,
+//                 d.nome AS nomeDisciplina,
 //                 pl.nome AS bimestre,
 //                 COALESCE(SUM(ac.nota * (a.peso / 100)), 0) AS nota
-//             FROM turma_materias tm
-//             JOIN materia m ON m.idMateria = tm.idMateria
-//             JOIN turmas t ON t.idTurma = tm.idTurma
-//             LEFT JOIN atividade a ON a.idMateria = tm.idMateria
+//             FROM turma_disciplinas tm
+//             JOIN disciplina d ON d.idDisciplina = td.idDisciplina
+//             JOIN turmas t ON t.idTurma = td.idTurma
+//             LEFT JOIN atividade a ON a.idDisciplina = td.idDisciplina
 //             LEFT JOIN periodo_letivo pl 
 //                 ON pl.idAno_letivo = t.idAno_letivo 
 //                 AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
 //             LEFT JOIN atividades_corrigidas ac 
 //                 ON ac.idAtividade = a.idAtividade AND ac.idAluno = ?
-//             WHERE tm.idTurma = ?
-//             GROUP BY tm.idMateria, m.nome, pl.nome
-//             ORDER BY nomeMateria, bimestre;
+//             WHERE td.idTurma = ?
+//             GROUP BY td.idDisciplina, d.nome, pl.nome
+//             ORDER BY nomeDisciplina, bimestre;
 //         `, [idAluno, idTurma]);
 
 //         res.json(notas);
@@ -998,21 +999,21 @@ cron.schedule('* * * * *', async () => {
 // });
 
 //TURMA
-// Busca os participantes de uma matéria em uma turma específicas
-// app.get('/materias/:idMateria/participantes/:idTurma', async (req, res) => {
-// app.get('/turmas/:idT/materia/:idMateria/alunos', async (req, res) => {
-//     let { idMateria, idTurma } = req.params;
+// Busca os participantes de uma disciplina em uma turma específicas
+// app.get('/disciplinas/:idDisciplina/participantes/:idTurma', async (req, res) => {
+// app.get('/turmas/:idT/disciplina/:idDisciplina/alunos', async (req, res) => {
+//     let { idDisciplina, idTurma } = req.params;
 
 //     try {
 //         let connectDb = new ConnectioDb(); // Inicializa a conexão com o banco de dados
 //         let db = await connectDb.connect(); // Conecta ao banco de dados
 //         let [participantes] = await db.query(`
-//             SELECT p.idAluno, p.nome, p.tipo, p.email_pessoal, m.nome AS nomeMateria
+//             SELECT p.idAluno, p.nome, p.tipo, p.email_pessoal, d.nome AS nomeDisciplina
 //             FROM alunos_turma at
 //             JOIN alunos p ON at.idAluno = p.idAluno
-//             JOIN materia m ON at.idMateria = m.idMateria
-//             WHERE at.idTurma = ? AND at.idMateria = ?
-//         `, [idTurma, idMateria]);
+//             JOIN disciplina d ON at.idDisciplina = d.idDisciplina
+//             WHERE at.idTurma = ? AND at.idDisciplina = ?
+//         `, [idTurma, idDisciplina]);
 
 //         res.json(participantes);
 //     } catch (error) {

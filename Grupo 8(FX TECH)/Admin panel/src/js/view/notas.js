@@ -2,7 +2,7 @@ let token = localStorage.getItem("token");
 let user = JSON.parse(localStorage.getItem("user"));
 
 let urlParams = new URLSearchParams(window.location.search);
-let idMateria = urlParams.get("idM");
+let idDisciplina = urlParams.get("idD");
 let idTurma = urlParams.get("idT");
 
 function criarDropdownAlunos() {
@@ -35,8 +35,8 @@ function criarDropdownAlunos() {
 
 async function carregarAlunosDropdown() {
     try {
-        // let response = await fetch(`http://localhost:3000/materias/${idMateria}/participantes/${idTurma}`);
-        let response = await fetch(`http://localhost:3000/turmas/${idTurma}/materia/${idMateria}/participantes`);
+        // let response = await fetch(`http://localhost:3000/disciplinas/${idDisciplina}/participantes/${idTurma}`);
+        let response = await fetch(`http://localhost:3000/turmas/${idTurma}/disciplina/${idDisciplina}/participantes`);
         if (!response.ok) throw new Error("Erro ao buscar participantes");
 
         let participantes = await response.json();
@@ -65,8 +65,8 @@ async function buscarNotasAluno() {
     let idAluno = user.idReferencia;
 
     try {
-        // let response = await fetch(`http://localhost:3000/notas-aluno/${idAluno}/${idMateria}/${idTurma}`, {
-        let response = await fetch(`http://localhost:3000/notas/aluno/${idAluno}/materia/${idMateria}/turma/${idTurma}`, {
+        // let response = await fetch(`http://localhost:3000/notas-aluno/${idAluno}/${idDisciplina}/${idTurma}`, {
+        let response = await fetch(`http://localhost:3000/notas/aluno/${idAluno}/disciplina/${idDisciplina}/turma/${idTurma}`, {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
@@ -170,8 +170,8 @@ async function buscarNotasAluno() {
 
 async function buscarNotasProfessor(idAluno) {
     try {
-        // let response = await fetch(`http://localhost:3000/notas-aluno/${idAluno}/${idMateria}/${idTurma}`);
-        let response = await fetch(`http://localhost:3000/notas/aluno/${idAluno}/materia/${idMateria}/turma/${idTurma}`);
+        // let response = await fetch(`http://localhost:3000/notas-aluno/${idAluno}/${idDisciplina}/${idTurma}`);
+        let response = await fetch(`http://localhost:3000/notas/aluno/${idAluno}/disciplina/${idDisciplina}/turma/${idTurma}`);
         if (!response.ok) throw new Error("Erro ao buscar notas do aluno");
 
         let dados = await response.json();
@@ -268,7 +268,7 @@ async function buscarNotasProfessor(idAluno) {
     }
 }
 
-async function exibirNotasAlunoP(dados, nomeMateria) {
+async function exibirNotasAlunoP(dados, nomeDisciplina) {
     let tabela = document.querySelector(".fl-table");
     if (!tabela) return console.error("Tabela não encontrada!");
 
@@ -298,7 +298,7 @@ async function exibirNotasAlunoP(dados, nomeMateria) {
     if (celulas[0]) {
         let divs = celulas[0].querySelectorAll("div");
         if (divs.length > 0) {
-            divs[0].textContent = nomeMateria;
+            divs[0].textContent = nomeDisciplina;
         }
     }
 
@@ -339,17 +339,17 @@ async function tabelaNotasProfessor(idTurma) {
     let ddTurmas = document.querySelector(".list-turmas");
     if (!ddTurmas) return console.error("Elemento .list-turmas não encontrado!");
 
-    // --- Dropdown de Matérias ---
-    let materiaWrapper = document.createElement("div");
-    materiaWrapper.style.marginTop = "10px";
+    // --- Dropdown de Disciplinas ---
+    let disciplinaWrapper = document.createElement("div");
+    disciplinaWrapper.style.marginTop = "10px";
 
-    let labelMateria = document.createElement("label");
-    labelMateria.setAttribute("for", "materiaSelect");
-    labelMateria.textContent = "Selecione a matéria: ";
+    let labelDisciplina = document.createElement("label");
+    labelDisciplina.setAttribute("for", "disciplinaSelect");
+    labelDisciplina.textContent = "Selecione a disciplina: ";
 
-    let selectMateria = document.createElement("select");
-    selectMateria.id = "materiaSelect";
-    selectMateria.innerHTML = `<option value="">-- Selecione uma Matéria --</option>`;
+    let selectDisciplina = document.createElement("select");
+    selectDisciplina.id = "disciplinaSelect";
+    selectDisciplina.innerHTML = `<option value="">-- Selecione uma Disciplina --</option>`;
 
     // --- Dropdown de Alunos ---
     let alunoWrapper = document.createElement("div");
@@ -368,38 +368,38 @@ async function tabelaNotasProfessor(idTurma) {
         document.querySelectorAll(".nota").forEach(tabela => (tabela.innerHTML = ""));
 
         // Limpa selects
-        selectMateria.innerHTML = `<option value="">-- Selecione uma Matéria --</option>`;
+        selectDisciplina.innerHTML = `<option value="">-- Selecione uma Disciplina --</option>`;
         selectAluno.innerHTML = `<option value="">-- Selecione um Aluno --</option>`;
 
-        // Matérias da turma
+        // Disciplinas da turma
         let turmaSelecionada = user.turmas.find(t => t.idTurma == idTurma);
-        if (turmaSelecionada?.materias?.length > 0) {
-            turmaSelecionada.materias.forEach(materia => {
+        if (turmaSelecionada?.disciplinas?.length > 0) {
+            turmaSelecionada.disciplinas.forEach(disciplina => {
                 let option = document.createElement("option");
-                option.value = materia.idMateria;
-                option.textContent = materia.nome;
-                selectMateria.appendChild(option);
+                option.value = disciplina.idDisciplina;
+                option.textContent = disciplina.nome;
+                selectDisciplina.appendChild(option);
             });
         }
     }
 
-    // Evento: Quando selecionar uma matéria
-    selectMateria.addEventListener("change", async () => {
-        let idMateria = selectMateria.value;
+    // Evento: Quando selecionar uma disciplina
+    selectDisciplina.addEventListener("change", async () => {
+        let idDisciplina = selectDisciplina.value;
 
         // Limpa o select de alunos
         selectAluno.innerHTML = `<option value="">-- Selecione um Aluno --</option>`;
 
-        if (!idMateria) return;
+        if (!idDisciplina) return;
 
-        // Buscar alunos da turma e matéria selecionada
+        // Buscar alunos da turma e disciplina selecionada
         try {
-            // let response = await fetch(`http://localhost:3000/materias/${idMateria}/participantes/${idTurma}`);
-            let response = await fetch(`http://localhost:3000/turmas/${idTurma}/materia/${idMateria}/participantes`);
-            if (!response.ok) throw new Error("Erro ao buscar alunos da turma e matéria");
+            // let response = await fetch(`http://localhost:3000/disciplinas/${idDisciplina}/participantes/${idTurma}`);
+            let response = await fetch(`http://localhost:3000/turmas/${idTurma}/disciplina/${idDisciplina}/participantes`);
+            if (!response.ok) throw new Error("Erro ao buscar alunos da turma e disciplina");
 
             let alunos = await response.json();
-            console.log("Alunos da turma e matéria:", alunos);
+            console.log("Alunos da turma e disciplina:", alunos);
             alunos
                 .filter(a => a.tipo === "aluno")
                 .sort((a, b) => a.nome.localeCompare(b.nome))
@@ -416,11 +416,11 @@ async function tabelaNotasProfessor(idTurma) {
     });
 
     // Montar estrutura na tela
-    ddTurmas.appendChild(materiaWrapper);
+    ddTurmas.appendChild(disciplinaWrapper);
     ddTurmas.appendChild(alunoWrapper);
 
-    materiaWrapper.appendChild(labelMateria);
-    materiaWrapper.appendChild(selectMateria);
+    disciplinaWrapper.appendChild(labelDisciplina);
+    disciplinaWrapper.appendChild(selectDisciplina);
 
     alunoWrapper.appendChild(labelAluno);
     alunoWrapper.appendChild(selectAluno);
@@ -430,18 +430,18 @@ async function tabelaNotasProfessor(idTurma) {
         let idAluno = selectAluno.value;
         if (idAluno) {
             try {
-                let idMateria = selectMateria.value;
-                console.log(`ID do aluno: ${idAluno}, ID da matéria: ${idMateria}, ID da turma: ${idTurma}`);
-                // let response = await fetch(`http://localhost:3000/notas-aluno/${idAluno}/${idMateria}/${idTurma}`);
+                let idDisciplina = selectDisciplina.value;
+                console.log(`ID do aluno: ${idAluno}, ID da disciplina: ${idDisciplina}, ID da turma: ${idTurma}`);
+                // let response = await fetch(`http://localhost:3000/notas-aluno/${idAluno}/${idDisciplina}/${idTurma}`);
                 let response = await fetch(
-                    `http://localhost:3000/notas/aluno/${idAluno}/materia/${idMateria}/turma/${idTurma}`
+                    `http://localhost:3000/notas/aluno/${idAluno}/disciplina/${idDisciplina}/turma/${idTurma}`
                 );
                 if (!response.ok) throw new Error("Erro ao buscar notas do aluno");
                 let dados = await response.json();
                 // Aqui você pode chamar a função para exibir as notas do aluno
                 console.log("Notas do aluno:", dados);
-                let nomeMateria = selectMateria.options[selectMateria.selectedIndex].textContent;
-                exibirNotasAlunoP(dados, nomeMateria);
+                let nomeDisciplina = selectDisciplina.options[selectDisciplina.selectedIndex].textContent;
+                exibirNotasAlunoP(dados, nomeDisciplina);
             } catch (err) {
                 console.error("Erro ao buscar notas do aluno:", err);
                 alert("Erro ao buscar notas do aluno. Tente novamente mais tarde.");
@@ -463,12 +463,12 @@ async function exibirTodasNotas(dados) {
     // Limpa o corpo da tabela antes de popular
     tbody.innerHTML = "";
 
-    // Agrupa por matéria
-    const materias = {};
+    // Agrupa por disciplina
+    const disciplinas = {};
 
-    dados.forEach(({ nomeMateria, bimestre, nota }) => {
-        if (!materias[nomeMateria]) {
-            materias[nomeMateria] = {
+    dados.forEach(({ nomeDisciplina, bimestre, nota }) => {
+        if (!disciplinas[nomeDisciplina]) {
+            disciplinas[nomeDisciplina] = {
                 '1º Bimestre': 0,
                 '2º Bimestre': 0,
                 '3º Bimestre': 0,
@@ -476,8 +476,8 @@ async function exibirTodasNotas(dados) {
             };
         }
 
-        if (bimestre && materias[nomeMateria].hasOwnProperty(bimestre)) {
-            materias[nomeMateria][bimestre] = parseFloat(nota);
+        if (bimestre && disciplinas[nomeDisciplina].hasOwnProperty(bimestre)) {
+            disciplinas[nomeDisciplina][bimestre] = parseFloat(nota);
         }
     });
 
@@ -489,16 +489,16 @@ async function exibirTodasNotas(dados) {
         '4º Bimestre': 0
     };
 
-    const qtdMaterias = Object.keys(materias).length;
+    const qtdDisciplinas = Object.keys(disciplinas).length;
 
     // Preenche cada linha da tabela com os dados agrupados
-    for (const [nomeMateria, bimestres] of Object.entries(materias)) {
+    for (const [nomeDisciplina, bimestres] of Object.entries(disciplinas)) {
         const linha = document.createElement("tr");
 
-        const tdMateria = document.createElement("td");
-        tdMateria.style.textAlign = "left";
-        tdMateria.innerHTML = `<div>${nomeMateria}</div><div></div>`;
-        linha.appendChild(tdMateria);
+        const tdDisciplina = document.createElement("td");
+        tdDisciplina.style.textAlign = "left";
+        tdDisciplina.innerHTML = `<div>${nomeDisciplina}</div><div></div>`;
+        linha.appendChild(tdDisciplina);
 
         let soma = 0, qtdNotas = 0;
 
@@ -527,18 +527,18 @@ async function exibirTodasNotas(dados) {
 
     for (let i = 1; i <= 4; i++) {
         let bimestre = `${i}º Bimestre`;
-        let mediaBimestre = qtdMaterias > 0 ? somasBimestres[bimestre] / qtdMaterias : 0;
+        let mediaBimestre = qtdDisciplinas > 0 ? somasBimestres[bimestre] / qtdDisciplinas : 0;
         colunas[i].textContent = mediaBimestre.toFixed(2);
     }
 
     // Média final geral (de todos os bimestres)
     let somaTodas = Object.values(somasBimestres).reduce((a, b) => a + b, 0);
-    let mediaFinalGeral = qtdMaterias > 0 ? somaTodas / (qtdMaterias * 4) : 0;
+    let mediaFinalGeral = qtdDisciplinas > 0 ? somaTodas / (qtdDisciplinas * 4) : 0;
     colunas[5].textContent = mediaFinalGeral.toFixed(2);
 }
 
 
-// async function exibirNotasAlunoA(dados, nomeMateria) {
+// async function exibirNotasAlunoA(dados, nomeDisciplina) {
 //     let tabela = document.querySelector(".fl-table");
 //     if (!tabela) return console.error("Tabela não encontrada!");
 
@@ -569,7 +569,7 @@ async function exibirTodasNotas(dados) {
 //     if (celulas[0]) {
 //         let divs = celulas[0].querySelectorAll("div");
 //         if (divs.length > 0) {
-//             divs[0].textContent = nomeMateria;
+//             divs[0].textContent = nomeDisciplina;
 //         }
 //     }
 
@@ -634,7 +634,7 @@ async function carregarDropdownTurmas(tabela) {
 document.addEventListener("DOMContentLoaded", async function () {
     console.log(user);
 
-    // Notas aluno por matéria
+    // Notas aluno por disciplina
     let mainNotas = document.querySelector(".main-notas");
     if (mainNotas) {
         if (user.tipo === "aluno") {
@@ -667,14 +667,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                     let idTurma = selectTurma.value;
                     if (idTurma === "") {
                         flTable.style.display = "none"; // Esconde a tabela se nenhuma turma for selecionada
-                        let dropdownMaterias = document.querySelector("#materiaSelect");
-                        if (dropdownMaterias) dropdownMaterias.parentElement.remove(); // Remove o dropdown de matérias
+                        let dropdownDisciplinas = document.querySelector("#disciplinaSelect");
+                        if (dropdownDisciplinas) dropdownDisciplinas.parentElement.remove(); // Remove o dropdown de disciplinas
                         let dropdownAlunos = document.querySelector("#alunoSelect");
                         if (dropdownAlunos) dropdownAlunos.parentElement.remove(); // Remove o dropdown de alunos
                     } else {
                         flTable.style.display = "table"; // Mostra a tabela se uma turma for selecionada
-                        let dropdownMaterias = document.querySelector("#materiaSelect");
-                        if (dropdownMaterias) dropdownMaterias.parentElement.remove(); // Remove o dropdown de matérias duplicado
+                        let dropdownDisciplinas = document.querySelector("#disciplinaSelect");
+                        if (dropdownDisciplinas) dropdownDisciplinas.parentElement.remove(); // Remove o dropdown de disciplinas duplicado
                         let dropdownAlunos = document.querySelector("#alunoSelect");
                         if (dropdownAlunos) dropdownAlunos.parentElement.remove(); // Remove o dropdown de alunos duplicado
                         tabelaNotasProfessor(idTurma);
@@ -689,8 +689,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     let idTurma = selectTurma.value;
                     if (idTurma == "") {
                         flTable.style.display = "none"; // Esconde a tabela se nenhuma turma for selecionada
-                        let dropdownMaterias = document.querySelector(".materiaSelect");
-                        if (dropdownMaterias) dropdownMaterias.remove(); // Remove o dropdown de matérias
+                        let dropdownDisciplinas = document.querySelector(".disciplinaSelect");
+                        if (dropdownDisciplinas) dropdownDisciplinas.remove(); // Remove o dropdown de disciplinas
                         let  dropdownAlunos = document.querySelector(".alunoSelect");
                         if (dropdownAlunos) dropdownAlunos.remove(); // Remove o dropdown de alunos
                     } else if (idTurma)

@@ -70,26 +70,16 @@ async function editarFuncionario(id, token) {
 async function tabelaFuncionarios() {
     let token = localStorage.getItem("token");
     try {
-        // let response = await fetch("http://localhost:3000/funcionarios", {
         let response = await fetch("http://localhost:3000/usuario/funcionarios", {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            headers: { Authorization: `Bearer ${token}` }
         });
 
-        if (!response.ok) {
-            throw new Error("Erro ao buscar os funcionários");
-        }
+        if (!response.ok) throw new Error("Erro ao buscar os funcionários");
         let funcionarios = await response.json();
-        console.log(funcionarios);
 
-        // Seleciona o corpo da tabela
         let tableBody = document.querySelector("#userTable tbody");
-
-        // Limpa o conteúdo existente na tabela
         tableBody.innerHTML = "";
 
-        // Adiciona os funcionários na tabela
         funcionarios.forEach(funcionario => {
             let row = document.createElement("tr");
             row.id = funcionario.idUsuario;
@@ -103,67 +93,64 @@ async function tabelaFuncionarios() {
                 <td class="emailEducacional">${funcionario.email_educacional}</td>
                 <td class="contato">${funcionario.contato}</td>
                 <td>
-                    <button class="btn-edit"><i class="material-icons editBtn">edit</i></button>
-                    <button class="btn-delete"><i class="material-icons deleteBtn">delete</i></button>
+                    <button class="btn-edit"><i class="material-icons">edit</i></button>
+                    <button class="btn-delete"><i class="material-icons">delete</i></button>
                 </td>
             `;
 
-            tableBody.appendChild(row);
-        });
-        // Adiciona evento de clique para o botão de excluir
-        document.addEventListener("click", (event) => {
-            if (event.target.classList.contains("deleteBtn")) {
-                let row = event.target.closest("tr");
-                let id = row.id;
-                if (confirm("Tem certeza que deseja excluir este funcionário?")) {
-                    deleteFuncionario(id, token);
-                }
-            }
-        });
-        // Adiciona evento de clique para o botão de editar
-        document.addEventListener("click", (event) => {
-            if (event.target.classList.contains("editBtn")) {
-                let row = event.target.closest("tr");
-                let id = row.id;
-                console.log("ID do funcionário:", id);
-                // Exibe o diálogo de edição
+            // Botão de editar
+            row.querySelector(".btn-edit").onclick = () => {
                 let dialogOverlay = document.querySelector(".dialog-overlay");
                 dialogOverlay.style.display = "flex";
                 dialogOverlay.classList.add("fade-in");
 
-
-                // Preenche os campos
-                document.querySelector("#editProfessionalName").value = row.querySelector(".nome").textContent;
-                document.querySelector("#editProfessionalJobName").value = row.querySelector(".cargo").textContent;
+                document.querySelector("#editProfessionalName").value = funcionario.nome;
+                document.querySelector("#editProfessionalJobName").value = funcionario.cargo;
 
                 let user = JSON.parse(localStorage.getItem("user"));
-
                 if (user.perfil.permition != 3) {
-                    document.querySelector("#editProfessionalJobName").setAttribute("readonly", "true");
-                    document.querySelector("#editProfessionalJobName").style.backgroundColor = "#e0e0e0";
-                    document.querySelector("#editProfessionalJobName").style.color = "#0000008a";
-                    document.querySelector("#editProfessionalJobName").style.cursor = "not-allowed";
+                    let jobInput = document.querySelector("#editProfessionalJobName");
+                    jobInput.setAttribute("readonly", "true");
+                    jobInput.style.backgroundColor = "#e0e0e0";
+                    jobInput.style.color = "#0000008a";
+                    jobInput.style.cursor = "not-allowed";
                 }
 
-                document.querySelector("#editProfessionalEmail").value = row.querySelector(".email").textContent;
-                document.querySelector("#editProfessionalEducationalEmail").value = row.querySelector(".emailEducacional").textContent;
-                document.querySelector("#editProfessionalContact").value = row.querySelector(".contato").textContent;
-                document.querySelector("#editProfessionalCpf").value = row.querySelector(".cpf").textContent;
-                document.querySelector("#editProfessionalRa").value = row.querySelector(".ra").textContent;
+                document.querySelector("#editProfessionalEmail").value = funcionario.email_pessoal;
+                document.querySelector("#editProfessionalEducationalEmail").value = funcionario.email_educacional;
+                document.querySelector("#editProfessionalContact").value = funcionario.contato;
+                document.querySelector("#editProfessionalCpf").value = funcionario.cpf;
+                document.querySelector("#editProfessionalRa").value = funcionario.RA;
 
-                document.querySelector("#confirmEdit").addEventListener("click", () => {
-                    editarFuncionario(id, token);
-                });
-            }
-            document.addEventListener("click", (event) => {
-                if (event.target.classList.contains("closeBtn") || event.target.id === "closeEditDialog") {
-                    let dialogOverlay = document.querySelector(".dialog-overlay");
-                    if (dialogOverlay) {
-                        dialogOverlay.style.display = "none";
-                        dialogOverlay.classList.remove("fade-in");
+                document.querySelector("#confirmEdit").onclick = () =>
+                    editarFuncionario(funcionario.idUsuario, token);
+            };
+
+            // Botão de excluir
+            row.querySelector(".btn-delete").onclick = async () => {
+                if (confirm("Tem certeza que deseja excluir este funcionário?")) {
+                    try {
+                        await deleteFuncionario(funcionario.idUsuario, token);
+                        alert("Funcionário excluído com sucesso!");
+                        tabelaFuncionarios();
+                    } catch (err) {
+                        console.error("Erro ao excluir funcionário:", err);
+                        alert("Erro ao excluir funcionário. Tente novamente.");
                     }
                 }
-            });
+            };
+
+            tableBody.appendChild(row);
+        });
+
+        document.addEventListener("click", (event) => {
+            if (event.target.classList.contains("closeBtn") || event.target.id === "closeEditDialog") {
+                let dialogOverlay = document.querySelector(".dialog-overlay");
+                if (dialogOverlay) {
+                    dialogOverlay.style.display = "none";
+                    dialogOverlay.classList.remove("fade-in");
+                }
+            }
         });
 
     } catch (error) {
@@ -296,52 +283,53 @@ async function tabelaAlunos() {
                 <td>
                     <button class="btn-edit"><i class="material-icons editBtn">edit</i></button>
                     <button class="btn-delete"><i class="material-icons deleteBtn">delete</i></button>
-
                 </td>
             `;
-            tableBody.appendChild(row);
-        });
-        // Adiciona evento de clique para o botão de excluir
-        document.addEventListener("click", (event) => {
-            if (event.target.classList.contains("deleteBtn")) {
-                let row = event.target.closest("tr");
-                let id = row.id;
+
+            // Adiciona o evento de exclusão
+            row.querySelector(".btn-delete").onclick = async () => {
                 if (confirm("Tem certeza que deseja excluir este aluno?")) {
-                    deleteAluno(id, token);
+                    try {
+                        await deleteAluno(row.id, token);
+                        alert("Aluno excluído com sucesso!");
+                        tabelaAlunos();
+                    } catch (err) {
+                        console.error("Erro ao excluir aluno:", err);
+                        alert("Erro ao excluir aluno. Tente novamente.");
+                    }
                 }
-            }
-        });
-        // Adiciona evento de clique para o botão de editar
-        document.addEventListener("click", (event) => {
-            if (event.target.classList.contains("editBtn")) {
-                let row = event.target.closest("tr");
-                let id = row.id;
-                console.log("ID do aluno:", id);
-                // Exibe o diálogo de edição
+            };
+
+            // Adiciona o evento de edição
+            row.querySelector(".btn-edit").onclick = () => {
                 let dialogOverlay = document.querySelector(".dialog-overlay");
                 dialogOverlay.style.display = "flex";
                 dialogOverlay.classList.add("fade-in");
-                // Preenche os campos
-                document.querySelector("#editStudentName").value = row.querySelector(".nome").textContent;
-                document.querySelector("#editStudentEmail").value = row.querySelector(".email").textContent;
-                document.querySelector("#editStudentEmailEducacional").value = row.querySelector(".emailEducacional").textContent;
-                document.querySelector("#editStudentContact").value = row.querySelector(".contato").textContent;
-                document.querySelector("#editStudentCpf").value = row.querySelector(".cpf").textContent;
-                document.querySelector("#editStudentRa").value = row.querySelector(".ra").textContent;
-                document.querySelector("#confirmEdit").addEventListener("click", () => {
-                    editarAluno(id, token);
-                });
-            }
-            document.addEventListener("click", (event) => {
-                if (event.target.classList.contains("closeBtn") || event.target.id === "closeEditDialog") {
-                    let dialogOverlay = document.querySelector(".dialog-overlay");
-                    if (dialogOverlay) {
-                        dialogOverlay.style.display = "none";
-                        dialogOverlay.classList.remove("fade-in");
-                    }
-                }
-            });
+
+                // Preenche os campos com os dados do aluno
+                document.querySelector("#editStudentName").value = aluno.nome;
+                document.querySelector("#editStudentEmail").value = aluno.email_pessoal;
+                document.querySelector("#editStudentEmailEducacional").value = aluno.email_educacional;
+                document.querySelector("#editStudentContact").value = aluno.contato;
+                document.querySelector("#editStudentCpf").value = aluno.cpf;
+                document.querySelector("#editStudentRa").value = aluno.ra;
+
+                document.querySelector("#confirmEdit").onclick = () => editarAluno(aluno.idUsuario, token);
+            };
+
+            tableBody.appendChild(row);
         });
+
+        document.addEventListener("click", (event) => {
+            if (event.target.classList.contains("closeBtn") || event.target.id === "closeEditDialog") {
+                let dialogOverlay = document.querySelector(".dialog-overlay");
+                if (dialogOverlay) {
+                    dialogOverlay.style.display = "none";
+                    dialogOverlay.classList.remove("fade-in");
+                }
+            }
+        });
+
     } catch (error) {
         console.error(error);
         alert("Erro ao carregar os alunos.");
@@ -454,23 +442,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     let sideMenuContent = document.querySelector(".side-menu-content");
     if (sideMenuContent) {
         let urlParams = new URLSearchParams(window.location.search);
-        let idAMateria = urlParams.get("idM");
+        let idDisciplina = urlParams.get("idD");
         let idTurma = urlParams.get("idT");
 
         sideMenuContent.innerHTML = `
             <a class="side-menu-link" id="toggle-menu">
                 <i class="material-icons">menu</i>
             </a>
-            <a href="../content-page/content-page.html?idM=${idAMateria}&idT=${idTurma}" class="side-menu-link">
+            <a href="../content-page/content-page.html?idD=${idDisciplina}&idT=${idTurma}" class="side-menu-link">
                 <i class="material-icons">home</i> <span>Inicio</span>
             </a>
-            <a href="materias.html?idM=${idAMateria}&idT=${idTurma}" class="side-menu-link">
-                <i class="material-icons">menu_book</i> <span>Matérias</span>
+            <a href="disciplinas.html?idD=${idDisciplina}&idT=${idTurma}" class="side-menu-link">
+                <i class="material-icons">menu_book</i> <span>Disciplinas</span>
             </a>
-            <a href="participantes.html?idM=${idAMateria}&idT=${idTurma}" class="side-menu-link">
+            <a href="participantes.html?idD=${idDisciplina}&idT=${idTurma}" class="side-menu-link">
                 <i class="material-icons">group</i> <span>Turma</span>
             </a>
-            <a href="notas-materia.html?idM=${idAMateria}&idT=${idTurma}" class="side-menu-link">
+            <a href="notas-disciplina.html?idD=${idDisciplina}&idT=${idTurma}" class="side-menu-link">
                 <i class="material-icons">grading</i> <span>Notas</span>
             </a>`;
     }
@@ -518,7 +506,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let listAluno = document.querySelector("#aluno-list");
     if (listAluno) {
-        console.log("sdakhnasjkbasjkdbsaj");
         tabelaAlunos();
     }
 });

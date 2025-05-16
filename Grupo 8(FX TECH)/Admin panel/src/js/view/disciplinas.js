@@ -27,7 +27,7 @@ async function carregarTurmas() {
         item.addEventListener('click', () => {
             selected.textContent = `${turma.nome} - ${turma.anoLetivo}`;
             list.style.display = 'none';
-            carregarMateriasTurma(turma.materias, turma.idTurma);
+            carregarDisciplinasTurma(turma.disciplinas, turma.idTurma);
         });
         list.appendChild(item);
     });
@@ -47,12 +47,12 @@ async function carregarTurmas() {
     wrapper.appendChild(list);
     listaTurmas.appendChild(wrapper);
 
-    // Carrega matérias da primeira turma
-    carregarMateriasTurma(turmas[0].materias, turmas[0].idTurma);
+    // Carrega disciplinas da primeira turma
+    carregarDisciplinasTurma(turmas[0].disciplinas, turmas[0].idTurma);
 }
 
 
-function carregarMateriasTurma(materias, idTurma) {
+function carregarDisciplinasTurma(disciplinas, idTurma) {
     console.log("ID da turma:", idTurma);
     let listaDisciplinas = document.querySelector('.list-disciplinas');
     if (!listaDisciplinas) {
@@ -62,12 +62,12 @@ function carregarMateriasTurma(materias, idTurma) {
 
     listaDisciplinas.innerHTML = ""; // Limpa antes
 
-    materias.forEach(materia => {
+    disciplinas.forEach(disciplina => {
         let link = document.createElement("a");
         link.classList.add("disciplinas");
-        link.id = materia.idMateria;
-        link.href = `atividades-materia.html?idM=${materia.idMateria}&idT=${idTurma}`;
-        link.textContent = materia.nome;
+        link.id = disciplina.idDisciplina;
+        link.href = `atividades-disciplina.html?idD=${disciplina.idDisciplina}&idT=${idTurma}`;
+        link.textContent = disciplina.nome;
 
         listaDisciplinas.appendChild(link);
     });
@@ -75,7 +75,7 @@ function carregarMateriasTurma(materias, idTurma) {
 
 document.addEventListener("DOMContentLoaded", () => {
     carregarTurmas();
-    // carregarMaterias();
+    // carregarDisciplinas();
 
     console.log("Token:", token);
     console.log("User:", user);

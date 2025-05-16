@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Horizon</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../../styles/aside.css" />
+    <link rel="stylesheet" href="../../styles/header.css" />
+    <link rel="stylesheet" href="../../styles/icons.css" />
+    <link rel="stylesheet" href="../../styles/main.css" />
+    <link rel="stylesheet" href="../../styles/style.css" />
+    <link rel="stylesheet" href="../../styles/drawer.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+    <style>
+        .button-back {
+            border: none;
+            border-radius: 6px;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            justify-items: center;
+            cursor: pointer;
+            color: #324960;
+        }
+
+        .button-back:hover {
+            opacity: 0.5;
+            /* Ajuste a opacidade para 50% ao passar o mouse */
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <button class="button-back" onclick="window.location.href='../content-page/content-page.html'">
+            <i data-lucide="arrow-big-left-dash"></i>
+        </button>
+        Painel de Gerenciamento
+    </header>
+    <div class="container" id="class-list">
+        <div class="navbar">
+            <ul class="navbar-nav">
+                <li class="logo">
+                    <a href="#" class="nav-link">
+                        <span class="link-text logo-text">Horizon</span>
+                        <i data-lucide="square-menu"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="user-list.html" class="nav-link">
+                        <i data-lucide="user"></i>
+                        <span class="link-text">Listagem de Alunos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="professional-list.html" class="nav-link">
+                        <i data-lucide="briefcase"></i>
+                        <span class="link-text">Listagem de Profissionais</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="class-list.html" class="nav-link">
+                        <i data-lucide="book"></i>
+                        <span class="link-text">Listagem de Turmas</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <aside class="asside-content">
+            <nav>
+                <ul>
+                    <li>
+                        <a href="./user-list.html" class="nav-aside-link">
+                            <i data-lucide="user"></i>
+                            Listagem de Alunos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./professional-list.html" class="nav-aside-link">
+                            <i data-lucide="briefcase"></i>
+                            Listagem de Profissionais
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./class-list.html" class="nav-aside-link">
+                            <i data-lucide="book"></i>
+                            Listagem de Turmas
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <main>
+            <div class="q-card">
+                <div class="q-card-section bg-grey">
+                    <span class="screenTitle">Listagem de Turmas</span>
+                    <hr />
+                </div>
+                <div class="q-card-section">
+                    <div class="row">
+                        <div class="col col-xs-6 col-md-6 col-lg-6 filter-table">
+                            <div class="flex column">
+                                <label>Ra:</label>
+                                <input id="raInput" placeholder="Ra..." class="input" />
+                            </div>
+                            <div class="flex column">
+                                <label>Nome:</label>
+                                <input id="nameInput" placeholder="Nome..." class="input" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 10px">
+                    <table class="fl-table" id="userTable">
+                        <thead>
+                            <tr>
+                                <th>NOME</th>
+                                <th>ANO LETIVO</th>
+                                <th>NÍVEL</th>
+                                <th>QTD. PARTICIPANTES</th>
+                                <th>DISCIPLINAS</th>
+                                <th>OPÇÕES</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot id="tableFootContent"></tfoot>
+                    </table>
+                </div>
+        </main>
+        <!-- Modal para exibir disciplinas -->
+        <div id="disciplinasModal" class="dialog-overlay" style="display: none;">
+            <div class="dialog-box" style="min-width: 60%; min-height: auto;">
+                <div class="q-card-section bg-grey">
+                    <span class="screenTitle">Gerenciar Disciplinas da Turma</span>
+                    <hr />
+                </div>
+                <div class="q-card-section">
+                    <div class="row row-disciplinas" style="display: flex; gap: 40px;">
+                        <div class="col col-xs-6">
+                            <h4>Disciplinas da Turma</h4>
+                            <ul id="disciplinasTurma" class="disc-lista"></ul>
+                        </div>
+                        <div style="border-left: 2px solid #ccc; height: auto;"></div>
+                        <div class="col col-xs-6">
+                            <h4>Disciplinas Disponíveis</h4>
+                            <ul id="disciplinasDisponiveis" class="disc-lista"></ul>
+                        </div>
+                    </div>
+                    <button class="btn-success flex items-center gap-sm btn-disciplina-modal"><i data-lucide="save" style="width: 20px" disabled></i>Salvar</button>
+                </div>
+                <hr />
+                <div class="q-card-section flex justify-end">
+                    <button class="btn-danger flex items-center gap-sm" id="closeDisciplinasModal">
+                        <i data-lucide="x" style="width: 20px"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Modal para exibir participantes -->
+        <div id="participantesModal" class="dialog-overlay" style="display: none;">
+            <div class="dialog-box" style="min-width: 20%; min-height: auto;">
+                <div class="q-card-section bg-grey">
+                    <span class="screenTitle">Participantes</span>
+                    <hr />
+                </div>
+                <div class="q-card-section">
+                    <div class="row">
+                        <div class="col col-xs-12">
+                            <ul id="participantesList">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="q-card-section flex justify-end">
+                    <button class="btn-danger flex items-center gap-sm" id="closeParticipantesModal">
+                        <i data-lucide="x" style="width: 20px"></i>
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diálogo completo para edição -->
+        <div id="editDialog" class="dialog-overlay">
+            <div class="dialog-box" style="min-width: 90%; min-height: auto">
+                <div class="q-card-section bg-grey">
+                    <span class="screenTitle">Editar Turma</span>
+                    <hr />
+                </div>
+                <div class="q-card-section">
+                    <div class="row">
+                        <div class="col col-xs-6 col-md-4 col-lg-3">
+                            <div class="flex column">
+                                <label for="editClassName">Nome da Turma:</label>
+                                <input placeholder="Nome da Turma..." class="input" id="editClassName" />
+                            </div>
+                        </div>
+                        <div class="col col-xs-6 col-md-4 col-lg-3">
+                            <div class="flex column">
+                                <label for="editClassLevel">Nível:</label>
+                                <input placeholder="Nível..." class="input" id="editClassLevel" />
+                            </div>
+                        </div>
+                        <div class="col col-xs-6 col-md-4 col-lg-3">
+                            <div class="flex column">
+                                <label for="editClassYear">Ano Letivo:</label>
+                                <select class="input" id="editClassYear">
+                                    <option value="" disabled selected>Selecione o Ano Letivo...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="q-card-section flex justify-between">
+                        <div>
+                            <button class="btn-danger flex items-center gap-sm closeBtn" id="closeEditDialog">
+                                <i data-lucide="ban" style="width: 20px"></i>
+                                Cancelar
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn-success flex items-center gap-sm" id="confirmEdit">
+                                <i data-lucide="save" style="width: 20px"></i>
+                                Salvar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script src="../../js/view/turmas.js"></script>
+</body>
+
+</html>

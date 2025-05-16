@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/atividades/aluno', AtividadesController.enviarAtividade);
 router.post('/atividades', AtividadesController.cadastrarAtividade);
-router.get('/atividades/materia/:idMateria/turma/:idT', AtividadesController.buscarAtividadesMateriasTurmas);
+router.get('/atividades/disciplina/:idDisciplina/turma/:idT', AtividadesController.buscarAtividadesDisciplinasTurmas);
 router.get('/atividades/:id', AtividadesController.buscarAtividade);
 router.delete('/atividades/:id', AtividadesController.excluirAtividade);
 router.put('/atividades/:id', AtividadesController.atualizarAtividade);
