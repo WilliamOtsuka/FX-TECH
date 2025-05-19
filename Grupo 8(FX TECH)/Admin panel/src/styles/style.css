@@ -220,15 +220,27 @@
   border-radius: 8px;
 }
 
+.inputProfessional {
+  font-weight: 500;
+  letter-spacing: 0.00937em;
+  border: none;
+  background: #eeeeee;
+  color: rgba(0, 0, 0, 0.87);
+  padding: 12px 10px 12px 10px;
+  width: 270px;
+  margin: 10px;
+  outline: 0 !important;
+  border-radius: 8px;
+}
+
 .jobSelect {
   font-weight: 500;
   letter-spacing: 0.00937em;
   border: none;
   background: #eeeeee;
   color: rgba(0, 0, 0, 0.87);
-  padding: 12px 0px;
-  padding-left: 10px;
-  width: 100%;
+  padding: 12px 10px 12px 10px;
+  width: 270px;
   outline: 0 !important;
   border-radius: 8px;
 }

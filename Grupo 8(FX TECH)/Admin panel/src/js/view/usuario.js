@@ -165,7 +165,6 @@ function aplicarFiltrosProfessor() {
     let jobValue = document.getElementById("jobInput").value.toLowerCase();
 
     let tableRows = document.querySelectorAll("#userTable tbody tr");
-
     tableRows.forEach((row) => {
         let raCell = row.querySelector(".ra");     // Use classe, não ID duplicado
         let nameCell = row.querySelector(".nome");
@@ -182,6 +181,27 @@ function aplicarFiltrosProfessor() {
         }
     });
 }
+
+function aplicarFiltrosAluno() {
+    let raValue = document.getElementById("raInput").value.replace(/\D/g, "").slice(0, 9).toLowerCase();
+    let nameValue = document.getElementById("nameInput").value.toLowerCase();
+
+    let tableRows = document.querySelectorAll("#userTable tbody tr");
+    tableRows.forEach((row) => {
+        let raCell = row.querySelector(".ra");
+        let nameCell = row.querySelector(".nome");
+       
+        let raMatch = !raValue || (raCell && raCell.textContent.toLowerCase().includes(raValue));
+        let nameMatch = !nameValue || (nameCell && nameCell.textContent.toLowerCase().includes(nameValue));
+        
+        if (raMatch && nameMatch) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
 
 async function deleteAluno(id, token) {
     try {
@@ -210,9 +230,13 @@ async function editarAluno(id, token) {
     let emailEducacional = document.querySelector("#editStudentEmailEducacional").value;
     let contato = document.querySelector("#editStudentContact").value;
     let cpf = document.querySelector("#editStudentCpf").value;
+    let endereco = document.querySelector("#editStudentAddress").value;
+    let pai = document.querySelector("#editStudentFather").value;
+    let mae = document.querySelector("#editStudentMother").value;
+    let data_nascimento = document.querySelector("#editStudentBirthDate").value;
     let ra = document.querySelector("#editStudentRa").value;
 
-    if (!nome || !email || !contato || !cpf || !ra) {
+    if (!nome || !email || !contato || !cpf || !ra || !endereco || !data_nascimento || !pai || !mae) {
         alert("Por favor, preencha todos os campos.");
         return;
     }
@@ -223,9 +247,12 @@ async function editarAluno(id, token) {
         email_educacional: emailEducacional,
         contato,
         cpf,
+        data_nascimento,
+        pai,
+        mae,
+        endereco,
         ra
     }
-
     try {
         let response = await fetch(`http://localhost:3000/usuario/aluno/${id}`, {
             method: "PUT",
@@ -247,6 +274,30 @@ async function editarAluno(id, token) {
         alert("Erro ao atualizar o aluno.");
     }
 }
+
+function formatarData(data) {
+    if (!data) return "";
+    // Tenta converter para Date
+    let dateObj = new Date(data);
+    if (isNaN(dateObj.getTime())) return data; // Retorna original se inválido
+
+    let dia = String(dateObj.getDate()).padStart(2, "0");
+    let mes = String(dateObj.getMonth() + 1).padStart(2, "0");
+    let ano = dateObj.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}
+
+function formatarDataEdit(data) {
+    if (!data) return "";
+    let dateObj = new Date(data);
+    if (isNaN(dateObj.getTime())) return ""; // Evita erro se a data for inválida
+
+    let ano = dateObj.getFullYear();
+    let mes = String(dateObj.getMonth() + 1).padStart(2, "0");
+    let dia = String(dateObj.getDate()).padStart(2, "0");
+    return `${ano}-${mes}-${dia}`;
+}
+
 
 async function tabelaAlunos() {
     let token = localStorage.getItem("token");
@@ -271,6 +322,7 @@ async function tabelaAlunos() {
         // Adiciona os alunos na tabela
         alunos.forEach(aluno => {
             let row = document.createElement("tr");
+
             row.id = aluno.idUsuario;
 
             row.innerHTML = `
@@ -280,6 +332,10 @@ async function tabelaAlunos() {
                 <td class="email">${aluno.email_pessoal}</td>
                 <td class="email-educacional">${aluno.email_educacional}</td>
                 <td class="contato">${aluno.contato}</td>
+                <td class="data-nascimento">${formatarData(aluno.data_nascimento)}</td>
+                <td class="pai">${aluno.pai}</td>
+                <td class="mae">${aluno.mae}</td>
+                <td class="endereco">${aluno.endereco}</td>
                 <td>
                     <button class="btn-edit"><i class="material-icons editBtn">edit</i></button>
                     <button class="btn-delete"><i class="material-icons deleteBtn">delete</i></button>
@@ -313,7 +369,10 @@ async function tabelaAlunos() {
                 document.querySelector("#editStudentContact").value = aluno.contato;
                 document.querySelector("#editStudentCpf").value = aluno.cpf;
                 document.querySelector("#editStudentRa").value = aluno.ra;
-
+                document.querySelector("#editStudentAddress").value = aluno.endereco;
+                document.querySelector("#editStudentFatherName").value = aluno.pai;
+                document.querySelector("#editStudentMotherName").value = aluno.mae;
+                document.querySelector("#editStudentBirthDate").value = formatarDataEdit(aluno.data_nascimento);
                 document.querySelector("#confirmEdit").onclick = () => editarAluno(aluno.idUsuario, token);
             };
 
@@ -507,5 +566,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     let listAluno = document.querySelector("#aluno-list");
     if (listAluno) {
         tabelaAlunos();
+
+        raInput.addEventListener("input", () => {
+            raInput.value = raInput.value.replace(/\D/g, "").slice(0, 9); // manter limitação
+            aplicarFiltrosAluno();
+        });
+
+        nameInput.addEventListener("input", aplicarFiltrosAluno);
     }
 });

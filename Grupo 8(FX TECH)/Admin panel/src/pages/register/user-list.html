@@ -105,16 +105,20 @@
             <div class="col col-xs-6 col-md-6 col-lg-6">
               <div class="flex column">
                 <label>Ra:</label>
-                <input placeholder="Ra..." class="input" />
+                <input id="raInput" placeholder="Ra..." class="input" />
               </div>
             </div>
-            <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
-              <button class="btn" style="margin-right: 5px" id="addStudent">
-                <i data-lucide="plus"></i>
-              </button>
-              <button class="btn" type="button">
-                <i data-lucide="search"></i>
-              </button>
+            <div class="col col-xs-6 col-md-6 col-lg-6">
+              <div class="flex column">
+                <label>Nome:</label>
+                <input id="nameInput" placeholder="Nome..." class="input" />
+              </div>
+
+              <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
+                <button class="btn" style="margin-right: 5px" id="addStudent">
+                  <i data-lucide="plus"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -142,95 +146,96 @@
       </div>
     </main>
 
-  <!-- Diálogo completo para edição -->
-  <div id="editDialog" class="dialog-overlay">
-    <div class="dialog-box" style="min-width: 90%; min-height: auto">
-      <div class="q-card-section bg-grey">
-        <span class="screenTitle">Editar Aluno</span>
+    <!-- Diálogo completo para edição -->
+    <div id="editDialog" class="dialog-overlay">
+      <div class="dialog-box" style="min-width: 90%; min-height: auto">
+        <div class="q-card-section bg-grey">
+          <span class="screenTitle">Editar Aluno</span>
+          <hr />
+        </div>
+        <div class="q-card-section">
+          <div class="row">
+            <div class="col col-xs-6 col-md-4 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentName">Nome:</label>
+                <input placeholder="Nome..." class="input" id="editStudentName" />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentEmail">E-mail:</label>
+                <input placeholder="E-mail..." class="input" type="email" id="editStudentEmail" />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentEmailEducacional">E-mail Educacional:</label>
+                <input placeholder="E-mail Educacional..." class="input" type="email"
+                  id="editStudentEmailEducacional" />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentFatherName">Nome pai:</label>
+                <input placeholder="Nome pai..." class="input" id="editStudentFatherName" />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentMotherName">Nome mãe:</label>
+                <input placeholder="Nome mãe..." class="input" id="editStudentMotherName" />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentContact">Contato:</label>
+                <input placeholder="Contato..." class="input" id="editStudentContact" maxlength="15" />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentBirthDate">Data nascimento:</label>
+                <input placeholder="Data nascimento" type="date" class="input" id="editStudentBirthDate" />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-6 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentCpf">Cpf:</label>
+                <input placeholder="CPF" class="input" id="editStudentCpf" maxlength="14" />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-6 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentRa">RA:</label>
+                <input placeholder="RA" class="input" id="editStudentRa" maxlength="14" />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-6 col-lg-3">
+              <div class="flex column">
+                <label for="editStudentAddress">Endereço:</label>
+                <input placeholder="Endereço..." class="input" id="editStudentAddress" />
+              </div>
+            </div>
+          </div>
+        </div>
         <hr />
-      </div>
-      <div class="q-card-section">
-        <div class="row">
-          <div class="col col-xs-6 col-md-4 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentName">Nome:</label>
-              <input placeholder="Nome..." class="input" id="editStudentName" />
-            </div>
+        <div class="q-card-section flex justify-between">
+          <div>
+            <button class="btn-danger flex items-center gap-sm closeBtn" id="closeEditDialog">
+              <i data-lucide="ban" style="width: 20px"></i>
+              Cancelar
+            </button>
           </div>
-          <div class="col col-xs-6 col-md-4 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentEmail">E-mail:</label>
-              <input placeholder="E-mail..." class="input" type="email" id="editStudentEmail" />
-            </div>
+          <div>
+            <button class="btn-success flex items-center gap-sm" id="confirmEdit">
+              <i data-lucide="save" style="width: 20px"></i>
+              Salvar
+            </button>
           </div>
-          <div class="col col-xs-6 col-md-4 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentEmailEducacional">E-mail Educacional:</label>
-              <input placeholder="E-mail Educacional..." class="input" type="email" id="editStudentEmailEducacional" />
-            </div>
-          </div>
-          <div class="col col-xs-6 col-md-4 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentFatherName">Nome pai:</label>
-              <input placeholder="Nome pai..." class="input" id="editStudentFatherName" />
-            </div>
-          </div>
-          <div class="col col-xs-6 col-md-4 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentMotherName">Nome mãe:</label>
-              <input placeholder="Nome mãe..." class="input" id="editStudentMotherName" />
-            </div>
-          </div>
-          <div class="col col-xs-6 col-md-4 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentContact">Contato:</label>
-              <input placeholder="Contato..." class="input" id="editStudentContact" maxlength="15" />
-            </div>
-          </div>
-          <div class="col col-xs-6 col-md-4 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentBirthDate">Data nascimento:</label>
-              <input placeholder="Data nascimento" type="date" class="input" id="editStudentBirthDate" />
-            </div>
-          </div>
-          <div class="col col-xs-6 col-md-6 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentCpf">Cpf:</label>
-              <input placeholder="CPF" class="input" id="editStudentCpf" maxlength="14" />
-            </div>
-          </div>
-          <div class="col col-xs-6 col-md-6 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentRa">RA:</label>
-              <input placeholder="RA" class="input" id="editStudentRa" maxlength="14" />
-            </div>
-          </div>
-          <div class="col col-xs-6 col-md-6 col-lg-3">
-            <div class="flex column">
-              <label for="editStudentAddress">Endereço:</label>
-              <input placeholder="Endereço..." class="input" id="editStudentAddress" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr />
-      <div class="q-card-section flex justify-between">
-        <div>
-          <button class="btn-danger flex items-center gap-sm closeBtn" id="closeEditDialog">
-            <i data-lucide="ban" style="width: 20px"></i>
-            Cancelar
-          </button>
-        </div>
-        <div>
-          <button class="btn-success flex items-center gap-sm" id="confirmEdit">
-            <i data-lucide="save" style="width: 20px"></i>
-            Salvar
-          </button>
         </div>
       </div>
     </div>
-  </div>
-  <script src="../../js/view/usuario.js"></script>
+    <script src="../../js/view/usuario.js"></script>
 </body>
 
 </html>

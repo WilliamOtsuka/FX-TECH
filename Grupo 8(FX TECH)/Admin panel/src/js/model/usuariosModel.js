@@ -156,21 +156,31 @@ class Usuarios {
 
     static async listarAlunos() {
         let [rows] = await db.query(`
-            SELECT u.email_pessoal, u.email_educacional, a.idAluno, u.nome, u.ra, u.cpf, u.contato, u.idUsuario
+            SELECT u.email_pessoal, u.email_educacional, a.idAluno, u.nome, u.ra, u.cpf, u.contato, u.endereco, a.pai, a.mae, u.data_nascimento, u.idUsuario
             FROM alunos a
             JOIN usuarios u ON a.idAluno = u.idReferencia AND u.tipo = 'aluno'
             ORDER BY u.nome ASC
         `);
         return rows;
     }
-
-    static async atualizarAluno(id, { nome, RA, email_pessoal, cpf, contato }) {
+    
+    static async atualizarAluno(id, { nome, RA, email_pessoal, email_educacional, cpf, contato, endereco, pai, mae, data_nascimento }) {
         let [result] = await db.query(`
             UPDATE usuarios u
             JOIN alunos a ON u.idReferencia = a.idAluno AND u.tipo = 'aluno'
-            SET u.nome = ?, u.ra = ?, u.email_pessoal = ?, u.contato = ?, u.cpf = ?
+            SET 
+                u.nome = ?, 
+                u.ra = ?, 
+                u.email_pessoal = ?, 
+                u.email_educacional = ?, 
+                u.contato = ?, 
+                u.cpf = ?, 
+                u.endereco = ?, 
+                u.data_nascimento = ?, 
+                a.pai = ?, 
+                a.mae = ?
             WHERE u.idUsuario = ?
-        `, [nome, RA, email_pessoal, contato, cpf, id]);
+        `, [nome, RA, email_pessoal, email_educacional, contato, cpf, endereco, data_nascimento, pai, mae, id]);
         return result.affectedRows > 0;
     }
 
