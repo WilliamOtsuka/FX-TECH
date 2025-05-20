@@ -190,10 +190,10 @@ function aplicarFiltrosAluno() {
     tableRows.forEach((row) => {
         let raCell = row.querySelector(".ra");
         let nameCell = row.querySelector(".nome");
-       
+
         let raMatch = !raValue || (raCell && raCell.textContent.toLowerCase().includes(raValue));
         let nameMatch = !nameValue || (nameCell && nameCell.textContent.toLowerCase().includes(nameValue));
-        
+
         if (raMatch && nameMatch) {
             row.style.display = "";
         } else {
@@ -479,7 +479,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let container = document.querySelector(".container-card-section");
     let user = JSON.parse(localStorage.getItem("user"));
 
-    console.log("user", user);
+    console.log("User", user);
     if (container && user?.perfil?.permition > 1) {
         let card = document.createElement("div");
         card.className = "q-card options-card";

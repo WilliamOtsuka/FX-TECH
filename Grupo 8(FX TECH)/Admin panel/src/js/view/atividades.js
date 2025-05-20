@@ -4,7 +4,6 @@ let idTurma = urlParams.get('idT');
 
 let user = JSON.parse(localStorage.getItem("user"));
 let token = localStorage.getItem("token");
-console.log("User:", user);
 
 function ajustarCamposPorTipo(tipoSelecionado) {
     let dataInput = document.getElementById("data");
@@ -165,6 +164,8 @@ function formatarHora(horaISO) {
 }
 
 async function carregarAtividades() {
+    localStorage.setItem("idTurma", idTurma);
+    localStorage.setItem("idDisciplina", idDisciplina);
     try {
         // Busca as atividades da turma e disciplina
         // let response = await fetch(`http://localhost:3000/disciplinas/${idDisciplina}/atividades/${idTurma}`);
@@ -798,7 +799,7 @@ async function carregarAtividade(idAtividade) {
 
         let respostaContainer = document.getElementById('resposta-container');
         if (respostaContainer && user.tipo === "aluno") {
-            if(resposta.descricaoAluno === null) {
+            if (resposta.descricaoAluno === null) {
                 resposta.descricaoAluno = "Nenhuma descrição fornecida."
             }
             respostaContainer.innerHTML = resposta
@@ -885,7 +886,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (backarrow) {
         backarrow.addEventListener('click', function (e) {
             e.preventDefault();
-            window.location.href = `./atividades-disciplina.html?idD=${user.turmas[0].disciplinas[0].idDisciplina}&idT=${user.turmas[0].idTurma}`;
+            let idTurma = localStorage.getItem("idTurma");
+            let idDisciplina = localStorage.getItem("idDisciplina");
+            localStorage.getItem("idDisciplina");
+            window.location.href = `./atividades-disciplina.html?idD=${idDisciplina}&idT=${idTurma}`;
         });
     }
 

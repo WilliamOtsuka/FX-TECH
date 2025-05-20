@@ -7,7 +7,7 @@ class Notas {
                 SELECT 
                     ae.idAluno,
                     a.titulo AS nomeAtividade,
-                    COALESCE(ac.nota, 0) AS nota,
+                    COALESCE(n.nota, 0) AS nota,
                     a.peso,
                     pl.nome AS bimestre,
                     ae.dataEntrega
@@ -18,29 +18,29 @@ class Notas {
                 JOIN periodo_letivo pl 
                     ON pl.idAno_letivo = t.idAno_letivo 
                     AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
-                LEFT JOIN atividades_corrigidas ac 
-                    ON ae.idAtividade = ac.idAtividade AND ae.idAluno = ac.idAluno
+                LEFT JOIN notas n 
+                    ON ae.idAtividade = n.idAtividade AND ae.idAluno = n.idAluno
                 WHERE a.idDisciplina = ? AND ae.idAluno = ?
             )
             UNION
             (
                 SELECT 
-                    ac.idAluno,
+                    n.idAluno,
                     a.titulo AS nomeAtividade,
-                    ac.nota,
+                    n.nota,
                     a.peso,
                     pl.nome AS bimestre,
                     ae.dataEntrega
-                FROM atividades_corrigidas ac
-                JOIN atividades a ON ac.idAtividade = a.idAtividade
+                FROM notas n
+                JOIN atividades a ON n.idAtividade = a.idAtividade
                 JOIN turma_disciplinas td ON a.idDisciplina = td.idDisciplina AND td.idTurma = ?
                 JOIN turmas t ON t.idTurma = td.idTurma
                 JOIN periodo_letivo pl 
                     ON pl.idAno_letivo = t.idAno_letivo 
                     AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
                 LEFT JOIN atividades_entregues ae 
-                    ON ae.idAtividade = ac.idAtividade AND ae.idAluno = ac.idAluno
-                WHERE a.idDisciplina = ? AND ac.idAluno = ?
+                    ON ae.idAtividade = n.idAtividade AND ae.idAluno = n.idAluno
+                WHERE a.idDisciplina = ? AND n.idAluno = ?
             )
             ORDER BY dataEntrega ASC;
         `, [idTurma, idDisciplina, idAluno, idTurma, idDisciplina, idAluno]);
@@ -53,7 +53,7 @@ class Notas {
                 td.idDisciplina,
                 d.nome AS nomeDisciplina,
                 pl.nome AS bimestre,
-                COALESCE(SUM(ac.nota * (a.peso / 100)), 0) AS nota
+                COALESCE(SUM(n.nota * (a.peso / 100)), 0) AS nota
             FROM turma_disciplinas td
             JOIN disciplina d ON d.idDisciplina = td.idDisciplina
             JOIN turmas t ON t.idTurma = td.idTurma
@@ -61,8 +61,8 @@ class Notas {
             LEFT JOIN periodo_letivo pl 
                 ON pl.idAno_letivo = t.idAno_letivo 
                 AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
-            LEFT JOIN atividades_corrigidas ac 
-                ON ac.idAtividade = a.idAtividade AND ac.idAluno = ?
+            LEFT JOIN notas n 
+                ON n.idAtividade = a.idAtividade AND n.idAluno = ?
             WHERE td.idTurma = ?
             GROUP BY td.idDisciplina, d.nome, pl.nome
             ORDER BY nomeDisciplina, bimestre;

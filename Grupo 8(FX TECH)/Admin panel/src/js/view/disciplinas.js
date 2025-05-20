@@ -2,6 +2,9 @@ let token = localStorage.getItem("token");
 let user = JSON.parse(localStorage.getItem("user"));
 
 async function carregarTurmas() {
+    localStorage.removeItem("idTurma");
+    localStorage.removeItem("idDisciplina");
+    
     let turmas = user.turmas;
     let listaTurmas = document.querySelector('.list-turmas');
     if (!listaTurmas) {
@@ -19,7 +22,7 @@ async function carregarTurmas() {
     let list = document.createElement('ul');
     list.classList.add('dropdown-turmas-list');
     list.style.display = 'none';
-
+    
     turmas.forEach(turma => {
         let item = document.createElement('li');
         item.textContent = `${turma.nome} - ${turma.anoLetivo}`;
@@ -75,14 +78,4 @@ function carregarDisciplinasTurma(disciplinas, idTurma) {
 
 document.addEventListener("DOMContentLoaded", () => {
     carregarTurmas();
-    // carregarDisciplinas();
-
-    console.log("Token:", token);
-    console.log("User:", user);
-    // <div class="list-content">
-    //             <i data-lucide="user"></i> Gustavo Althmann
-    //</div>
-    document.querySelector(".user-name").innerHTML = user.perfil.nome;
-    document.querySelector(".user-ra").innerHTML = user.perfil.RA;
-
 });

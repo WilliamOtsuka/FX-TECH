@@ -3,7 +3,7 @@ import db from '../../../connection-db.js';
 class Atividades {
     static async buscarAtividades(idDisciplina, idTurma) {
         let [rows] = await db.query(
-            'SELECT * FROM atividades WHERE idDisciplina = ? AND idTurma = ?',
+            'SELECT * FROM atividades WHERE idDisciplina = ? AND idTurma = ? ORDER BY dataEntrega, hora',
             [idDisciplina, idTurma]
         );
         return rows;
@@ -30,7 +30,7 @@ class Atividades {
 
     static async excluirAtividade(idAtividade) {
         await db.query(
-            'DELETE FROM atividades_corrigidas WHERE idAtividade = ?',
+            'DELETE FROM notas WHERE idAtividade = ?',
             [idAtividade]
         );
         await db.query(
@@ -55,32 +55,33 @@ class Atividades {
     static async buscarNaoEntregues(idAtividade) {
         let [rows] = await db.query(`
             SELECT 
-                ta.idAluno, 
-                ta.idTurma,
-                u.nome AS nome,
-                u.ra AS ra
-            FROM alunos_turma ta
-            JOIN alunos al ON ta.idAluno = al.idAluno
-            JOIN atividades a ON ta.idTurma = a.idTurma
+            at.idAluno, 
+            at.idTurma,
+            u.nome AS nome,
+            u.ra AS ra
+            FROM alunos_turma at
+            JOIN alunos al ON at.idAluno = al.idAluno
+            JOIN atividades a ON at.idTurma = a.idTurma
             JOIN usuarios u ON al.idAluno = u.idReferencia AND u.tipo = 'aluno'
             WHERE a.idAtividade = ?
               AND NOT EXISTS (
-                  SELECT 1 
-                  FROM atividades_entregues ae 
-                  WHERE ae.idAluno = ta.idAluno AND ae.idAtividade = a.idAtividade
+              SELECT 1 
+              FROM atividades_entregues ae 
+              WHERE ae.idAluno = at.idAluno AND ae.idAtividade = a.idAtividade
               )
               AND (
-                  NOT EXISTS (
-                      SELECT 1 
-                      FROM atividades_corrigidas ac 
-                      WHERE ac.idAluno = ta.idAluno AND ac.idAtividade = a.idAtividade
-                  )
-                  OR EXISTS (
-                      SELECT 1
-                      FROM atividades_corrigidas ac
-                      WHERE ac.idAluno = ta.idAluno AND ac.idAtividade = a.idAtividade AND ac.entregue = 'nao'
-                  )
-              );
+              NOT EXISTS (
+                  SELECT 1 
+                  FROM notas n 
+                  WHERE n.idAluno = at.idAluno AND n.idAtividade = a.idAtividade
+              )
+              OR EXISTS (
+                  SELECT 1
+                  FROM notas n
+                  WHERE n.idAluno = at.idAluno AND n.idAtividade = a.idAtividade AND n.entregue = 'nao'
+              )
+              )
+            ORDER BY u.nome;
         `, [idAtividade]);
         return rows;
     }
@@ -137,7 +138,7 @@ class Atividades {
 
         // Inserção ou atualização da correção
         let [result] = await db.query(`
-            INSERT INTO atividades_corrigidas (idAtividade, idAluno, nota, feedback, entregue)
+            INSERT INTO notas (idAtividade, idAluno, nota, feedback, entregue)
             VALUES (?, ?, ?, ?, ?)
         `, [idAtividade, idAluno, nota, feedback, entregue]);
 
@@ -154,7 +155,7 @@ class Atividades {
 
         // Verifica se a correção existe
         let [existingCorrecao] = await db.query(`
-            SELECT * FROM atividades_corrigidas
+            SELECT * FROM notas
             WHERE idAtividade = ? AND idAluno = ?
         `, [idAtividade, idAluno]);
 
@@ -164,7 +165,7 @@ class Atividades {
 
         // Atualiza a correção
         let [result] = await db.query(`
-            UPDATE atividades_corrigidas
+            UPDATE notas
             SET nota = ?, feedback = ?
             WHERE idAtividade = ? AND idAluno = ?
         `, [nota, feedback, idAtividade, idAluno]);
@@ -173,9 +174,9 @@ class Atividades {
     }
     static async excluirCorrecao(idAtividade, idAluno) {
 
-        // Exclui a correção da tabela atividades_corrigidas
+        // Exclui a correção da tabela notas
         let [deleteResult] = await db.query(`
-            DELETE FROM atividades_corrigidas
+            DELETE FROM notas
             WHERE idAtividade = ? AND idAluno = ?
         `, [idAtividade, idAluno]);
 
@@ -191,7 +192,7 @@ class Atividades {
     static async buscarCorrecao(idAtividade, idAluno) {
         let [rows] = await db.query(`
             SELECT idAluno, idAtividade, feedback, nota
-            FROM atividades_corrigidas
+            FROM notas
             WHERE idAtividade = ? AND idAluno = ?
         `, [idAtividade, idAluno]);
         return rows[0];

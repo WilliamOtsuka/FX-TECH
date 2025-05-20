@@ -37,9 +37,10 @@ class Usuarios {
             perfil = alunoRows[0];
 
             let [turmasAluno] = await db.query(`
-                SELECT t.idTurma, t.nome, t.idAno_letivo, al.ano AS anoLetivo
+                SELECT t.idTurma, s.nome, t.codigo, t.turno, t.idAno_letivo, al.ano AS anoLetivo
                 FROM alunos_turma at 
                 JOIN turmas t ON at.idTurma = t.idTurma
+                JOIN serie s ON t.idSerie = s.idSerie
                 JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
                 WHERE at.idAluno = ?
             `, [user.idReferencia]);
@@ -70,10 +71,11 @@ class Usuarios {
 
             let [turmasDisciplinas] = await db.query(`
                 SELECT 
-                    t.idTurma, t.nome AS nomeTurma, t.idAno_letivo, al.ano AS anoLetivo,
+                    t.idTurma, s.nome AS nomeTurma, t.codigo, t.turno, t.idAno_letivo, al.ano AS anoLetivo,
                     d.idDisciplina, d.nome AS nomeDisciplina
                 FROM professor_turma pt
                 JOIN turmas t ON pt.idTurma = t.idTurma
+                JOIN serie s ON t.idSerie = s.idSerie
                 JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
                 JOIN disciplinas d ON pt.idDisciplina = d.idDisciplina
                 WHERE pt.idColaboradores = ?
@@ -86,6 +88,8 @@ class Usuarios {
                     turmaMap.set(row.idTurma, {
                         idTurma: row.idTurma,
                         nome: row.nomeTurma,
+                        codigo: row.codigo,
+                        turno: row.turno,
                         idAno_letivo: row.idAno_letivo,
                         anoLetivo: row.anoLetivo,
                         disciplinas: []

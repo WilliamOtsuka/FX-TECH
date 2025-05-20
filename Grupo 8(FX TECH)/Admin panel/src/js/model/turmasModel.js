@@ -3,10 +3,11 @@ import db from '../../../connection-db.js';
 class Turmas {
     static async listarTurmas() {
         let [rows] = await db.query(`
-            SELECT t.idTurma, t.nome, al.ano AS anoLetivo, t.ensino
+            SELECT t.idTurma, s.nome, t.codigo, t.turno, al.ano AS anoLetivo, t.ensino
             FROM turmas t
+            JOIN serie s ON t.idSerie = s.idSerie
             JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
-            ORDER BY al.ano DESC, t.nome ASC
+            ORDER BY al.ano DESC, s.nome ASC
         `);
         return rows;
     }
@@ -61,9 +62,9 @@ class Turmas {
 
         // Deleta atividades corrigidas relacionadas às atividades da turma
         await db.query(`
-            DELETE ac 
-            FROM atividades_corrigidas ac
-            WHERE ac.idAtividade IN (
+            DELETE n 
+            FROM notas n
+            WHERE n.idAtividade IN (
             SELECT a.idAtividade
             FROM atividades a
             WHERE a.idTurma = ?
