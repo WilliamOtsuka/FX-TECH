@@ -16,27 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `disciplinas`
+-- Table structure for table `notas`
 --
 
-DROP TABLE IF EXISTS `disciplinas`;
+DROP TABLE IF EXISTS `notas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `disciplinas` (
-  `idDisciplina` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(255) NOT NULL,
-  PRIMARY KEY (`idDisciplina`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `notas` (
+  `idNota` int NOT NULL AUTO_INCREMENT,
+  `idAluno` int NOT NULL,
+  `idAtividade` int NOT NULL,
+  `feedback` varchar(1000) NOT NULL,
+  `nota` float NOT NULL,
+  `entregue` enum('nao','sim') NOT NULL,
+  PRIMARY KEY (`idNota`)
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `disciplinas`
+-- Dumping data for table `notas`
 --
 
-LOCK TABLES `disciplinas` WRITE;
-/*!40000 ALTER TABLE `disciplinas` DISABLE KEYS */;
-INSERT INTO `disciplinas` VALUES (1,'Física'),(2,'Matemática'),(3,'Biologia'),(4,'Português'),(5,'História'),(6,'Geografia'),(7,'Química'),(8,'Filosofia'),(9,'Sociologia'),(10,'Artes'),(11,'Educação Física'),(12,'Ciências');
-/*!40000 ALTER TABLE `disciplinas` ENABLE KEYS */;
+LOCK TABLES `notas` WRITE;
+/*!40000 ALTER TABLE `notas` DISABLE KEYS */;
+INSERT INTO `notas` VALUES (1,3,21,'Não entregue',0,'nao'),(2,4,21,'Não entregue',0,'nao'),(3,5,21,'Não entregue',0,'nao'),(4,6,21,'Não entregue',0,'nao'),(5,7,21,'Não entregue',0,'nao'),(6,1,21,'corrigir tarefa legal',10,'sim'),(7,1,25,'parabens!',10,'sim'),(64,2,28,'Não entregue',0,'nao'),(65,3,28,'Não entregue',0,'nao'),(66,4,28,'Não entregue',0,'nao'),(67,5,28,'Não entregue',0,'nao'),(68,6,28,'Não entregue',0,'nao'),(69,7,28,'Não entregue',0,'nao'),(79,1,31,'Não entregue',0,'nao'),(80,2,31,'Não entregue',0,'nao'),(81,3,31,'Não entregue',0,'nao'),(82,4,31,'Não entregue',0,'nao'),(83,5,31,'Não entregue',0,'nao'),(84,6,31,'Não entregue',0,'nao'),(85,7,31,'Não entregue',0,'nao');
+/*!40000 ALTER TABLE `notas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -48,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-19 17:04:32
+-- Dump completed on 2025-05-20 14:35:20

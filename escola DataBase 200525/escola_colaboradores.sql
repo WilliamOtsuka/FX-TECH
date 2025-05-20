@@ -16,31 +16,29 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `ano_letivo`
+-- Table structure for table `colaboradores`
 --
 
-DROP TABLE IF EXISTS `ano_letivo`;
+DROP TABLE IF EXISTS `colaboradores`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `ano_letivo` (
-  `idAno_letivo` int NOT NULL AUTO_INCREMENT,
-  `ano` varchar(20) NOT NULL,
-  `data_inicio` date NOT NULL,
-  `data_fim` date NOT NULL,
-  `situacao` enum('planejado','ativo','encerrado') NOT NULL DEFAULT 'planejado',
-  `ano_corrente` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`idAno_letivo`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `colaboradores` (
+  `idColaboradores` int NOT NULL AUTO_INCREMENT,
+  `permition` int NOT NULL,
+  `cargo` text NOT NULL,
+  PRIMARY KEY (`idColaboradores`),
+  UNIQUE KEY `idColaboradores_UNIQUE` (`idColaboradores`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `ano_letivo`
+-- Dumping data for table `colaboradores`
 --
 
-LOCK TABLES `ano_letivo` WRITE;
-/*!40000 ALTER TABLE `ano_letivo` DISABLE KEYS */;
-INSERT INTO `ano_letivo` VALUES (1,'2025','2025-02-01','2025-12-20','ativo',1),(2,'2024','2024-02-05','2024-12-13','encerrado',0);
-/*!40000 ALTER TABLE `ano_letivo` ENABLE KEYS */;
+LOCK TABLES `colaboradores` WRITE;
+/*!40000 ALTER TABLE `colaboradores` DISABLE KEYS */;
+INSERT INTO `colaboradores` VALUES (1,2,'coordenador'),(2,1,'professor'),(3,1,'professor'),(4,1,'professor');
+/*!40000 ALTER TABLE `colaboradores` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -52,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-19 17:04:33
+-- Dump completed on 2025-05-20 14:35:20

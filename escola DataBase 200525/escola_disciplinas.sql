@@ -16,37 +16,27 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `atividades`
+-- Table structure for table `disciplinas`
 --
 
-DROP TABLE IF EXISTS `atividades`;
+DROP TABLE IF EXISTS `disciplinas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `atividades` (
-  `idAtividade` int NOT NULL AUTO_INCREMENT,
-  `titulo` varchar(255) NOT NULL,
-  `descricao` text,
-  `dataEntrega` date NOT NULL,
-  `hora` time NOT NULL,
-  `peso` int NOT NULL,
-  `idDisciplina` int NOT NULL,
-  `status` enum('disponivel','indisponivel') NOT NULL,
-  `idTurma` int NOT NULL,
-  `tipo` enum('atividade','avaliativa') NOT NULL,
-  PRIMARY KEY (`idAtividade`),
-  KEY `atividade_ibfk_1` (`idDisciplina`),
-  CONSTRAINT `atividades_ibfk_1` FOREIGN KEY (`idDisciplina`) REFERENCES `disciplinas` (`idDisciplina`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `disciplinas` (
+  `idDisciplina` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(255) NOT NULL,
+  PRIMARY KEY (`idDisciplina`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `atividades`
+-- Dumping data for table `disciplinas`
 --
 
-LOCK TABLES `atividades` WRITE;
-/*!40000 ALTER TABLE `atividades` DISABLE KEYS */;
-INSERT INTO `atividades` VALUES (21,'Trabalho de Física 2º Bimestre','Teste Trabalho 1','2025-05-06','18:08:00',10,1,'indisponivel',1,'atividade'),(23,'Teste Atividade Quarto Bimestre','4º bim','2025-10-10','23:59:00',20,1,'disponivel',1,'atividade'),(25,'teste prova','prova','2025-05-06','18:25:00',70,1,'indisponivel',1,'avaliativa'),(28,'asdfasdasdasdsad','teste','2025-05-13','14:29:00',11,1,'disponivel',1,'atividade');
-/*!40000 ALTER TABLE `atividades` ENABLE KEYS */;
+LOCK TABLES `disciplinas` WRITE;
+/*!40000 ALTER TABLE `disciplinas` DISABLE KEYS */;
+INSERT INTO `disciplinas` VALUES (1,'Física'),(2,'Matemática'),(3,'Biologia'),(4,'Português'),(5,'História'),(6,'Geografia'),(7,'Química'),(8,'Filosofia'),(9,'Sociologia'),(10,'Artes'),(11,'Educação Física'),(12,'Ciências');
+/*!40000 ALTER TABLE `disciplinas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -58,4 +48,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-19 17:04:32
+-- Dump completed on 2025-05-20 14:35:20

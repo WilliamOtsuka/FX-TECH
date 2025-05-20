@@ -16,30 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `periodo_letivo`
+-- Table structure for table `turmas`
 --
 
-DROP TABLE IF EXISTS `periodo_letivo`;
+DROP TABLE IF EXISTS `turmas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `periodo_letivo` (
-  `idPeriodo_letivo` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `turmas` (
+  `idTurma` int NOT NULL AUTO_INCREMENT,
+  `idSerie` varchar(50) NOT NULL,
   `idAno_letivo` int NOT NULL,
-  `nome` varchar(50) NOT NULL,
-  `data_inicio` date NOT NULL,
-  `data_fim` date NOT NULL,
-  PRIMARY KEY (`idPeriodo_letivo`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `codigo` enum('A','B','C') NOT NULL,
+  `turno` enum('manhã','tarde','noite') NOT NULL,
+  PRIMARY KEY (`idTurma`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `periodo_letivo`
+-- Dumping data for table `turmas`
 --
 
-LOCK TABLES `periodo_letivo` WRITE;
-/*!40000 ALTER TABLE `periodo_letivo` DISABLE KEYS */;
-INSERT INTO `periodo_letivo` VALUES (1,1,'1º Bimestre','2025-02-01','2025-04-05'),(2,1,'2º Bimestre','2025-04-06','2025-06-15'),(3,1,'3º Bimestre','2025-08-04','2025-10-01'),(4,1,'4º Bimestre','2025-10-02','2025-12-03'),(9,2,'1º Bimestre','2024-02-05','2024-04-12'),(10,2,'2º Bimestre','2024-04-15','2024-06-21'),(11,2,'3º Bimestre','2024-07-22','2024-09-27'),(12,2,'4º Bimestre','2024-09-30','2024-12-13');
-/*!40000 ALTER TABLE `periodo_letivo` ENABLE KEYS */;
+LOCK TABLES `turmas` WRITE;
+/*!40000 ALTER TABLE `turmas` DISABLE KEYS */;
+INSERT INTO `turmas` VALUES (1,'10',1,'A','manhã'),(2,'11',1,'B','manhã'),(3,'12',1,'C','manhã'),(4,'10',1,'B','manhã'),(5,'10',2,'A','manhã'),(6,'9',1,'A','manhã');
+/*!40000 ALTER TABLE `turmas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-19 17:04:33
+-- Dump completed on 2025-05-20 14:35:19

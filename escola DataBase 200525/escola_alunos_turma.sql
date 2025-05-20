@@ -16,28 +16,27 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `professor_turma`
+-- Table structure for table `alunos_turma`
 --
 
-DROP TABLE IF EXISTS `professor_turma`;
+DROP TABLE IF EXISTS `alunos_turma`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `professor_turma` (
-  `idColaboradores` int NOT NULL,
+CREATE TABLE `alunos_turma` (
+  `idAluno` int NOT NULL,
   `idTurma` int NOT NULL,
-  `idDisciplina` int NOT NULL,
-  PRIMARY KEY (`idColaboradores`,`idTurma`,`idDisciplina`)
+  PRIMARY KEY (`idAluno`,`idTurma`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `professor_turma`
+-- Dumping data for table `alunos_turma`
 --
 
-LOCK TABLES `professor_turma` WRITE;
-/*!40000 ALTER TABLE `professor_turma` DISABLE KEYS */;
-INSERT INTO `professor_turma` VALUES (2,1,1),(2,2,1),(2,3,12),(3,1,2);
-/*!40000 ALTER TABLE `professor_turma` ENABLE KEYS */;
+LOCK TABLES `alunos_turma` WRITE;
+/*!40000 ALTER TABLE `alunos_turma` DISABLE KEYS */;
+INSERT INTO `alunos_turma` VALUES (1,1),(1,6),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,2),(9,2),(10,2),(11,2),(12,2),(13,2),(14,2),(15,3),(16,3),(17,3),(18,3),(19,3),(20,3),(21,3);
+/*!40000 ALTER TABLE `alunos_turma` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -49,4 +48,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-19 17:04:33
+-- Dump completed on 2025-05-20 14:35:19

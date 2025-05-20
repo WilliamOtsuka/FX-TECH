@@ -16,31 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `atividades_corrigidas`
+-- Table structure for table `ano_letivo`
 --
 
-DROP TABLE IF EXISTS `atividades_corrigidas`;
+DROP TABLE IF EXISTS `ano_letivo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `atividades_corrigidas` (
-  `idCorrecao` int NOT NULL AUTO_INCREMENT,
-  `idAluno` int NOT NULL,
-  `idAtividade` int NOT NULL,
-  `feedback` varchar(1000) NOT NULL,
-  `nota` float NOT NULL,
-  `entregue` enum('nao','sim') NOT NULL,
-  PRIMARY KEY (`idCorrecao`)
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `ano_letivo` (
+  `idAno_letivo` int NOT NULL AUTO_INCREMENT,
+  `ano` varchar(20) NOT NULL,
+  `data_inicio` date NOT NULL,
+  `data_fim` date NOT NULL,
+  `situacao` enum('planejado','ativo','encerrado') NOT NULL DEFAULT 'planejado',
+  `ano_corrente` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`idAno_letivo`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `atividades_corrigidas`
+-- Dumping data for table `ano_letivo`
 --
 
-LOCK TABLES `atividades_corrigidas` WRITE;
-/*!40000 ALTER TABLE `atividades_corrigidas` DISABLE KEYS */;
-INSERT INTO `atividades_corrigidas` VALUES (1,3,21,'Não entregue',0,'nao'),(2,4,21,'Não entregue',0,'nao'),(3,5,21,'Não entregue',0,'nao'),(4,6,21,'Não entregue',0,'nao'),(5,7,21,'Não entregue',0,'nao'),(6,1,21,'corrigir tarefa legal',10,'sim'),(7,1,25,'parabens!',10,'sim'),(64,2,28,'Não entregue',0,'nao'),(65,3,28,'Não entregue',0,'nao'),(66,4,28,'Não entregue',0,'nao'),(67,5,28,'Não entregue',0,'nao'),(68,6,28,'Não entregue',0,'nao'),(69,7,28,'Não entregue',0,'nao');
-/*!40000 ALTER TABLE `atividades_corrigidas` ENABLE KEYS */;
+LOCK TABLES `ano_letivo` WRITE;
+/*!40000 ALTER TABLE `ano_letivo` DISABLE KEYS */;
+INSERT INTO `ano_letivo` VALUES (1,'2025','2025-02-01','2025-12-20','ativo',1),(2,'2024','2024-02-05','2024-12-13','encerrado',0);
+/*!40000 ALTER TABLE `ano_letivo` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-19 17:04:32
+-- Dump completed on 2025-05-20 14:35:19

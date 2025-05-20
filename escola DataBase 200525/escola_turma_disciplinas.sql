@@ -35,7 +35,7 @@ CREATE TABLE `turma_disciplinas` (
 
 LOCK TABLES `turma_disciplinas` WRITE;
 /*!40000 ALTER TABLE `turma_disciplinas` DISABLE KEYS */;
-INSERT INTO `turma_disciplinas` VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),(1,11),(2,1),(2,2),(2,4),(2,5),(2,6),(2,7),(2,8),(2,9),(2,10),(2,11),(3,2),(3,4),(3,5),(3,6),(3,10),(3,11),(3,12),(4,2),(4,4),(4,5),(4,6),(4,10),(4,11),(4,12);
+INSERT INTO `turma_disciplinas` VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),(1,11),(2,1),(2,2),(2,4),(2,5),(2,6),(2,7),(2,8),(2,9),(2,10),(2,11),(4,2),(4,4),(4,5),(4,6),(4,10),(4,11),(4,12);
 /*!40000 ALTER TABLE `turma_disciplinas` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -48,4 +48,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-19 17:04:33
+-- Dump completed on 2025-05-20 14:35:19

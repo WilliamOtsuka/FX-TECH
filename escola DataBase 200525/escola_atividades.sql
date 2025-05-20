@@ -16,27 +16,37 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `alunos_turma`
+-- Table structure for table `atividades`
 --
 
-DROP TABLE IF EXISTS `alunos_turma`;
+DROP TABLE IF EXISTS `atividades`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `alunos_turma` (
-  `idAluno` int NOT NULL,
+CREATE TABLE `atividades` (
+  `idAtividade` int NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(255) NOT NULL,
+  `descricao` text,
+  `dataEntrega` date NOT NULL,
+  `hora` time NOT NULL,
+  `peso` int NOT NULL,
+  `idDisciplina` int NOT NULL,
+  `status` enum('disponivel','indisponivel') NOT NULL,
   `idTurma` int NOT NULL,
-  PRIMARY KEY (`idAluno`,`idTurma`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `tipo` enum('atividade','avaliativa') NOT NULL,
+  PRIMARY KEY (`idAtividade`),
+  KEY `atividade_ibfk_1` (`idDisciplina`),
+  CONSTRAINT `atividades_ibfk_1` FOREIGN KEY (`idDisciplina`) REFERENCES `disciplinas` (`idDisciplina`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `alunos_turma`
+-- Dumping data for table `atividades`
 --
 
-LOCK TABLES `alunos_turma` WRITE;
-/*!40000 ALTER TABLE `alunos_turma` DISABLE KEYS */;
-INSERT INTO `alunos_turma` VALUES (1,1),(1,4),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,2),(9,2),(10,2),(11,2),(12,2),(13,2),(14,2),(15,3),(16,3),(17,3),(18,3),(19,3),(20,3),(21,3);
-/*!40000 ALTER TABLE `alunos_turma` ENABLE KEYS */;
+LOCK TABLES `atividades` WRITE;
+/*!40000 ALTER TABLE `atividades` DISABLE KEYS */;
+INSERT INTO `atividades` VALUES (21,'Trabalho de Física 2º Bimestre','Teste Trabalho 1','2025-05-06','18:08:00',10,1,'indisponivel',1,'atividade'),(25,'teste prova','prova','2025-05-06','18:25:00',70,1,'indisponivel',1,'avaliativa'),(28,'asdfasdasdasdsad','teste','2025-05-13','14:29:00',11,1,'indisponivel',1,'atividade'),(31,'teste atbsadsadsa','sdsadasdas','2025-05-20','14:05:00',4,1,'indisponivel',1,'atividade');
+/*!40000 ALTER TABLE `atividades` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -48,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-19 17:04:32
+-- Dump completed on 2025-05-20 14:35:21
