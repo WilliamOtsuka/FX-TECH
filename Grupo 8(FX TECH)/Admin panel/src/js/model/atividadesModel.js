@@ -1,6 +1,80 @@
 import db from '../../../connection-db.js';
+import fs from 'fs';
+import path from 'path';
 
 class Atividades {
+    //     static async enviarAtividade(idAluno, idAtividade, descricao, dataEntrega) {
+    //         let [atividade] = await db.query(
+    //             'SELECT status FROM atividades WHERE idAtividade = ?',
+    //             [idAtividade]
+    //         );
+
+    //         if (atividade.length === 0 || atividade[0].status === 'indisponivel') {
+    //             throw new Error('Não é possível entregar uma atividade indisponível');
+    //         }
+
+    //         let [existingEntrega] = await db.query(
+    //             'SELECT * FROM atividades_entregues WHERE idAluno = ? AND idAtividade = ?',
+    //             [idAluno, idAtividade]
+    //         );
+
+    //         if (existingEntrega.length > 0) {
+    //             let [result] = await db.query(
+    //                 'UPDATE atividades_entregues SET descricao = ?, dataEntrega = ? WHERE idAluno = ? AND idAtividade = ?',
+    //                 [descricao, dataEntrega, idAluno, idAtividade]
+    //             );
+    //             return { message: 'Entrega atualizada com sucesso!', updated: result.affectedRows > 0 };
+    //         } else {
+    //             let correcao = 'pendente';
+    //             let [result] = await db.query(
+    //                 'INSERT INTO atividades_entregues (idAluno, idAtividade, descricao, dataEntrega, correcao) VALUES (?, ?, ?, ?, ?)',
+    //                 [idAluno, idAtividade, descricao, dataEntrega, correcao]
+    //             );
+    //             return { message: 'Atividade entregue com sucesso!', idEntrega: result.insertId };
+    //         }
+    //     }
+
+    static async enviarAtividade(idAluno, idAtividade, descricao, dataEntrega, nomeArquivo) {
+        let [atividade] = await db.query(
+            'SELECT status FROM atividades WHERE idAtividade = ?',
+            [idAtividade]
+        );
+
+        if (atividade.length === 0 || atividade[0].status === 'indisponivel') {
+            throw new Error('Não é possível entregar uma atividade indisponível');
+        }
+
+        let [existingEntrega] = await db.query(
+            'SELECT * FROM atividades_entregues WHERE idAluno = ? AND idAtividade = ?',
+            [idAluno, idAtividade]
+        );
+
+        if (existingEntrega.length > 0) {
+            // Verifica se há arquivo anterior e um novo foi enviado
+            const arquivoAntigo = existingEntrega[0].arquivo;
+            if (arquivoAntigo && nomeArquivo) {
+                const caminhoArquivo = path.join('uploads', arquivoAntigo);
+                if (fs.existsSync(caminhoArquivo)) {
+                    fs.unlinkSync(caminhoArquivo); // Remove o arquivo antigo
+                }
+            }
+
+            let [result] = await db.query(
+                'UPDATE atividades_entregues SET descricao = ?, dataEntrega = ?, arquivo = ? WHERE idAluno = ? AND idAtividade = ?',
+                [descricao, dataEntrega, nomeArquivo || arquivoAntigo, idAluno, idAtividade]
+            );
+
+            return { message: 'Entrega atualizada com sucesso!', updated: result.affectedRows > 0 };
+        } else {
+            let correcao = 'pendente';
+            let [result] = await db.query(
+                'INSERT INTO atividades_entregues (idAluno, idAtividade, descricao, dataEntrega, correcao, arquivo) VALUES (?, ?, ?, ?, ?, ?)',
+                [idAluno, idAtividade, descricao, dataEntrega, correcao, nomeArquivo]
+            );
+            return { message: 'Atividade entregue com sucesso!', idEntrega: result.insertId };
+        }
+    }
+
     static async buscarAtividades(idDisciplina, idTurma) {
         let [rows] = await db.query(
             'SELECT * FROM atividades WHERE idDisciplina = ? AND idTurma = ? ORDER BY dataEntrega, hora',
@@ -29,6 +103,18 @@ class Atividades {
     }
 
     static async excluirAtividade(idAtividade) {
+        // Remove arquivos enviados relacionados à atividade excluída antes de deletar os registros
+        let [entregas] = await db.query(
+            'SELECT arquivo FROM atividades_entregues WHERE idAtividade = ? AND arquivo IS NOT NULL',
+            [idAtividade]
+        );
+        for (const entrega of entregas) {
+            const caminhoArquivo = path.join('uploads', entrega.arquivo);
+            if (fs.existsSync(caminhoArquivo)) {
+                fs.unlinkSync(caminhoArquivo);
+            }
+        }
+
         await db.query(
             'DELETE FROM notas WHERE idAtividade = ?',
             [idAtividade]
@@ -41,6 +127,7 @@ class Atividades {
             'DELETE FROM atividades WHERE idAtividade = ?',
             [idAtividade]
         );
+
         return result.affectedRows > 0;
     }
 
@@ -49,6 +136,7 @@ class Atividades {
             'UPDATE atividades SET titulo = ?, descricao = ?, dataEntrega = ?, hora = ?, status = "disponivel", peso = ? WHERE idAtividade = ?',
             [titulo, descricao, dataEntrega, hora, peso, idAtividade]
         );
+
         return result.affectedRows > 0;
     }
 
@@ -98,6 +186,7 @@ class Atividades {
             JOIN usuarios u ON al.idAluno = u.idReferencia AND u.tipo = 'aluno'
             WHERE ae.idAtividade = ? AND ae.correcao = 'pendente';
                     `, [idAtividade]);
+
         return rows;
     }
 
@@ -113,6 +202,7 @@ class Atividades {
             JOIN usuarios u ON al.idAluno = u.idReferencia AND u.tipo = 'aluno'
             WHERE ae.idAtividade = ? AND ae.correcao = 'corrigida';
         `, [idAtividade]);
+
         return rows;
     }
 
@@ -206,6 +296,7 @@ class Atividades {
                 ae.descricao AS descricaoAluno,
                 ae.correcao AS correcao,
                 ae.descricao,
+                ae.arquivo,
                 u.ra AS ra,
                 u.nome AS nome,
                 at.titulo,
@@ -244,38 +335,6 @@ class Atividades {
         }
 
         return result.insertId;
-    }
-
-    static async enviarAtividade(idAluno, idAtividade, descricao, dataEntrega) {
-
-        let [atividade] = await db.query(
-            'SELECT status FROM atividades WHERE idAtividade = ?',
-            [idAtividade]
-        );
-
-        if (atividade.length === 0 || atividade[0].status === 'indisponivel') {
-            throw new Error('Não é possível entregar uma atividade indisponível');
-        }
-
-        let [existingEntrega] = await db.query(
-            'SELECT * FROM atividades_entregues WHERE idAluno = ? AND idAtividade = ?',
-            [idAluno, idAtividade]
-        );
-
-        if (existingEntrega.length > 0) {
-            let [result] = await db.query(
-                'UPDATE atividades_entregues SET descricao = ?, dataEntrega = ? WHERE idAluno = ? AND idAtividade = ?',
-                [descricao, dataEntrega, idAluno, idAtividade]
-            );
-            return { message: 'Entrega atualizada com sucesso!', updated: result.affectedRows > 0 };
-        } else {
-            let correcao = 'pendente';
-            let [result] = await db.query(
-                'INSERT INTO atividades_entregues (idAluno, idAtividade, descricao, dataEntrega, correcao) VALUES (?, ?, ?, ?, ?)',
-                [idAluno, idAtividade, descricao, dataEntrega, correcao]
-            );
-            return { message: 'Atividade entregue com sucesso!', idEntrega: result.insertId };
-        }
     }
 }
 

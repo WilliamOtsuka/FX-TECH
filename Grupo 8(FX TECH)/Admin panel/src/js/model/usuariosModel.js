@@ -51,6 +51,7 @@ class Usuarios {
                     FROM disciplinas d 
                     JOIN turma_disciplinas td ON d.idDisciplina = td.idDisciplina 
                     WHERE td.idTurma = ?
+                    ORDER BY d.nome ASC
                 `, [turma.idTurma]);
 
                 turmas.push({
@@ -70,15 +71,35 @@ class Usuarios {
             perfil = profRows[0];
 
             let [turmasDisciplinas] = await db.query(`
-                SELECT 
-                    t.idTurma, s.nome AS nomeTurma, t.codigo, t.turno, t.idAno_letivo, al.ano AS anoLetivo,
-                    d.idDisciplina, d.nome AS nomeDisciplina
+                SELECT t.idTurma, s.nome AS nomeTurma, t.codigo, t.turno, t.idAno_letivo, al.ano AS anoLetivo, d.idDisciplina, d.nome AS nomeDisciplina, s.ensino,
+                    
+                -- Nível de ensino
+                    CASE 
+                        WHEN LOWER(s.ensino) LIKE '%médio%' THEN 1
+                        WHEN LOWER(s.ensino) LIKE '%fundamental%' THEN 2
+                        ELSE 3
+                    END AS nivelEnsino,
+
+                    -- Ordenação personalizada da série
+                    CASE 
+                        WHEN LOWER(s.ensino) LIKE '%medio%' THEN 
+                            4 - CAST(REGEXP_SUBSTR(s.nome, '[0-9]+') AS UNSIGNED)
+                        WHEN LOWER(s.ensino) LIKE '%fundamental%' THEN 
+                            10 - CAST(REGEXP_SUBSTR(s.nome, '[0-9]+') AS UNSIGNED)
+                        ELSE 99
+                    END AS ordenacaoSerie
+
                 FROM professor_turma pt
                 JOIN turmas t ON pt.idTurma = t.idTurma
                 JOIN serie s ON t.idSerie = s.idSerie
                 JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
                 JOIN disciplinas d ON pt.idDisciplina = d.idDisciplina
                 WHERE pt.idColaboradores = ?
+                ORDER BY 
+                    al.ano DESC,
+                    nivelEnsino ASC,
+                    ordenacaoSerie ASC,
+                    d.nome ASC;
             `, [user.idReferencia]);
 
             let turmaMap = new Map();
@@ -92,6 +113,7 @@ class Usuarios {
                         turno: row.turno,
                         idAno_letivo: row.idAno_letivo,
                         anoLetivo: row.anoLetivo,
+                        serie: row.serie,
                         disciplinas: []
                     });
                 }

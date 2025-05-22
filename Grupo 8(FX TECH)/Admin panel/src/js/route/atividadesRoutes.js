@@ -1,9 +1,23 @@
-import express from 'express';
 import AtividadesController from '../controller/atividadesController.js';
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
 
 const router = express.Router();
 
-router.post('/atividades/aluno', AtividadesController.enviarAtividade);
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueName = Date.now() + '-' + file.originalname;
+        cb(null, uniqueName);
+    }
+});
+const upload = multer({ storage });
+
+
+router.post('/atividades/aluno', upload.single('arquivo'), AtividadesController.enviarAtividade);
 router.post('/atividades', AtividadesController.cadastrarAtividade);
 router.get('/atividades/disciplina/:idDisciplina/turma/:idT', AtividadesController.buscarAtividadesDisciplinasTurmas);
 router.get('/atividades/:id', AtividadesController.buscarAtividade);

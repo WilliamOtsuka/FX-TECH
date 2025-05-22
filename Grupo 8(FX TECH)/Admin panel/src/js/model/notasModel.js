@@ -2,50 +2,31 @@ import db from '../../../connection-db.js';
 
 class Notas {
     static async buscarNotasPorAlunoDisciplinaETurma(idAluno, idDisciplina, idTurma) {
-        let [rows] = await db.query(`
-            (
-                SELECT 
-                    ae.idAluno,
-                    a.titulo AS nomeAtividade,
-                    COALESCE(n.nota, 0) AS nota,
-                    a.peso,
-                    pl.nome AS bimestre,
-                    ae.dataEntrega
-                FROM atividades_entregues ae
-                JOIN atividades a ON ae.idAtividade = a.idAtividade
-                JOIN turma_disciplinas td ON a.idDisciplina = td.idDisciplina AND td.idTurma = ?
-                JOIN turmas t ON t.idTurma = td.idTurma
-                JOIN periodo_letivo pl 
-                    ON pl.idAno_letivo = t.idAno_letivo 
-                    AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
-                LEFT JOIN notas n 
-                    ON ae.idAtividade = n.idAtividade AND ae.idAluno = n.idAluno
-                WHERE a.idDisciplina = ? AND ae.idAluno = ?
-            )
-            UNION
-            (
-                SELECT 
-                    n.idAluno,
-                    a.titulo AS nomeAtividade,
-                    n.nota,
-                    a.peso,
-                    pl.nome AS bimestre,
-                    ae.dataEntrega
-                FROM notas n
-                JOIN atividades a ON n.idAtividade = a.idAtividade
-                JOIN turma_disciplinas td ON a.idDisciplina = td.idDisciplina AND td.idTurma = ?
-                JOIN turmas t ON t.idTurma = td.idTurma
-                JOIN periodo_letivo pl 
-                    ON pl.idAno_letivo = t.idAno_letivo 
-                    AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
-                LEFT JOIN atividades_entregues ae 
-                    ON ae.idAtividade = n.idAtividade AND ae.idAluno = n.idAluno
-                WHERE a.idDisciplina = ? AND n.idAluno = ?
-            )
-            ORDER BY dataEntrega ASC;
-        `, [idTurma, idDisciplina, idAluno, idTurma, idDisciplina, idAluno]);
-        return rows;
-    }
+    const [rows] = await db.query(`
+        SELECT 
+            a.titulo AS nomeAtividade,
+            COALESCE(n.nota, 0) AS nota,
+            a.peso,
+            pl.nome AS bimestre,
+            ae.dataEntrega,
+            a.dataEntrega AS dataEntregaAtividade
+        FROM atividades a
+        JOIN turma_disciplinas td ON a.idDisciplina = td.idDisciplina AND td.idTurma = ?
+        JOIN turmas t ON t.idTurma = td.idTurma
+        JOIN periodo_letivo pl 
+            ON pl.idAno_letivo = t.idAno_letivo 
+            AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
+        LEFT JOIN atividades_entregues ae 
+            ON ae.idAtividade = a.idAtividade AND ae.idAluno = ?
+        LEFT JOIN notas n 
+            ON n.idAtividade = a.idAtividade AND n.idAluno = ?
+        WHERE a.idDisciplina = ?
+        ORDER BY dataEntregaAtividade ASC
+    `, [idTurma, idAluno, idAluno, idDisciplina]);
+
+    return rows;
+}
+
 
     static async buscarNotasPorAlunoETurma(idAluno, idTurma) {
         let [rows] = await db.query(`

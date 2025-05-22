@@ -22,6 +22,7 @@ app.use('/', turmasRoutes);
 app.use('/', disciplinasRoutes);
 app.use('/', notasRouter);
 app.use('/', anoLetivoRoutes);
+app.use('/uploads', express.static('uploads'));
 
 // atualiza o status da atividade para indisponivel se o prazo de entrega já tiver passado
 cron.schedule('* * * * *', async () => {
@@ -49,7 +50,7 @@ cron.schedule('* * * * *', async () => {
 
         let agora = new Date();
         let dataHoraAtual = agora.toISOString().replace('T', ' ').split('.')[0]; // formato YYYY-MM-DD HH:MM:SS
-        // 1. Buscar todas as atividades com prazo vencido e indisponíveis
+        // Busca todas as atividades com prazo vencido e indisponíveis
         let [atividades] = await db.query(`
           SELECT a.idAtividade, a.idTurma, a.idDisciplina
           FROM atividades a
@@ -60,14 +61,14 @@ cron.schedule('* * * * *', async () => {
         let totalInseridos = 0;
 
         for (let atividade of atividades) {
-            // 2. Buscar todos os alunos da turma dessa atividade
+            // Busca todos os alunos da turma dessa atividade
             let [alunosDaTurma] = await db.query(`
         SELECT at.idAluno
         FROM alunos_turma at
         WHERE at.idTurma = ?
       `, [atividade.idTurma]);
 
-            // 3. Para cada aluno, verificar se ele entregou
+            // Para cada aluno, verificar se ele entregou
             for (let aluno of alunosDaTurma) {
                 let [entregas] = await db.query(`
                     SELECT idEntrega
@@ -75,10 +76,10 @@ cron.schedule('* * * * *', async () => {
                     WHERE idAluno = ? AND idAtividade = ?
                 `, [aluno.idAluno, atividade.idAtividade]);
 
-                // Se NÃO achou o aluno, atribuir nota 0
+                // Se não achou o aluno, atribuir nota 0
                 if (entregas.length === 0) {
                     try {
-                        // Verifica se já não tem correção (evita duplicatas)
+                        // Verifica se já não tem correção
                         let [correcaoExistente] = await db.query(`
                             SELECT idNota
                             FROM notas

@@ -3,17 +3,27 @@ import Atividades from '../model/atividadesModel.js';
 class AtividadesController {
 
     static async enviarAtividade(req, res) {
+        // try {
+        //     let { idAluno, idAtividade, descricao, dataEntrega } = req.body;
+        //     const atividade = await Atividades.enviarAtividade(idAluno, idAtividade, descricao, dataEntrega);
+        //     if (atividade) {
+        //         res.status(201).json({ message: 'Atividade enviada com sucesso', atividade });
+        //     } else {
+        //         res.status(400).json({ message: 'Erro ao enviar atividade' });
+        //     }
+        // } catch (error) {
+        //     console.error('Erro ao enviar atividade:', error);
+        //     res.status(500).json({ error: 'Erro ao enviar atividade' });
+        // }
         try {
-            let { idAluno, idAtividade, descricao, dataEntrega } = req.body;
-            const atividade = await Atividades.enviarAtividade(idAluno, idAtividade, descricao, dataEntrega);
-            if (atividade) {
-                res.status(201).json({ message: 'Atividade enviada com sucesso', atividade });
-            } else {
-                res.status(400).json({ message: 'Erro ao enviar atividade' });
-            }
-        } catch (error) {
-            console.error('Erro ao enviar atividade:', error);
-            res.status(500).json({ error: 'Erro ao enviar atividade' });
+            const { idAluno, idAtividade, descricao, dataEntrega } = req.body;
+            const nomeArquivo = req.file ? req.file.filename : null;
+
+            const resultado = await Atividades.enviarAtividade(idAluno, idAtividade, descricao, dataEntrega, nomeArquivo);
+            res.status(200).json(resultado);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Erro ao entregar atividade.' });
         }
     }
 
@@ -120,29 +130,30 @@ class AtividadesController {
             res.status(500).json({ error: 'Erro ao buscar atividades corrigidas' });
         }
     }
-static async enviarCorrecao(req, res) {
-    try {
-        const { id, idAluno } = req.params;
-        const { nota, feedback } = req.body;
+    
+    static async enviarCorrecao(req, res) {
+        try {
+            const { id, idAluno } = req.params;
+            const { nota, feedback } = req.body;
 
-        // Verificar o status da atividade
-        const atividade = await Atividades.buscarAtividadePorId(id);
-        if (atividade.status === 'disponivel') {
-            return res.status(403).json({ message: 'Não é possível corrigir uma atividade ainda disponível.' });
-        }
+            // Verificar o status da atividade
+            const atividade = await Atividades.buscarAtividadePorId(id);
+            if (atividade.status === 'disponivel') {
+                return res.status(403).json({ message: 'Não é possível corrigir uma atividade ainda disponível.' });
+            }
 
-        // Enviar a correção
-        const sucesso = await Atividades.enviarCorrecao(id, idAluno, { nota, feedback });
-        if (sucesso) {
-            res.status(200).json({ message: 'Correção enviada com sucesso' });
-        } else {
-            res.status(404).json({ message: 'Atividade ou aluno não encontrado' });
+            // Enviar a correção
+            const sucesso = await Atividades.enviarCorrecao(id, idAluno, { nota, feedback });
+            if (sucesso) {
+                res.status(200).json({ message: 'Correção enviada com sucesso' });
+            } else {
+                res.status(404).json({ message: 'Atividade ou aluno não encontrado' });
+            }
+        } catch (error) {
+            console.error('Erro ao enviar correção:', error);
+            res.status(500).json({ error: 'Erro ao enviar correção' });
         }
-    } catch (error) {
-        console.error('Erro ao enviar correção:', error);
-        res.status(500).json({ error: 'Erro ao enviar correção' });
     }
-}
 
     static async atualizarCorrecao(req, res) {
         try {

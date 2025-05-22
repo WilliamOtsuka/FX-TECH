@@ -115,7 +115,7 @@
     font-size: 16px;
 }
 
-#resposta-container h3{
+#resposta-container h3 {
     margin: 0;
     padding: 0;
 }
@@ -430,7 +430,7 @@ textarea {
     cursor: pointer;
     min-width: 200px;
     position: relative;
-    padding-right: 2em;  
+    padding-right: 2em;
 }
 
 .dropdown-tipos-selected {
@@ -441,7 +441,7 @@ textarea {
     cursor: pointer;
     min-width: 200px;
     position: relative;
-    padding-right: 2em;  
+    padding-right: 2em;
 }
 
 .dropdown-turmas-selected::after {
@@ -454,7 +454,8 @@ textarea {
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 6px solid #333; /* cor da seta */
+    border-top: 6px solid #333;
+    /* cor da seta */
     pointer-events: none;
 }
 
@@ -468,7 +469,8 @@ textarea {
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 6px solid #333; /* cor da seta */
+    border-top: 6px solid #333;
+    /* cor da seta */
     pointer-events: none;
 }
 
@@ -522,8 +524,7 @@ textarea {
     background-color: #f0f0f0;
 }
 
-.menu-lateral {
-}
+.menu-lateral {}
 
 .professor-container {
     display: flex;
@@ -547,8 +548,8 @@ textarea {
     }
 }
 
-.items-menu { 
-    display:flex;
+.items-menu {
+    display: flex;
     flex-direction: column;
     padding: 40px 20px;
 }
@@ -565,6 +566,23 @@ textarea {
 .atividade-container {
     display: flex;
     flex-direction: row;
+}
+
+.anexo {
+    display: inline-block;
+    padding: 4px 12px;
+    background-color: #ffffff;
+    color: #4c6baf;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 15px;
+    border: 1px solid #bcd6f7;
+    transition: background 0.1s, color 0.2s;
+}
+
+.anexo:hover {
+    background-color: #4c6baf;
+    color: #fff;
 }
 
 .form-correcao {
@@ -589,7 +607,7 @@ textarea {
 }
 
 .flex-container .flex-item p {
-   margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
 .form-correcao h2 {
@@ -678,7 +696,7 @@ textarea {
     font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
-}   
+}
 
 .btnCancelarCorrecao:hover {
     background-color: #5a6268;
@@ -689,77 +707,75 @@ textarea {
     flex-direction: column;
     gap: 50px;
     padding: 20px;
-  }
-  
-  .list-alunos,
-  .list-professor {
+}
+
+.list-alunos,
+.list-professor {
     padding: 10px;
     border-radius: 8px;
     width: 250px;
-  }
-  
-  ul {
+}
+
+ul {
     padding-left: 20px;
     font-size: 16px;
     list-style: none;
-  }
+}
 
-  h2 {
+h2 {
     font-size: 18px;
     color: #324960;
-  }
-  
-  .list-alunos, .list-professor {
-    padding: 10px;
-  }
+}
 
-  .email {
+.list-alunos, .list-professor {
+    padding: 10px;
+}
+
+.email {
     font-size: 14px;
     color: #324960;
-  }
+}
 
-  .participante {
+.participante {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items:flex-start;
+    align-items: flex-start;
     font-size: 16px;
     padding-bottom: 20px;
-  }
+}
 
-  .tabela {
+.tabela {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
     font-family: Arial, sans-serif;
     border: 1px solid #ccc;
     box-shadow: 0 2px 4px #7e7e7e3d;
-  }
-  
-  .tabela-head {
+}
+
+.tabela-head {
     background-color: #324960;
     color: white;
-  }
-  
-  .tabela-head-row {
-  }
-  
-  .tabela-head-cell {
+}
+
+.tabela-head-row {}
+
+.tabela-head-cell {
     padding: 6px;
     text-align: center;
-  }
-  
-  .tabela-body-row:nth-child(even) {
+}
+
+.tabela-body-row:nth-child(even) {
     background-color: #f2f2f2;
-  }
-  
-  .tabela-body-row:hover {
+}
+
+.tabela-body-row:hover {
     background-color: #e6e6e6;
-  }
-  
-  .tabela-body-cell {
+}
+
+.tabela-body-cell {
     padding: 6px;
     text-align: center;
     border-bottom: 1px solid #ddd;
-  }
-  
+}

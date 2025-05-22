@@ -39,13 +39,14 @@ function carregarTipos() {
     let tipoContainer = document.querySelector('.tipo-container');
 
     let tipos = ["atividade", "avaliativa"];
+    let defaultText = "Selecione o tipo...";
 
     let wrapper = document.createElement('div');
     wrapper.classList.add('dropdown-tipos-wrapper');
 
     let selected = document.createElement('div');
     selected.classList.add('dropdown-tipos-selected');
-    selected.textContent = tipos[0]; // Define o primeiro valor como selecionado inicialmente
+    selected.textContent = defaultText; // Valor default inicial
 
     let list = document.createElement('ul');
     list.classList.add('dropdown-tipos-list');
@@ -62,6 +63,14 @@ function carregarTipos() {
         list.appendChild(item);
     });
 
+    // Adiciona o valor default como item não selecionável (apenas visual)
+    let defaultItem = document.createElement('li');
+    defaultItem.textContent = defaultText;
+    defaultItem.classList.add('default-item');
+    defaultItem.style.color = "#888";
+    defaultItem.style.pointerEvents = "none";
+    list.insertBefore(defaultItem, list.firstChild);
+
     selected.addEventListener('click', () => {
         list.style.display = list.style.display === 'none' ? 'block' : 'none';
     });
@@ -77,7 +86,36 @@ function carregarTipos() {
     wrapper.appendChild(list);
     tipoContainer.appendChild(wrapper);
 
-    ajustarCamposPorTipo(tipos[0]);
+    let dataInput = document.getElementById("data");
+    let horaInput = document.getElementById("hora");
+    let tipoLabel = document.querySelector('label[for="data"]');
+    let tipoSelecionado = null;
+
+    // Desabilita campos inicialmente
+    dataInput.disabled = true;
+    horaInput.disabled = true;
+
+    // Observa seleção do tipo
+    document.querySelector('.dropdown-tipos-list').addEventListener('click', function (e) {
+        let selected = document.querySelector('.dropdown-tipos-selected');
+        if (!selected) return;
+        let novoTipo = selected.textContent;
+        if (novoTipo !== tipoSelecionado) {
+            tipoSelecionado = novoTipo;
+            // Limpa valores
+            dataInput.value = "";
+            horaInput.value = "";
+            // Habilita campos
+            dataInput.disabled = false;
+            horaInput.disabled = false;
+            // Ajusta label
+            if (tipoSelecionado === "avaliativa") {
+                tipoLabel.textContent = "Data da Aplicação da Prova:";
+            } else {
+                tipoLabel.textContent = "Data de Entrega:";
+            }
+        }
+    });
 }
 
 async function enviarFormulario(event) {
@@ -716,24 +754,34 @@ async function carregarAtividadeEntregue() {
             atividade.descricaoAluno = "Nenhuma descrição fornecida."
         }
 
+        let anexoHTML = "";
+        if (atividade.arquivo) {
+            // Remove tudo antes e incluindo o primeiro '-' do nome do arquivo
+            const nomeOriginal = atividade.arquivo.substring(atividade.arquivo.indexOf('-') + 1);
+            anexoHTML = `<a href="http://localhost:3000/uploads/${atividade.arquivo}" class="anexo" target="_blank" download="${nomeOriginal}">${nomeOriginal}</a><br/>`;
+        }
+
         let formHTML = `
             <form id="form-correcao" class="form-correcao">
-                <h2>Correção de Atividade</h2>
-                <div class="flex-container">
-                    <div class="flex-item">
-                        <p><strong>Aluno:</strong> ${atividade.nome}</p>
-                        <p><strong>RA:</strong> ${atividade.ra}</p>
-                    </div>
-                    <div class="flex-item">
-                        <p><strong>Título da Tarefa:</strong> ${atividade.titulo}</p>
-                        <p><strong>Descrição da Tarefa:</strong> ${atividade.descricaoAtividade}</p>
-                    </div>
-                    <div class="flex-item">
-                        <p><strong>Descrição do Aluno:</strong> ${atividade.descricaoAluno}</p>
-                        <p><strong>Peso da Atividade (%):</strong> ${atividade.peso}</p>
-                    </div>
+            <h2>Correção de Atividade</h2>
+            <div class="flex-container">
+                <div class="flex-item">
+                <p><strong>Aluno:</strong> ${atividade.nome}</p>
+                <p><strong>RA:</strong> ${atividade.ra}</p>
                 </div>
+                <div class="flex-item">
+                <p><strong>Título da Tarefa:</strong> ${atividade.titulo}</p>
+                <p><strong>Descrição da Tarefa:</strong> ${atividade.descricaoAtividade}</p>
+                </div>
+                <div class="flex-item">
+                <p><strong>Descrição do Aluno:</strong> ${atividade.descricaoAluno}</p>
+                <p><strong>Peso da Atividade (%):</strong> ${atividade.peso}</p>
+                ${anexoHTML}
+                </div>
+            </div>
         `;
+
+
         if (user.tipo === "colaborador") {
             if (atividade.correcao === 'pendente') {
                 formHTML += renderFormularioNota();
@@ -798,23 +846,31 @@ async function carregarAtividade(idAtividade) {
         }
 
         let respostaContainer = document.getElementById('resposta-container');
+
         if (respostaContainer && user.tipo === "aluno") {
+            let anexoHTML = "";
+            if (resposta.arquivo) {
+                const nomeOriginal = resposta.arquivo.substring(resposta.arquivo.indexOf('-') + 1);
+                anexoHTML = `<a href="http://localhost:3000/uploads/${resposta.arquivo}" download="${nomeOriginal}" class="anexo" target="_blank">${nomeOriginal}</a><br/>`;
+            }
             if (resposta.descricaoAluno === null) {
                 resposta.descricaoAluno = "Nenhuma descrição fornecida."
             }
             respostaContainer.innerHTML = resposta
                 ? `
-                    <h3>Resposta do Aluno:</h3>
-                    <p>Descrição: ${resposta.descricaoAluno}</p>
+                <h2>Resposta do Aluno:</h2>
+                <p>Descrição: ${resposta.descricaoAluno}</p>
+                ${anexoHTML}
                 `
                 : `<p>Nenhuma resposta encontrada.</p>`;
         }
+
         let btnEnviar = document.querySelector(".submit-btn");
         let fileInput = document.querySelector("#arquivo");
         let descricaoInput = document.querySelector("#descricao");
 
         if (btnEnviar && fileInput && descricaoInput) {
-            if (atividade.status === "indisponivel" || user.tipo === "colaborador") {
+            if (atividade.status === "indisponivel" || user.tipo === "colaborador" || atividade.tipo === 'avaliativa') {
                 [fileInput, descricaoInput, btnEnviar].forEach(element => {
                     element.disabled = true;
                     element.style.backgroundColor = "#cccccc52";
@@ -837,12 +893,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-
-    let tipoContainer = document.querySelector('.tipo-container');
-    if (tipoContainer) {
-        carregarTipos();
-    }
-
     let pesoSelect = document.getElementById("peso");
     if (pesoSelect) {
         pesoSelect.addEventListener("input", function () {
@@ -858,6 +908,12 @@ document.addEventListener("DOMContentLoaded", function () {
     //Adicionar atividade
     let atividadeForm = document.getElementById("atividadeForm");
     if (atividadeForm) {
+
+        let tipoContainer = document.querySelector('.tipo-container');
+        if (tipoContainer) {
+            carregarTipos();
+        }
+
         document.getElementById("atividadeForm").addEventListener("submit", async function (event) {
             enviarFormulario(event);
         });
@@ -873,7 +929,19 @@ document.addEventListener("DOMContentLoaded", function () {
         // Cria o link para adicionar atividades
         let link = document.createElement("a");
         link.classList.add("adicionarAtividade");
-        link.href = `cadastro-atividade.html?idD=${idDisciplina}&idT=${idTurma}`; // Adiciona o idTurma aqui
+
+        // atraves do idTurma, busca o ano letivo em usuario
+        let anoLetivo = user.turmas.find(turma => turma.idTurma == idTurma).anoLetivo;
+        let anoAtual = new Date().getFullYear();
+        if (anoLetivo == anoAtual)
+            link.href = `cadastro-atividade.html?idD=${idDisciplina}&idT=${idTurma}`; // Adiciona o idTurma aqui
+
+        else {
+            link.style.cursor = "not-allowed";
+            link.style.color = "#ccc";
+            link.style.textDecoration = "none";
+            link.title = "Não é possível adicionar atividades fora do ano letivo atual.";
+        }
         link.textContent = `Adicionar Atividades +`;
 
         // Insere o link antes da lista de atividades
@@ -915,40 +983,37 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         document.getElementById('entregaForm').addEventListener('submit', async function (event) {
-            event.preventDefault(); // Previne o comportamento padrão do formulário
+            event.preventDefault();
+
             let idAluno = user.idReferencia; // ID do aluno (colaborador)
             let descricao = document.getElementById('descricao').value.trim() || "Sem descrição";
             let dataEntrega = new Date().toISOString().split('T')[0];
+            let arquivo = document.getElementById('arquivo').files[0]; // <- captura do arquivo
 
-            if (!descricao) {
-                alert('A descrição da atividade é obrigatória.');
+            if (!idAluno || !idAtividade || !dataEntrega) {
+                alert('Dados obrigatórios ausentes.');
                 return;
             }
-            if (!idAtividade) {
-                alert('ID da atividade não encontrado.');
-                return;
-            }
-            if (!idAluno) {
-                alert('ID do aluno não encontrado.');
-                return;
-            }
-            if (!dataEntrega) {
-                alert('Data atual não encontrada.');
-                return;
+
+            let formData = new FormData();
+            formData.append("idAluno", idAluno);
+            formData.append("idAtividade", idAtividade);
+            formData.append("descricao", descricao);
+            formData.append("dataEntrega", dataEntrega);
+
+            if (arquivo) {
+                formData.append("arquivo", arquivo); // <- adiciona o arquivo ao FormData
             }
 
             try {
-                // let response = await fetch('http://localhost:3000/entregar-atividade', {
                 let response = await fetch('http://localhost:3000/atividades/aluno', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ idAluno, idAtividade, descricao, dataEntrega }),
+                    body: formData, // <- agora é o FormData, não mais JSON
                 });
+
                 if (response.ok) {
                     alert('Atividade enviada com sucesso!');
-                    document.getElementById('entregaForm').reset(); // Limpa o formulário após o envio
+                    document.getElementById('entregaForm').reset();
                 } else {
                     let data = await response.json();
                     alert(`Erro: ${data.message}`);
@@ -957,7 +1022,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error('Erro ao enviar a atividade:', error);
                 alert('Erro de conexão. Tente novamente.');
             }
-            window.location.reload(); // Atualiza a página após o envio
+
+            window.location.reload();
         });
     }
 });
