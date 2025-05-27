@@ -78,9 +78,13 @@ class TurmasController {
         try {
             let { idT } = req.params;
             let disciplinas = await Turmas.buscarDisciplinasPorTurma(idT);
-            if (disciplinas.length > 0) {
+            if (disciplinas.length > 0) {   
                 res.json(disciplinas);
-            } else {
+            } else if (disciplinas.length === 0) {
+                console.log("Turma sem disciplinas encontrado!");
+                res.json([]);
+            }
+            else {
                 res.status(404).json({ message: "Nenhuma disciplina encontrada para a turma." });
             }
         } catch (error) {
@@ -93,16 +97,15 @@ class TurmasController {
         try {
             let { idT } = req.params;
     
-            // Validação do parâmetro
-            if (!idT) {
-                return res.status(400).json({ message: "O parâmetro idT é obrigatório." });
-            }
-    
             let participantes = await Turmas.listarParticipantesPorTurma(idT);
     
             if (participantes.length > 0) {
                 res.json(participantes);
-            } else {
+            } else if (participantes.length === 0) {
+                console.log("Turma sem alunos encontrado!");
+                res.json([]);
+            }
+            else {
                 res.status(404).json({ message: "Nenhum participante encontrado para a turma." });
             }
         } catch (error) {

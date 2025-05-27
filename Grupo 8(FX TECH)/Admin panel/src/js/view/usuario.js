@@ -1,3 +1,85 @@
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validarCamposFuncionario() {
+    const cpfInput = document.querySelector("#professionalCpf");
+    const contatoInput = document.querySelector("#professionalContact");
+    const emailInput = document.querySelector("#professionalEmail");
+    const anoInput = document.querySelector("#professionalAno");
+
+    cpfInput.addEventListener("input", () => {
+        let value = cpfInput.value.replace(/\D/g, "").slice(0, 11);
+
+        if (value.length > 9) {
+            value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, "$1.$2.$3-$4");
+        } else if (value.length > 6) {
+            value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+        } else if (value.length > 3) {
+            value = value.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+        }
+
+        cpfInput.value = value;
+    });
+
+    contatoInput.addEventListener("input", () => {
+        let value = contatoInput.value.replace(/\D/g, "").slice(0, 11);
+
+        if (value.length > 6) {
+            value = value.replace(/^(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+        } else if (value.length > 2) {
+            value = value.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+        }
+
+        contatoInput.value = value;
+    });
+    anoInput.addEventListener("input", () => {
+        let value = anoInput.value.replace(/[^\d]/g, "").slice(0, 4);
+        const anoAtual = new Date().getFullYear();
+        if (value.length === 4) {
+            let anoNum = parseInt(value);
+            if (anoNum > anoAtual) {
+                value = anoAtual.toString();
+            } else if (anoNum < 1900) {
+                value = "1900";
+            }
+        }
+        anoInput.value = value;
+    });
+}
+
+// function isValidCPF(cpf) {
+//     cpf = cpf.replace(/[^\d]+/g, "");
+//     if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+//     let soma = 0, resto;
+//     for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i - 1]) * (11 - i);
+//     resto = (soma * 10) % 11;
+//     if (resto === 10 || resto === 11) resto = 0;
+//     if (resto !== parseInt(cpf[9])) return false;
+//     soma = 0;
+//     for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i - 1]) * (12 - i);
+//     resto = (soma * 10) % 11;
+//     if (resto === 10 || resto === 11) resto = 0;
+//     return resto === parseInt(cpf[10]);
+// }
+
+function showPass() {
+    // Tenta encontrar o input de senha do login ou do profissional
+    let passwordInput = document.querySelector("#password") || document.querySelector("#professionalPassword");
+    let eyeBtn = document.querySelector("#eye-btn");
+    if (!passwordInput || !eyeBtn) return;
+
+    let isHidden = passwordInput.type === "password";
+    passwordInput.type = isHidden ? "text" : "password";
+    let newIcon = isHidden ? "eye" : "eye-off";
+    eyeBtn.innerHTML = `<i data-lucide="${newIcon}" style="color: #0000008a;"></i>`;
+    if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+    }
+    eyeBtn.classList.toggle("unvisible");
+    eyeBtn.classList.toggle("visible");
+}
+
 
 async function deleteFuncionario(id, token) {
     try {
@@ -100,9 +182,9 @@ async function tabelaFuncionarios() {
 
             // Botão de editar
             row.querySelector(".btn-edit").onclick = () => {
-                let dialogOverlay = document.querySelector(".dialog-overlay");
-                dialogOverlay.style.display = "flex";
-                dialogOverlay.classList.add("fade-in");
+                let editDialog = document.querySelector("#editDialog");
+                editDialog.style.display = "flex";
+                editDialog.classList.add("fade-in");
 
                 document.querySelector("#editProfessionalName").value = funcionario.nome;
                 document.querySelector("#editProfessionalJobName").value = funcionario.cargo;
@@ -145,10 +227,10 @@ async function tabelaFuncionarios() {
 
         document.addEventListener("click", (event) => {
             if (event.target.classList.contains("closeBtn") || event.target.id === "closeEditDialog") {
-                let dialogOverlay = document.querySelector(".dialog-overlay");
-                if (dialogOverlay) {
-                    dialogOverlay.style.display = "none";
-                    dialogOverlay.classList.remove("fade-in");
+                let editDialog = document.querySelector("#editDialog");
+                if (editDialog) {
+                    editDialog.style.display = "none";
+                    editDialog.classList.remove("fade-in");
                 }
             }
         });
@@ -369,9 +451,16 @@ async function tabelaAlunos() {
                 document.querySelector("#editStudentContact").value = aluno.contato;
                 document.querySelector("#editStudentCpf").value = aluno.cpf;
                 document.querySelector("#editStudentRa").value = aluno.ra;
+
+                let editStudentRaInput = document.querySelector("#editStudentRa");
+                editStudentRaInput.setAttribute("readonly", "true");
+                editStudentRaInput.style.backgroundColor = "#e0e0e0";
+                editStudentRaInput.style.color = "#0000008a";
+                editStudentRaInput.style.cursor = "not-allowed";
+
                 document.querySelector("#editStudentAddress").value = aluno.endereco;
-                document.querySelector("#editStudentFatherName").value = aluno.pai;
-                document.querySelector("#editStudentMotherName").value = aluno.mae;
+                document.querySelector("#editStudentFather").value = aluno.pai;
+                document.querySelector("#editStudentMother").value = aluno.mae;
                 document.querySelector("#editStudentBirthDate").value = formatarDataEdit(aluno.data_nascimento);
                 document.querySelector("#confirmEdit").onclick = () => editarAluno(aluno.idUsuario, token);
             };
@@ -393,6 +482,114 @@ async function tabelaAlunos() {
         console.error(error);
         alert("Erro ao carregar os alunos.");
     }
+}
+
+async function adicionarFuncionario() {
+    let token = localStorage.getItem("token");
+
+    let raInput = document.querySelector("#professionalRa");
+    let nameInput = document.querySelector("#professionalName");
+    let passwordInput = document.querySelector("#professionalPassword");
+    let jobInput = document.querySelector("#professionalJobName");
+    let emailInput = document.querySelector("#professionalEmail");
+    let emailEducacionalInput = document.querySelector("#professionalEducationalEmail");
+    let contactInput = document.querySelector("#professionalContact");
+    let cpfInput = document.querySelector("#professionalCpf");
+    let anoInput = document.querySelector("#professionalAno");
+
+    document.querySelector("#confirmAdd").onclick = async () => {
+        if (!isValidEmail(emailInput))
+        {
+            alert("Por favor, insira um email válido.");
+            return;
+        }
+        
+        let anoFormatado = "";
+        if (anoInput) {
+            anoFormatado = anoInput.value ? anoInput.value.slice(-2) : "";
+        } else {
+            console.warn("Campo #professionalAno não encontrado.");
+        }
+        console.log("Ano formatado:", anoFormatado);
+
+        try {
+            let response = await fetch(`http://localhost:3000/usuario/funcionarios/RA/${(anoFormatado)}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            if (!response.ok) {
+                throw new Error("Erro ao adicionar funcionário");
+            }
+            let data = await response.json();
+            let novoRA = data?.novoRA || "";
+            raInput.value = novoRA;
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao gerar RA. Por favor, tente novamente.");
+            return;
+        }
+
+        let emailEd = nameInput.value.trim();
+
+        let partesNome = emailEd.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(" ");
+        let emailNome = partesNome[0];
+        if (partesNome.length > 1 && partesNome[partesNome.length - 1] !== partesNome[0]) {
+            emailNome += "." + partesNome[partesNome.length - 1];
+        }
+        emailEducacionalInput.value = `${emailNome}@horizon.com.br`;
+
+        let nome = nameInput?.value.trim();
+        let senha = passwordInput?.value.trim();
+        let cargo = jobInput?.value.trim();
+        let email = emailInput?.value.trim();
+        let contato = contactInput?.value.trim();
+        let cpf = cpfInput?.value.trim();
+        let email_educacional = emailEducacionalInput?.value.trim();
+        let ra = raInput?.value.trim();
+
+        if (!nome || !cargo || !email || !contato || !cpf || !ra) {
+            alert("Por favor, preencha todos os campos obrigatórios.");
+            return;
+        }
+
+        let novoFuncionario = {
+            nome,
+            senha,
+            cargo,
+            email_pessoal: email,
+            email_educacional,
+            contato,
+            cpf,
+            RA: ra
+        };
+
+        console.log("Novo funcionário:", novoFuncionario);
+
+        try {
+            let response = await fetch("http://localhost:3000/usuario/funcionario", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(novoFuncionario),
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao adicionar funcionário");
+            }
+
+            alert("Funcionário adicionado com sucesso!");
+            document.querySelector(".dialog-overlay").style.display = "none";
+            window.location.reload();
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao adicionar funcionário.");
+        }
+    };
 }
 
 // Executa após o carregamento completo da página
@@ -528,15 +725,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (eyeBtn && passwordInput) {
         eyeBtn.addEventListener("click", () => {
-            let isHidden = passwordInput.type === "password";
-            passwordInput.type = isHidden ? "text" : "password";
-            let newIcon = isHidden ? "eye" : "eye-off";
-            eyeBtn.innerHTML = `<i data-lucide="${newIcon}" style="color: #0000008a;"></i>`;
-            if (typeof lucide !== "undefined") {
-                lucide.createIcons();
-            }
-            eyeBtn.classList.toggle("unvisible");
-            eyeBtn.classList.toggle("visible");
+            showPass();
         });
     }
 
@@ -550,13 +739,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    validarCamposFuncionario();
+
     let listProfessional = document.querySelector("#professional-list");
     if (listProfessional) {
+        let btnAdd = document.querySelector("#addProfessional");
+        btnAdd.addEventListener("click", () => {
+            let dialogOverlay = document.querySelector(".dialog-overlay");
+            dialogOverlay.style.display = "flex";
+            dialogOverlay.classList.add("fade-in");
+
+            let eyeBtn = document.querySelector("#eye-btn");
+            let passwordInput = document.querySelector("#professionalPassword");
+            if (eyeBtn && passwordInput) {
+                eyeBtn.addEventListener("click", () => {
+                    showPass();
+                });
+
+                adicionarFuncionario();
+            }
+        });
+
         tabelaFuncionarios();
 
         raInput.addEventListener("input", () => {
             raInput.value = raInput.value.replace(/\D/g, "").slice(0, 9); // manter limitação
             aplicarFiltrosProfessor();
+
         });
 
         nameInput.addEventListener("input", aplicarFiltrosProfessor);

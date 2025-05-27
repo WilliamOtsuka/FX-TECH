@@ -82,7 +82,9 @@
 
 .filter-table {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   align-items: center;
   margin-bottom: 20px;
   width: 100%;
@@ -93,7 +95,7 @@
 }
 
 .col {
-  padding: 15px 15px 15px 5px;
+  padding: 15px 15px 15px 15px;
   /* Espaçamento interno das colunas */
   box-sizing: border-box;
   /* Inclui padding e border no cálculo da largura total */
@@ -155,7 +157,7 @@
   }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 2000px) {
 
   /* Large devices (lg) */
   .col-lg-12 {
@@ -163,7 +165,7 @@
   }
 
   .col-lg-6 {
-    flex: 0 0 50%;
+    flex: 0 0 0;
   }
 
   .col-lg-4 {
@@ -205,6 +207,7 @@
 
 .column {
   flex-direction: column;
+  padding: 10px;
 }
 
 .input {
@@ -213,9 +216,8 @@
   border: none;
   background: #eeeeee;
   color: rgba(0, 0, 0, 0.87);
-  padding: 12px 0px;
-  padding-left: 10px;
-  width: 100%;
+  padding: 12px 0px 12px 10px;
+  width: 350px; 
   outline: 0 !important;
   border-radius: 8px;
 }

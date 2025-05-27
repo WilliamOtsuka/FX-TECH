@@ -50,7 +50,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="user-list.html" class="nav-link">
+          <a href="student-list.html" class="nav-link">
             <i data-lucide="user"></i>
             <span class="link-text">Listagem de Alunos</span>
           </a>
@@ -73,7 +73,7 @@
       <nav>
         <ul>
           <li>
-            <a href="./user-list.html" class="nav-aside-link">
+            <a href="./student-list.html" class="nav-aside-link">
               <i data-lucide="user"></i>
               Listagem de Alunos
             </a>
@@ -118,16 +118,16 @@
                   <option value="coordenador">Coordenador</option>
                 </select>
               </div>
+            </div>
           </div>
-        </div>
 
-        <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
-          <button class="btn" style="margin-right: 5px" id="addStudent">
-            <i data-lucide="plus"></i>
-          </button>
+          <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
+            <button class="btn" style="margin-right: 5px" id="addProfessional">
+              <i data-lucide="plus"></i>
+            </button>
+          </div>
+
         </div>
-        
-      </div>
         <div style="margin-top: 10px">
           <table class="fl-table" id="userTable">
             <thead>
@@ -147,6 +147,91 @@
           </table>
         </div>
     </main>
+    <!-- Diálogo completo para cadastro -->
+    <div id="addDialog" class="dialog-overlay">
+      <div class="dialog-box" style="min-width: 90%; min-height: auto">
+        <div class="q-card-section bg-grey">
+          <span class="screenTitle">Cadastrar profissional</span>
+          <hr />
+        </div>
+        <div class="q-card-section">
+          <div class="row">
+            <div class="col col-xs-6 col-md-4 col-lg-4">
+              <div class="flex column">
+                <label for="professionalName">Nome:</label>
+                <input placeholder="Nome..." class="input" id="professionalName" required />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-4">
+              <div class="flex column">
+                <label for="professionalPassword">Senha provisória:</label>
+                <div class="flex">
+                  <input placeholder="Senha provisória..." class="input" id="professionalPassword" type="password"
+                  required />
+                  <button type="button" id="eye-btn" class="pointer btn-password unvisible">
+                    <i data-lucide="eye-off" style="color: #0000008a;"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-4">
+              <div class="flex column">
+                <label for="professionalJobName">Profissao:</label>
+                <select class="input" id="professionalJobName" required>
+                  <option value="">Selecione...</option>
+                  <option value="professor">Professor</option>
+                  <option value="coordenador">Coordenador</option>
+                </select>
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-4 col-lg-4">
+              <div class="flex column">
+                <label for="professionalEmail">E-mail:</label>
+                <input placeholder="E-mail..." class="input" type="email" id="professionalEmail" required />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-6 col-lg-6">
+              <div class="flex column">
+                <label for="professionalContact">Contato:</label>
+                <input placeholder="Contato..." class="input" id="professionalContact" maxlength="15" required />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-6 col-lg-6">
+              <div class="flex column">
+                <label for="professionalCpf">CPF:</label>
+                <input placeholder="Cpf..." class="input" id="professionalCpf" maxlength="14" required />
+              </div>
+            </div>
+            <div class="col col-xs-6 col-md-6 col-lg-6">
+              <div class="flex column">
+                <label for="professionalAno">Ano de Admissão:</label>
+                <input placeholder="Ano..." class="input" id="professionalAno" type="number" min="1900" max="2025"
+                  step="1" required pattern="\d{4}" maxlength="4"
+                  oninput="if(this.value.length>4)this.value=this.value.slice(0,4);" />
+              </div>
+            </div>
+            <input type="hidden" id="professionalRa" />
+            <input type="hidden" id="professionalEducationalEmail" />
+          </div>
+          <hr />
+          <div class="q-card-section flex justify-between">
+            <div>
+              <button class="btn-danger flex items-center gap-sm closeBtn" id="closeAddDialog">
+                <i data-lucide="ban" style="width: 20px"></i>
+                Cancelar
+              </button>
+            </div>
+            <div>
+              <button class="btn-success flex items-center gap-sm" id="confirmAdd">
+                <i data-lucide="save" style="width: 20px"></i>
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Diálogo completo para edição -->
     <div id="editDialog" class="dialog-overlay">
       <div class="dialog-box" style="min-width: 90%; min-height: auto">
@@ -177,7 +262,8 @@
             <div class="col col-xs-6 col-md-4 col-lg-4">
               <div class="flex column">
                 <label for="editProfessionalEducationalEmail">E-mail educacional:</label>
-                <input placeholder="E-mail educacional..." class="input" type="email" id="editProfessionalEducationalEmail" />
+                <input placeholder="E-mail educacional..." class="input" type="email"
+                  id="editProfessionalEducationalEmail" />
               </div>
             </div>
             <div class="col col-xs-6 col-md-6 col-lg-6">
@@ -216,7 +302,8 @@
           </div>
         </div>
       </div>
-      <script src="../../js/view/usuario.js"></script>
+    </div>
+    <script src="../../js/view/usuario.js"></script>
 </body>
 
 </html>

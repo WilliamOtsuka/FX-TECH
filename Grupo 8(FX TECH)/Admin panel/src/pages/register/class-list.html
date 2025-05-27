@@ -50,7 +50,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="user-list.html" class="nav-link">
+                    <a href="student-list.html" class="nav-link">
                         <i data-lucide="user"></i>
                         <span class="link-text">Listagem de Alunos</span>
                     </a>
@@ -73,7 +73,7 @@
             <nav>
                 <ul>
                     <li>
-                        <a href="./user-list.html" class="nav-aside-link">
+                        <a href="./student-list.html" class="nav-aside-link">
                             <i data-lucide="user"></i>
                             Listagem de Alunos
                         </a>
@@ -103,32 +103,67 @@
                     <div class="row">
                         <div class="col col-xs-6 col-md-6 col-lg-6 filter-table">
                             <div class="flex column">
-                                <label>Ra:</label>
-                                <input id="raInput" placeholder="Ra..." class="input" />
+                                <label for="nameSelect">Nome:</label>
+                                <select id="nameSelect" class="input">
+                                    <option value="" selected>Selecione o Nome...</option>
+                                    <option value="1º ano">1º Ano</option>
+                                    <option value="2º ano">2º Ano</option>
+                                    <option value="3º ano">3º Ano</option>
+                                    <option value="4º ano">4º Ano</option>
+                                    <option value="5º ano">5º Ano</option>
+                                    <option value="6º ano">6º Ano</option>
+                                    <option value="7º ano">7º Ano</option>
+                                    <option value="8º ano">8º Ano</option>
+                                    <option value="9º ano">9º Ano</option>
+                                </select>
                             </div>
                             <div class="flex column">
-                                <label>Nome:</label>
-                                <input id="nameInput" placeholder="Nome..." class="input" />
+                                <label for="raSelect">Código:</label>
+                                <select id="raSelect" class="input">
+                                    <option value="" selected>Selecione o Código...</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                </select>
+                            </div>
+                            <div class="flex column">
+                                <label for="levelSelect">Nível:</label>
+                                <select id="levelSelect" class="input">
+                                    <option value="" selected>Selecione o Nível...</option>
+                                </select>
+                            </div>
+                            <div class="flex column">
+                                <label for="yearSelect">Ano Letivo:</label>
+                                <select class="input" id="yearSelect">
+                                    <option value="" selected>Selecione o Ano Letivo...</option>
+                                </select>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div style="margin-top: 10px">
-                    <table class="fl-table" id="userTable">
-                        <thead>
-                            <tr>
-                                <th>NOME</th>
-                                <th>ANO LETIVO</th>
-                                <th>NÍVEL</th>
-                                <th>QTD. PARTICIPANTES</th>
-                                <th>DISCIPLINAS</th>
-                                <th>OPÇÕES</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        <tfoot id="tableFootContent"></tfoot>
-                    </table>
+                <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
+                    <button class="btn" style="margin-right: 5px" id="addStudent">
+                        <i data-lucide="plus"></i>
+                    </button>
                 </div>
+            </div>
+            <div style="margin-top: 10px">
+                <table class="fl-table" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>NOME</th>
+                            <th>CODIGO</th>
+                            <th>ANO LETIVO</th>
+                            <th>NÍVEL</th>
+                            <th>QTD. PARTICIPANTES</th>
+                            <th>DISCIPLINAS</th>
+                            <th>OPÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot id="tableFootContent"></tfoot>
+                </table>
+            </div>
         </main>
         <!-- Modal para exibir disciplinas -->
         <div id="disciplinasModal" class="dialog-overlay" style="display: none;">
@@ -149,7 +184,8 @@
                             <ul id="disciplinasDisponiveis" class="disc-lista"></ul>
                         </div>
                     </div>
-                    <button class="btn-success flex items-center gap-sm btn-disciplina-modal"><i data-lucide="save" style="width: 20px" disabled></i>Salvar</button>
+                    <button class="btn-success flex items-center gap-sm btn-disciplina-modal"><i data-lucide="save"
+                            style="width: 20px" disabled></i>Salvar</button>
                 </div>
                 <hr />
                 <div class="q-card-section flex justify-end">

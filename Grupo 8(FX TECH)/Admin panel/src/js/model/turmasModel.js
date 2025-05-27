@@ -3,7 +3,7 @@ import db from '../../../connection-db.js';
 class Turmas {
     static async listarTurmas() {
         let [rows] = await db.query(`
-            SELECT t.idTurma, s.nome, t.codigo, t.turno, al.ano AS anoLetivo, t.ensino
+            SELECT t.idTurma, s.nome, t.codigo, t.turno, al.ano AS anoLetivo, s.ensino
             FROM turmas t
             JOIN serie s ON t.idSerie = s.idSerie
             JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
@@ -139,6 +139,7 @@ class Turmas {
             FROM turma_disciplinas td
             JOIN disciplinas d ON td.idDisciplina = d.idDisciplina
             WHERE td.idTurma = ?
+            ORDER BY d.nome ASC
         `, [idTurma]);
         return rows;
     }

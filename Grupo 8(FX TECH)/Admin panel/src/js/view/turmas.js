@@ -61,35 +61,40 @@ async function carregarParticipantes() {
 async function modalDisciplinas(idTurma, token) {
     try {
         // Busca disciplinas da turma
-        const response = await fetch(`http://localhost:3000/turmas/${idTurma}/disciplinas`, {
+        let response = await fetch(`http://localhost:3000/turmas/${idTurma}/disciplinas`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         if (!response.ok) throw new Error("Erro ao buscar as disciplinas da turma");
         let disciplinasTurma = await response.json();
 
         // Busca todas as disciplinas disponíveis
-        const allDisciplinasRes = await fetch("http://localhost:3000/disciplinas", {
+        let allDisciplinasRes = await fetch("http://localhost:3000/disciplinas", {
             headers: { Authorization: `Bearer ${token}` }
         });
         if (!allDisciplinasRes.ok) throw new Error("Erro ao buscar todas as disciplinas");
         let todasDisciplinas = await allDisciplinasRes.json();
 
+        if (disciplinasTurma === 0) {
+            disciplinasTurma = [];
+        }
+
         // Inicializa listas
         let disciplinasDisponiveis = todasDisciplinas.filter(
             disc => !disciplinasTurma.some(turmaDisc => turmaDisc.idDisciplina === disc.idDisciplina)
         );
+
         let disciplinasAdicionadas = [];
         let disciplinasRemovidas = [];
 
         // Renderiza as listas na modal
         function renderizarListas() {
-            const ulTurma = document.getElementById("disciplinasTurma");
-            const ulDisponiveis = document.getElementById("disciplinasDisponiveis");
+            let ulTurma = document.getElementById("disciplinasTurma");
+            let ulDisponiveis = document.getElementById("disciplinasDisponiveis");
             ulTurma.innerHTML = "";
             ulDisponiveis.innerHTML = "";
 
             disciplinasTurma.forEach(d => {
-                const li = document.createElement("li");
+                let li = document.createElement("li");
                 li.textContent = d.nome;
                 li.onclick = () => {
                     disciplinasTurma = disciplinasTurma.filter(item => item.idDisciplina !== d.idDisciplina);
@@ -105,7 +110,7 @@ async function modalDisciplinas(idTurma, token) {
             });
 
             disciplinasDisponiveis.forEach(d => {
-                const li = document.createElement("li");
+                let li = document.createElement("li");
                 li.textContent = d.nome;
                 li.onclick = () => {
                     disciplinasDisponiveis = disciplinasDisponiveis.filter(item => item.idDisciplina !== d.idDisciplina);
@@ -123,8 +128,8 @@ async function modalDisciplinas(idTurma, token) {
 
         // Atualiza o estado do botão de salvar
         function atualizarBotaoSalvar() {
-            const botaoSalvar = document.querySelector(".btn-disciplina-modal");
-            const habilitar = disciplinasAdicionadas.length > 0 || disciplinasRemovidas.length > 0;
+            let botaoSalvar = document.querySelector(".btn-disciplina-modal");
+            let habilitar = disciplinasAdicionadas.length > 0 || disciplinasRemovidas.length > 0;
             botaoSalvar.disabled = !habilitar;
             botaoSalvar.style.cursor = habilitar ? "pointer" : "not-allowed";
             botaoSalvar.style.opacity = habilitar ? "1" : "0.5";
@@ -134,7 +139,7 @@ async function modalDisciplinas(idTurma, token) {
         atualizarBotaoSalvar();
 
         // Exibe a modal
-        const modal = document.getElementById("disciplinasModal");
+        let modal = document.getElementById("disciplinasModal");
         modal.style.display = "flex";
         modal.classList.add("fade-in");
 
@@ -148,7 +153,7 @@ async function modalDisciplinas(idTurma, token) {
             try {
                 // Adiciona disciplinas
                 if (disciplinasAdicionadas.length > 0) {
-                    const resAdd = await fetch(`http://localhost:3000/disciplinas/turma/${idTurma}`, {
+                    let resAdd = await fetch(`http://localhost:3000/disciplinas/turma/${idTurma}`, {
                         method: "PUT",
                         headers: {
                             "Content-Type": "application/json",
@@ -163,7 +168,7 @@ async function modalDisciplinas(idTurma, token) {
 
                 // Remove disciplinas
                 if (disciplinasRemovidas.length > 0) {
-                    const resRemove = await fetch(`http://localhost:3000/disciplinas/turma/${idTurma}`, {
+                    let resRemove = await fetch(`http://localhost:3000/disciplinas/turma/${idTurma}`, {
                         method: "DELETE",
                         headers: {
                             "Content-Type": "application/json",
@@ -209,12 +214,19 @@ async function modalParticipantes(idTurma, token) {
             // Limpa o conteúdo existente na lista
             participantesList.innerHTML = "";
 
-            // Adiciona os participantes na lista
-            participantes.forEach((participante) => {
-                let listItem = document.createElement("li");
-                listItem.textContent = `${participante.nome} - ${participante.ra}`;
-                participantesList.appendChild(listItem);
-            });
+            if (participantes.length === 0) {
+                let innerHTML = document.createElement("p");
+                innerHTML.textContent = "Nenhum participante encontrado.";
+                participantesList.appendChild(innerHTML);
+            }
+            else {
+                // Adiciona os participantes na lista
+                participantes.forEach((participante) => {
+                    let listItem = document.createElement("li");
+                    listItem.textContent = `${participante.nome} - ${participante.ra}`;
+                    participantesList.appendChild(listItem);
+                });
+            }
 
             // Exibe a modal
             let modal = document.querySelector("#participantesModal");
@@ -349,6 +361,7 @@ async function tabelaClasse() {
             row.id = turma.idTurma;
             row.innerHTML = `
                 <td class="class-name">${turma.nome}</td>
+                <td class="class-code">${turma.codigo}</td>
                 <td class="class-year">${turma.anoLetivo}</td>
                 <td class="class-level">${turma.ensino}</td>
                 <td class="class-disciplines"><button class="btn-disciplinas">Disciplinas</button></td>
@@ -393,7 +406,7 @@ async function tabelaClasse() {
                 document.querySelector("#editClassLevel").value = turma.ensino;
 
                 // Seleciona o ano letivo correto no <select>
-                const selectAno = document.querySelector("#editClassYear");
+                let selectAno = document.querySelector("#editClassYear");
                 for (let option of selectAno.options) {
                     if (option.textContent == turma.anoLetivo || option.value == turma.anoLetivo) {
                         option.selected = true;
@@ -421,6 +434,99 @@ async function tabelaClasse() {
     }
 }
 
+function filtroAno() {
+    try {
+        let response = fetch("http://localhost:3000/ano_letivo");
+        response.then(res => {
+            if (!res.ok) throw new Error("Erro ao buscar anos letivos");
+            return res.json();
+        }).then(anos => {
+            let yearSelect = document.getElementById("yearSelect");
+            anos.forEach(ano => {
+                let option = document.createElement("option");
+                option.value = ano.ano;
+                option.textContent = ano.ano;
+                yearSelect.appendChild(option);
+            });
+        }).catch(error => {
+            console.error("Erro ao carregar anos letivos:", error);
+        });
+    } catch (error) {
+        console.error("Erro ao aplicar filtro de ano:", error);
+        alert("Erro ao carregar os anos letivos. Tente novamente mais tarde.");
+    }
+}
+
+function aplicarFiltrosTurma() {
+    let nameSelect = document.getElementById("nameSelect");
+    let raSelect = document.getElementById("raSelect");
+    let yearSelect = document.getElementById("yearSelect");
+    let levelSelect = document.getElementById("levelSelect");
+    let tableBody = document.querySelector("#userTable tbody");
+
+    function filtrarTabela() {
+        let nameValue = nameSelect.value.toLowerCase();
+        let raValue = raSelect.value.toLowerCase();
+        let yearValue = yearSelect.value.toLowerCase();
+        let levelValue = levelSelect.value.toLowerCase();
+
+        Array.from(tableBody.rows).forEach(row => {
+            let nome = row.querySelector(".class-name").textContent.toLowerCase();
+            let codigo = row.querySelector(".class-code").textContent.toLowerCase();
+            let ano = row.querySelector(".class-year").textContent.toLowerCase();
+            let nivel = row.querySelector(".class-level").textContent.toLowerCase();
+
+            let match =
+                (nameValue === "" || nome.includes(nameValue)) &&
+                (raValue === "" || codigo.includes(raValue)) &&
+                (yearValue === "" || ano.includes(yearValue)) &&
+                (levelValue === "" || nivel.includes(levelValue));
+
+            row.style.display = match ? "" : "none";
+        });
+    }
+
+    nameSelect.addEventListener("change", () => {
+        levelSelect.innerHTML = ""; //
+
+        let optionFundamental = document.createElement("option");
+        optionFundamental = document.createElement("option");
+        optionFundamental.value = "Fundamental";
+        optionFundamental.textContent = "Fundamental";
+        levelSelect.appendChild(optionFundamental);
+
+        let selectedName = nameSelect.value;
+
+        if (["1º ano", "2º ano", "3º ano"].includes(selectedName)) {
+            let option = document.createElement("option");
+            option.textContent = "Selecione o Nível...";
+            option.value = "";
+            option.selected = true;
+            levelSelect.insertBefore(option, levelSelect.firstChild);
+
+            let optionMedio = document.createElement("option");
+            optionMedio.value = "Médio";
+            optionMedio.textContent = "Médio";
+            levelSelect.appendChild(optionMedio);
+
+        } else {
+            Array.from(levelSelect.options).forEach(opt => {
+                if (opt.value === "Médio") {
+                    levelSelect.removeChild(opt);
+                }
+            });
+        }
+        filtrarTabela();
+    });
+
+    filtroAno();
+
+    [nameSelect, raSelect, yearSelect, levelSelect].forEach(select => {
+        select.addEventListener("input", filtrarTabela);
+        select.addEventListener("change", filtrarTabela);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     let containerParticipantes = document.querySelector('.list-participantes');
     if (containerParticipantes) {
@@ -430,6 +536,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let listTurma = document.querySelector("#class-list");
     if (listTurma) {
         lucide.createIcons();
+        aplicarFiltrosTurma();
         tabelaClasse();
     }
 });

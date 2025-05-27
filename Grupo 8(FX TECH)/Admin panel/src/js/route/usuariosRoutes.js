@@ -4,9 +4,11 @@ import UsuariosController from '../controller/usuariosController.js';
 let router = express.Router();
 
 router.post('/login', UsuariosController.login);
+router.post('/usuario/funcionario', UsuariosController.cadastrarFuncionario);
 router.get('/usuario/funcionarios', UsuariosController.listarFuncionarios);
 router.put('/usuario/funcionario/:id', UsuariosController.atualizarFuncionario);
 router.delete('/usuario/funcionario/:id', UsuariosController.excluirFuncionario);
+router.get('/usuario/funcionarios/RA/:ano', UsuariosController.buscarMaiorRAFuncionario);
 
 router.get('/usuario/alunos', UsuariosController.listarAlunos);
 router.put('/usuario/aluno/:id', UsuariosController.atualizarAluno);

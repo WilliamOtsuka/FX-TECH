@@ -13,7 +13,7 @@ class UsuariosController {
             if (!result) {
                 return res.status(401).json({ message: 'RA, tipo ou senha inválidos' });
             }
-    
+
             // ✅ Enviar os dados para o frontend
             return res.status(200).json({
                 token: result.token,
@@ -22,10 +22,37 @@ class UsuariosController {
                     perfil: result.perfil,
                     turmas: result.turmas
                 }
-            });  
+            });
         } catch (error) {
             console.error("Erro ao fazer login:", error);
             return res.status(500).json({ error: 'Erro ao fazer login' });
+        }
+    }
+
+    static async cadastrarFuncionario(req, res) {
+        try {
+            let { nome, senha, cargo, email_pessoal, email_educacional, contato, cpf, RA } = req.body;
+
+            if (!nome || !cargo || !email_pessoal || !email_educacional || !RA || !cpf || !contato) {
+                return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+            }
+
+            let novoFuncionario = {
+                nome,
+                senha,
+                cargo,
+                email_pessoal,
+                email_educacional,
+                contato,
+                cpf,
+                RA
+            };
+
+            let funcionario = await Usuarios.cadastrarFuncionario(novoFuncionario);
+            return res.status(201).json(funcionario);
+        } catch (error) {
+            console.error("Erro ao cadastrar funcionário:", error);
+            return res.status(500).json({ error: 'Erro ao cadastrar o funcionário' });
         }
     }
 
@@ -38,7 +65,7 @@ class UsuariosController {
             return res.status(500).json({ error: 'Erro ao listar funcionários' });
         }
     }
-    
+
     static async atualizarFuncionario(req, res) {
         try {
             let { id } = req.params;
@@ -98,13 +125,26 @@ class UsuariosController {
     static async atualizarAluno(req, res) {
         try {
             let { id } = req.params;
-            let { nome, RA, cpf, contato } = req.body;
+            let { nome, email_pessoal, email_educacional, contato, cpf, data_nascimento, pai, mae, endereco, ra } = req.body;
 
-            if (!nome || !RA || !cpf || !contato) {
+            if (!nome || !email_pessoal || !email_educacional || !contato || !cpf || !data_nascimento || !pai || !mae || !endereco || !ra) {
                 return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
             }
 
-            let sucesso = await Usuarios.atualizarAluno(id, { nome, RA, cpf, contato });
+            let alunoAtualizado = {
+                nome,
+                email_pessoal,
+                email_educacional,
+                contato,
+                cpf,
+                data_nascimento,
+                pai,
+                mae,
+                endereco,
+                ra
+            };
+
+            let sucesso = await Usuarios.atualizarAluno(id, alunoAtualizado);
             if (sucesso) {
                 return res.status(200).json({ message: 'Aluno atualizado com sucesso!' });
             } else {
@@ -138,6 +178,32 @@ class UsuariosController {
         } catch (error) {
             console.error("Erro ao excluir aluno:", error);
             return res.status(500).json({ error: 'Erro ao excluir o aluno' });
+        }
+    }
+
+    static async buscarMaiorRAFuncionario(req, res) {
+        try {
+            const { ano } = req.params;
+
+            // Busca o maior RA já cadastrado para o ano informado
+            const maiorRA = await Usuarios.buscarMaiorRAFuncionario(ano);
+            let ultimoRA = maiorRA || "";
+            let prefixo = "10" + ano;
+            let sequencial = 1;
+
+            if (ultimoRA && ultimoRA.startsWith(prefixo)) {
+                // Continua a sequência do ano informado
+                sequencial = parseInt(ultimoRA.slice(4), 10) + 1;
+            } else {
+                // Começa do 1 para o novo ano
+                sequencial = 1;
+            }
+
+            let novoRA = prefixo + String(sequencial).padStart(5, "0");
+            return res.status(200).json({ novoRA });
+        } catch (error) {
+            console.log("Erro ao buscar maior RA de funcionário:", error);
+            return res.status(500).json({ error: 'Erro ao buscar maior RA de funcionário' });
         }
     }
 }

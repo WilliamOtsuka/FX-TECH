@@ -2,7 +2,7 @@ import db from '../../../connection-db.js';
 
 class Disciplinas {
     static async buscarTodas() {
-        let [rows] = await db.query('SELECT * FROM disciplinas');
+        let [rows] = await db.query('SELECT * FROM disciplinas ORDER BY nome');
         return rows;
     }
 

@@ -144,6 +144,44 @@ class Usuarios {
         return { user, perfil, turmas, token };
     }
 
+    static async cadastrarFuncionario({ nome, senha, cargo, email_pessoal, email_educacional, contato, cpf, RA }) {
+        // Verifica se o RA já existe
+        let [existing] = await db.query('SELECT * FROM usuarios WHERE ra = ? AND tipo = "colaborador"', [RA]);
+        if (existing.length > 0) {
+            throw new Error('RA já cadastrado');
+        }
+
+        let permition = 1; 
+        if (cargo && cargo.toLowerCase() === 'coordenador') {
+            permition = 2;
+        }
+
+        // Cria o colaborador
+        let [colabResult] = await db.query(`
+            INSERT INTO colaboradores (cargo, permition)
+            VALUES (?, ?)
+        `, [cargo, permition]);
+
+        if (colabResult.affectedRows === 0) {
+            throw new Error('Erro ao cadastrar colaborador');
+        }
+
+        let idColaboradores = colabResult.insertId;
+
+        // Cria o usuário com idReferencia apontando para o colaborador criado
+        let [result] = await db.query(`
+            INSERT INTO usuarios (nome, senha, email_pessoal, email_educacional, contato, cpf, ra, tipo, idReferencia)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'colaborador', ?)
+        `, [nome, senha, email_pessoal, email_educacional, contato, cpf, RA, idColaboradores]);
+
+        if (result.affectedRows === 0) {
+            throw new Error('Erro ao cadastrar usuário');
+        }
+
+
+        return { nome, cargo, email_pessoal, email_educacional, contato, cpf, RA };
+    }
+
     static async listarFuncionarios() {
         let [rows] = await db.query(`
             SELECT u.email_pessoal, u.email_educacional, c.idColaboradores, u.nome, c.cargo, u.RA, u.cpf, u.contato, u.idUsuario
@@ -180,6 +218,16 @@ class Usuarios {
         return result.affectedRows > 0;
     }
 
+    static async buscarMaiorRAFuncionario(ano) {
+        let prefixo = "10" + ano;
+        let [rows] = await db.query(`
+            SELECT MAX(ra) as maiorRA 
+            FROM usuarios 
+            WHERE tipo = 'colaborador' AND ra LIKE ?
+        `, [`${prefixo}%`]);
+        return rows[0]?.maiorRA || null;
+    }
+
     static async listarAlunos() {
         let [rows] = await db.query(`
             SELECT u.email_pessoal, u.email_educacional, a.idAluno, u.nome, u.ra, u.cpf, u.contato, u.endereco, a.pai, a.mae, u.data_nascimento, u.idUsuario
@@ -189,8 +237,8 @@ class Usuarios {
         `);
         return rows;
     }
-    
-    static async atualizarAluno(id, { nome, RA, email_pessoal, email_educacional, cpf, contato, endereco, pai, mae, data_nascimento }) {
+
+    static async atualizarAluno(id, { nome, ra, email_pessoal, email_educacional, contato, cpf, data_nascimento, pai, mae, endereco }) {
         let [result] = await db.query(`
             UPDATE usuarios u
             JOIN alunos a ON u.idReferencia = a.idAluno AND u.tipo = 'aluno'
@@ -206,7 +254,7 @@ class Usuarios {
                 a.pai = ?, 
                 a.mae = ?
             WHERE u.idUsuario = ?
-        `, [nome, RA, email_pessoal, email_educacional, contato, cpf, endereco, data_nascimento, pai, mae, id]);
+        `, [nome, ra, email_pessoal, email_educacional, contato, cpf, endereco, data_nascimento, pai, mae, id]);
         return result.affectedRows > 0;
     }
 
