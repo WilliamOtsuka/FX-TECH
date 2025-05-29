@@ -321,7 +321,7 @@
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   width: 100%;
-  max-width: 400px;
+  max-width: 1200px;
   position: relative;
 }
 
@@ -470,4 +470,26 @@ table {
 
 .btn-disciplinas:hover, .btn-participantes:hover {
   background-color: #2a3b4d;
+}
+
+.matricula-btn {
+  background-color: #324960;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  height: 36px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.matricula-btn:hover {
+  background-color: #2a3b4d;
+}
+
+#matricula-box{
+  padding: 10px;
 }

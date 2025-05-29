@@ -55,7 +55,7 @@ class Notas {
         static async buscarNotasPorTurmaEDisciplina(idTurma, idDisciplina) {
             let [rows] = await db.query(`
                                 SELECT DISTINCT
-                    at.idAluno,
+                    m.idAluno,
                     u.nome AS nome_aluno,
                     a.titulo AS nomeAtividade,
                     COALESCE(n.nota, 0) AS nota,
@@ -70,16 +70,16 @@ class Notas {
                 JOIN periodo_letivo pl 
                     ON pl.idAno_letivo = t.idAno_letivo 
                     AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
-                JOIN alunos_turma at ON at.idTurma = t.idTurma
-                JOIN usuarios u ON u.idUsuario = at.idAluno AND u.tipo = 'aluno'
-                LEFT JOIN notas n ON n.idAtividade = a.idAtividade AND n.idAluno = at.idAluno
+                JOIN matricula m ON m.idTurma = t.idTurma
+                JOIN usuarios u ON u.idUsuario = m.idAluno AND u.tipo = 'aluno'
+                LEFT JOIN notas n ON n.idAtividade = a.idAtividade AND n.idAluno = m.idAluno
                 LEFT JOIN (
                     SELECT idAtividade, idAluno, MIN(dataEntrega) as dataEntrega
                     FROM atividades_entregues
                     GROUP BY idAtividade, idAluno
-                ) ae ON ae.idAtividade = a.idAtividade AND ae.idAluno = at.idAluno
+                ) ae ON ae.idAtividade = a.idAtividade AND ae.idAluno = m.idAluno
                 WHERE a.idDisciplina = ?
-                ORDER BY at.idAluno, pl.idPeriodo_letivo, a.dataEntrega;
+                ORDER BY m.idAluno, pl.idPeriodo_letivo, a.dataEntrega;
             `, [idTurma, idDisciplina]);
             // Agrupa as notas por aluno e por bimestre
             let alunos = {};

@@ -50,12 +50,11 @@ class Atividades {
         );
 
         if (existingEntrega.length > 0) {
-            // Verifica se há arquivo anterior e um novo foi enviado
-            const arquivoAntigo = existingEntrega[0].arquivo;
-            if (arquivoAntigo && nomeArquivo) {
-                const caminhoArquivo = path.join('uploads', arquivoAntigo);
+            let arquivoAntigo = existingEntrega[0].arquivo;
+            if (arquivoAntigo) {
+                let caminhoArquivo = path.join('uploads', arquivoAntigo);
                 if (fs.existsSync(caminhoArquivo)) {
-                    fs.unlinkSync(caminhoArquivo); // Remove o arquivo antigo
+                    fs.unlinkSync(caminhoArquivo); 
                 }
             }
 
@@ -108,8 +107,8 @@ class Atividades {
             'SELECT arquivo FROM atividades_entregues WHERE idAtividade = ? AND arquivo IS NOT NULL',
             [idAtividade]
         );
-        for (const entrega of entregas) {
-            const caminhoArquivo = path.join('uploads', entrega.arquivo);
+        for (let entrega of entregas) {
+            let caminhoArquivo = path.join('uploads', entrega.arquivo);
             if (fs.existsSync(caminhoArquivo)) {
                 fs.unlinkSync(caminhoArquivo);
             }
@@ -143,30 +142,30 @@ class Atividades {
     static async buscarNaoEntregues(idAtividade) {
         let [rows] = await db.query(`
             SELECT 
-            at.idAluno, 
-            at.idTurma,
+            m.idAluno, 
+            m.idTurma,
             u.nome AS nome,
             u.ra AS ra
-            FROM alunos_turma at
-            JOIN alunos al ON at.idAluno = al.idAluno
-            JOIN atividades a ON at.idTurma = a.idTurma
+            FROM matricula m
+            JOIN alunos al ON m.idAluno = al.idAluno
+            JOIN atividades a ON m.idTurma = a.idTurma
             JOIN usuarios u ON al.idAluno = u.idReferencia AND u.tipo = 'aluno'
             WHERE a.idAtividade = ?
               AND NOT EXISTS (
               SELECT 1 
               FROM atividades_entregues ae 
-              WHERE ae.idAluno = at.idAluno AND ae.idAtividade = a.idAtividade
+              WHERE ae.idAluno = m.idAluno AND ae.idAtividade = a.idAtividade
               )
               AND (
               NOT EXISTS (
                   SELECT 1 
                   FROM notas n 
-                  WHERE n.idAluno = at.idAluno AND n.idAtividade = a.idAtividade
+                  WHERE n.idAluno = m.idAluno AND n.idAtividade = a.idAtividade
               )
               OR EXISTS (
                   SELECT 1
                   FROM notas n
-                  WHERE n.idAluno = at.idAluno AND n.idAtividade = a.idAtividade AND n.entregue = 'nao'
+                  WHERE n.idAluno = m.idAluno AND n.idAtividade = a.idAtividade AND n.entregue = 'nao'
               )
               )
             ORDER BY u.nome;
@@ -299,12 +298,12 @@ class Atividades {
                 ae.arquivo,
                 u.ra AS ra,
                 u.nome AS nome,
-                at.titulo,
-                at.descricao AS descricaoAtividade,
-                at.peso
+                m.titulo,
+                m.descricao AS descricaoAtividade,
+                m.peso
             FROM atividades_entregues ae
             JOIN alunos al ON ae.idAluno = al.idAluno
-            JOIN atividades at ON ae.idAtividade = at.idAtividade
+            JOIN atividades m ON ae.idAtividade = m.idAtividade
             JOIN usuarios u ON al.idAluno = u.idReferencia AND u.tipo = 'aluno'
             WHERE ae.idAtividade = ? AND ae.idAluno = ?;
         `, [idAtividade, idAluno]);
@@ -325,7 +324,7 @@ class Atividades {
             );
 
             // Insere todos os alunos da turma na tabela atividades_entregues
-            let [alunos] = await db.query('SELECT idAluno FROM alunos_turma WHERE idTurma = ?', [idTurma]);
+            let [alunos] = await db.query('SELECT idAluno FROM matricula WHERE idTurma = ?', [idTurma]);
             for (let aluno of alunos) {
                 await db.query(
                     'INSERT INTO atividades_entregues (idAluno, idAtividade, correcao) VALUES (?, ?, ?)',

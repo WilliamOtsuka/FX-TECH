@@ -3,10 +3,10 @@ function isValidEmail(email) {
 }
 
 function validarCamposFuncionario() {
-    const cpfInput = document.querySelector("#professionalCpf");
-    const contatoInput = document.querySelector("#professionalContact");
-    const emailInput = document.querySelector("#professionalEmail");
-    const anoInput = document.querySelector("#professionalAno");
+    let cpfInput = document.querySelector("#professionalCpf");
+    let contatoInput = document.querySelector("#professionalContact");
+    let emailInput = document.querySelector("#professionalEmail");
+    let anoInput = document.querySelector("#professionalAno");
 
     cpfInput.addEventListener("input", () => {
         let value = cpfInput.value.replace(/\D/g, "").slice(0, 11);
@@ -35,7 +35,7 @@ function validarCamposFuncionario() {
     });
     anoInput.addEventListener("input", () => {
         let value = anoInput.value.replace(/[^\d]/g, "").slice(0, 4);
-        const anoAtual = new Date().getFullYear();
+        let anoAtual = new Date().getFullYear();
         if (value.length === 4) {
             let anoNum = parseInt(value);
             if (anoNum > anoAtual) {
@@ -341,8 +341,25 @@ function aplicarFiltrosAluno() {
     let raValue = document.getElementById("raInput").value.replace(/\D/g, "").slice(0, 9).toLowerCase();
     let nameValue = document.getElementById("nameInput").value.toLowerCase();
 
+    // Filtra a tabela de alunos
     let tableRows = document.querySelectorAll("#userTable tbody tr");
     tableRows.forEach((row) => {
+        let raCell = row.querySelector(".ra");
+        let nameCell = row.querySelector(".nome");
+
+        let raMatch = !raValue || (raCell && raCell.textContent.toLowerCase().includes(raValue));
+        let nameMatch = !nameValue || (nameCell && nameCell.textContent.toLowerCase().includes(nameValue));
+
+        if (raMatch && nameMatch) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    // Filtra a tabela de matrículas
+    let matriculaRows = document.querySelectorAll("#matriculaTable tbody tr");
+    matriculaRows.forEach((row) => {
         let raCell = row.querySelector(".ra");
         let nameCell = row.querySelector(".nome");
 
@@ -490,7 +507,7 @@ async function tabelaAlunos() {
                 <td class="data-nascimento">${formatarData(aluno.data_nascimento)}</td>
                 <td class="pai">${aluno.pai}</td>
                 <td class="mae">${aluno.mae}</td>
-                <td class="endereco">${aluno.endereco}</td>
+                <td class="endereco">${aluno.cep}</td>
                 <td>
                     <button class="btn-edit"><i class="material-icons editBtn">edit</i></button>
                     <button class="btn-delete"><i class="material-icons deleteBtn">delete</i></button>
@@ -531,7 +548,7 @@ async function tabelaAlunos() {
                 editStudentRaInput.style.color = "#0000008a";
                 editStudentRaInput.style.cursor = "not-allowed";
 
-                document.querySelector("#editStudentAddress").value = aluno.endereco;
+                document.querySelector("#editStudentAddress").value = aluno.cep;
                 document.querySelector("#editStudentFather").value = aluno.pai;
                 document.querySelector("#editStudentMother").value = aluno.mae;
                 document.querySelector("#editStudentBirthDate").value = formatarDataEdit(aluno.data_nascimento);
@@ -662,9 +679,18 @@ async function adicionarFuncionario() {
             alert("Erro ao adicionar funcionário.");
         }
     };
+
+    let closeBtn = document.querySelector("#closeAddDialog");
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            document.querySelector(".dialog-overlay").style.display = "none";
+        };
+    } else {
+        console.warn("Botão de fechar diálogo não encontrado.");
+    }
 }
 
-async function realizarMatricula() {
+async function realizarInscricao() {
     // Seleciona os inputs pelo id ou pelo seletor adequado
     let nameInput = document.querySelector("#name");
     let emailInput = document.querySelector('#email');
@@ -676,9 +702,10 @@ async function realizarMatricula() {
     let numeroInput = document.querySelector("#numero");
     let fatherNameInput = document.querySelector("#pai");
     let motherNameInput = document.querySelector('#mae');
+    let tipoInput = document.querySelector("#tipo");
 
     // Botão de envio
-    let btn = document.querySelector("#matriculaBtn");
+    let btn = document.querySelector("#inscricaoBtn");
     if (!btn) return;
 
     btn.onclick = async (e) => {
@@ -698,10 +725,10 @@ async function realizarMatricula() {
         let numero = numeroInput?.value.trim();
         let pai = fatherNameInput?.value.trim();
         let mae = motherNameInput?.value.trim();
-        // let foto = document.querySelector('#foto').files[0];
-        let historicoFile = document.querySelector('#historico').files[0];
+        let foto = document.querySelector('#foto').files[0];
+        let tipo = tipoInput?.value.trim();
 
-        let rg = rgInput?.value.trim();        
+        let rg = rgInput?.value.trim();
 
         console.log("Dados do aluno:", {
             nome,
@@ -714,10 +741,11 @@ async function realizarMatricula() {
             numero,
             pai,
             mae,
-            historicoFile
+            foto,
+            tipo
         });
 
-        if (!nome || !email || !contato || !rg || !cpf || !data_nascimento || !endereco || !numero || !pai || !mae || !historicoFile) {
+        if (!nome || !email || !contato || !rg || !cpf || !data_nascimento || !endereco || !numero || !pai || !mae || !foto || !tipo) {
             alert("Por favor, preencha todos os campos obrigatórios.");
             return;
         }
@@ -734,7 +762,7 @@ async function realizarMatricula() {
         formData.append("pai", pai);
         formData.append("mae", mae);
         formData.append("foto", foto);
-        formData.append("historico", historicoFile);
+        formData.append("tipo", tipo);
 
 
         try {
@@ -756,7 +784,229 @@ async function realizarMatricula() {
     }
 }
 
-// Executa após o carregamento completo da página
+async function carregarMatriculasPendentes() {
+    let token = localStorage.getItem("token");
+    try {
+        let response = await fetch("http://localhost:3000/usuario/matriculas/pendentes", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            return;
+        }
+        let matriculas = await response.json();
+
+        let table = document.querySelector("#matriculaTable");
+        let tbody = table.querySelector("tbody");
+        if (!tbody) {
+            tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+        }
+        tbody.innerHTML = "";
+
+        if (matriculas.length === 0) {
+            let row = document.createElement("tr");
+            row.innerHTML = `<td colspan="11" style="text-align: center;">Nenhuma matrícula pendente encontrada.</td>`;
+            tbody.appendChild(row);
+            return;
+        }
+
+        matriculas.forEach(matricula => {
+            let row = document.createElement("tr");
+            row.id = matricula.idMatricula;
+            row.innerHTML = `
+                <td class="ra">${matricula.ra || ""}</td>
+                <td class="nome">${matricula.nome || ""}</td>
+                <td>${matricula.tipo || ""}</td>
+                <td>${matricula.email_pessoal || ""}</td>
+                <td>${formatarData(matricula.data_inscricao)}</td>
+                <td>${formatarData(matricula.data_prazo)}</td>
+                <td>${matricula.rg || ""}</td>
+                <td>${matricula.cpf || ""}</td>
+                <td>${matricula.contato || ""}</td>
+                <td>${matricula.status || ""}</td>
+                <td>
+                    <button class="btn-edit" id="${matricula.idAluno}"><i class="material-icons editBtn">edit</i></button>
+                    <button class="btn-delete"><i class="material-icons deleteBtn">delete</i></button>
+                </td>
+            `;
+            row.querySelector(".btn-delete").onclick = async () => {
+                if (confirm("Tem certeza que deseja excluir esta matrícula?")) {
+                    try {
+                        console.log("Excluindo matrícula:", matricula.idUsuario);
+                        await deleteAluno(matricula.idUsuario, token);
+                        alert("Matrícula excluída com sucesso!");
+                        carregarMatriculasPendentes();
+                    } catch (err) {
+                        console.error("Erro ao excluir matrícula:", err);
+                        alert("Erro ao excluir matrícula. Tente novamente.");
+                    }
+                }
+            };
+
+            row.querySelector(".btn-edit").onclick = async () => {
+                // Exibe o dialog de matrícula
+                let dialogOverlay = document.querySelector("#matriculaDialog");
+                dialogOverlay.style.display = "flex";
+                dialogOverlay.classList.add("fade-in");
+
+                // Preenche ano letivo e turma dinamicamente
+                let yearSelect = document.querySelector("#enrollYear");
+                let classSelect = document.querySelector("#enrollClass");
+                yearSelect.innerHTML = `<option value="">Selecione o ano letivo...</option>`;
+                classSelect.innerHTML = `<option value="">Selecione a turma...</option>`;
+
+                if (yearSelect && classSelect) {
+                    try {
+                        let resAnos = await fetch("http://localhost:3000/ano_letivo", {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        if (!resAnos.ok) throw new Error("Erro ao buscar anos letivos");
+
+                        let anos = await resAnos.json();
+                        console.log("Anos letivos:", anos);
+                        yearSelect.innerHTML = `<option value="">Selecione o ano letivo...</option>`;
+                        yearSelect.value = "";
+                        if (yearSelect.value === "") {
+                            classSelect.disabled = true;
+                            classSelect.style.backgroundColor = "#cccccc";
+                            classSelect.style.color = "#888888";
+                            classSelect.style.cursor = "not-allowed";
+                        }
+
+                        anos.forEach(ano => {
+                            let opt = document.createElement("option");
+                            opt.value = ano.idAno_letivo;
+                            opt.textContent = ano.ano;
+                            yearSelect.appendChild(opt);
+                        });
+
+                        let resTurmas = await fetch("http://localhost:3000/turmas", {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        if (!resTurmas.ok) throw new Error("Erro ao buscar turmas");
+
+                        let turmas = await resTurmas.json();
+
+                        function atualizarTurmas() {
+                            if (yearSelect.value === "") {
+                                classSelect.disabled = true;
+                                classSelect.style.backgroundColor = "#cccccc";
+                                classSelect.style.color = "#888888";
+                                classSelect.style.cursor = "not-allowed";
+                                classSelect.innerHTML = `<option value="">Selecione a turma...</option>`;
+
+                            } else {
+                                let anoSelecionado = yearSelect.value;
+                                classSelect.disabled = false;
+                                classSelect.style.backgroundColor = "#eeeeee";
+                                classSelect.style.color = "#000000";
+                                classSelect.style.cursor = "pointer";
+                                classSelect.innerHTML = `<option value="">Selecione a turma...</option>`;
+                                turmas
+                                    .filter(turma => turma.idAno_letivo == anoSelecionado)
+                                    .forEach(turma => {
+                                        let opt = document.createElement("option");
+                                        opt.value = turma.idTurma;
+                                        opt.textContent = `${turma.nome} ${turma.codigo} - ${turma.anoLetivo}`;
+                                        classSelect.appendChild(opt);
+                                    });
+                            }
+                        }
+
+                        yearSelect.addEventListener("change", atualizarTurmas);
+
+                        if (yearSelect.value) {
+                            atualizarTurmas();
+                        }
+
+                    } catch (e) {
+                        console.warn("Erro ao carregar anos ou turmas:", e);
+                    }
+                } else {
+                    console.warn("Elementos yearSelect ou classSelect não encontrados.");
+                }
+                // Limpa campos do formulário
+                document.querySelector("#enrollPassword").value = "";
+                document.querySelector("#enrollTranscript").value = "";
+                yearSelect.value = "";
+                classSelect.value = "";
+
+                // Evento de fechar
+                document.querySelector("#closeEnrollDialog").onclick = () => {
+                    dialogOverlay.style.display = "none";
+                    dialogOverlay.classList.remove("fade-in");
+                };
+
+                // Evento de confirmação de matrícula
+                document.querySelector("#form-matricula").onsubmit = async (e) => {
+                    e.preventDefault();
+                    let senha = document.querySelector("#enrollPassword").value.trim();
+                    let historico = document.querySelector("#enrollTranscript").files[0];
+                    let anoLetivo = yearSelect.value;
+                    let turma = classSelect.value;
+                    // Geração de email educacional se necessário
+
+                    if (!senha || !historico || !anoLetivo || !turma) {
+                        alert("Preencha todos os campos obrigatórios.");
+                        return;
+                    }
+
+                    let formData = new FormData();
+                    formData.append("senha", senha);
+                    formData.append("historico", historico);
+                    formData.append("anoLetivo", anoLetivo);
+                    formData.append("turma", turma);
+                    formData.append("idMatricula", row.id);
+                    if (!matricula.email_educacional) {
+                        let partesNome = matricula.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(" ");
+                        let emailNome = partesNome[0];
+                        if (partesNome.length > 1 && partesNome[partesNome.length - 1] !== partesNome[0]) {
+                            emailNome += "." + partesNome[partesNome.length - 1];
+                        }
+                        let emailEducacional = `${emailNome}@horizon.com.br`;
+                        formData.append("email_educacional", emailEducacional);
+
+                        console.log("Email educacional gerado:", emailEducacional);
+                    }
+
+                    try {
+                        let res = await fetch(`http://localhost:3000/usuario/matricula/aluno/${row.id}`, {
+                            method: "POST",
+                            headers: { Authorization: `Bearer ${token}` },
+                            body: formData
+                        });
+                        if (!res.ok) throw new Error("Erro ao confirmar matrícula");
+                        alert("Matrícula confirmada com sucesso!");
+                        dialogOverlay.style.display = "none";
+                        dialogOverlay.classList.remove("fade-in");
+                        carregarMatriculasPendentes();
+                    } catch (err) {
+                        console.error("Erro ao confirmar matrícula:", err);
+                        alert("Erro ao confirmar matrícula. Tente novamente.");
+                    }
+                };
+            };
+
+            tbody.appendChild(row);
+        });
+
+        document.addEventListener("click", (event) => {
+            if (event.target.classList.contains("closeBtn") || event.target.id === "closeEnrollDialog") {
+                let dialogOverlay = document.querySelector("#matriculaDialog");
+                if (dialogOverlay) {
+                    dialogOverlay.style.display = "none";
+                    dialogOverlay.classList.remove("fade-in");
+                }
+            }
+        });
+    } catch (error) {
+        console.error("Erro ao carregar matrículas pendentes:", error);
+        alert("Erro ao carregar matrículas pendentes. Tente novamente mais tarde.");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     // Inicializa ícones se a biblioteca estiver disponível
     if (typeof lucide !== "undefined") {
@@ -875,15 +1125,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         tabelaAlunos();
 
         raInput.addEventListener("input", () => {
-            raInput.value = raInput.value.replace(/\D/g, "").slice(0, 9); // manter limitação
+            raInput.value = raInput.value.replace(/\D/g, "").slice(0, 9);
             aplicarFiltrosAluno();
         });
 
         nameInput.addEventListener("input", aplicarFiltrosAluno);
     }
 
-    let matricula = document.querySelector("#matriculaForm");
-    if (matricula) {
-        realizarMatricula();
+    let inscricao = document.querySelector("#inscricaoForm");
+    if (inscricao) {
+        realizarInscricao();
+    }
+
+    let matriculaTable = document.querySelector("#matricula-list");
+    if (matriculaTable) {
+        carregarMatriculasPendentes();
+
+        raInput.addEventListener("input", () => {
+            raInput.value = raInput.value.replace(/\D/g, "").slice(0, 9);
+            aplicarFiltrosAluno();
+        });
+
+        nameInput.addEventListener("input", aplicarFiltrosAluno);
     }
 });

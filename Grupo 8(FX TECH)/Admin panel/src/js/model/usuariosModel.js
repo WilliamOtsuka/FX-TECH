@@ -38,11 +38,11 @@ class Usuarios {
 
             let [turmasAluno] = await db.query(`
                 SELECT t.idTurma, s.nome, t.codigo, t.turno, t.idAno_letivo, al.ano AS anoLetivo
-                FROM alunos_turma at 
-                JOIN turmas t ON at.idTurma = t.idTurma
+                FROM matricula m 
+                JOIN turmas t ON m.idTurma = t.idTurma
                 JOIN serie s ON t.idSerie = s.idSerie
                 JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
-                WHERE at.idAluno = ?
+                WHERE m.idAluno = ?
             `, [user.idReferencia]);
 
             for (let turma of turmasAluno) {
@@ -144,7 +144,7 @@ class Usuarios {
         return { user, perfil, turmas, token };
     }
 
-    static async cadastrarAluno({ nome, email_pessoal, contato, cpf, rg, data_nascimento, pai, mae, endereco, historico }) {
+    static async cadastrarAluno({ nome, email_pessoal, contato, cpf, rg, data_nascimento, pai, mae, endereco, numero, tipo, foto }) {
         // Verifica se o aluno já existe pelo CPF
         let [existing] = await db.query(
             'SELECT * FROM usuarios WHERE (cpf = ?) AND tipo = "aluno"',
@@ -164,27 +164,25 @@ class Usuarios {
         let maiorRA = raRow[0]?.maiorRA || `${prefixo}0000`;
         let novoRA = (parseInt(maiorRA) + 1).toString();
 
-        // Cria o aluno
         let [alunoResult] = await db.query(
-            `INSERT INTO alunos (pai, mae, historico_escolar) VALUES (?, ?, ?)`,
-            [pai, mae, historico]
+            `INSERT INTO alunos (pai, mae) VALUES (?, ?)`,
+            [pai, mae]
         );
+
         if (alunoResult.affectedRows === 0) {
             throw new Error('Erro ao cadastrar aluno');
         }
         let idAluno = alunoResult.insertId;
 
-        // Cria o usuário com idReferencia apontando para o aluno criado
         let [usuarioResult] = await db.query(
             `INSERT INTO usuarios (
-                nome, ra, senha, rg, cpf, email_pessoal, contato, tipo, cep, numero, data_nascimento, idReferencia
+                nome, ra, rg, cpf, email_pessoal, contato, tipo, cep, numero, data_nascimento, idReferencia, foto
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, 'aluno', ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, 'aluno', ?, ?, ?, ?, ?
             )`,
             [
                 nome,
                 novoRA,
-                cpf,
                 rg,
                 cpf,
                 email_pessoal,
@@ -192,11 +190,24 @@ class Usuarios {
                 endereco,
                 numero,
                 data_nascimento,
-                idAluno
+                idAluno,
+                foto
             ]
         );
         if (usuarioResult.affectedRows === 0) {
             throw new Error('Erro ao cadastrar usuário');
+        }
+
+        let dataInscricao = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        let dataPrazo = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+
+        let [matriculaResult] = await db.query(
+            `INSERT INTO matricula (idAluno, status, tipo, data_inscricao, data_prazo) VALUES (?, 'pendente', ?, ?, ?)`,
+            [idAluno, tipo, dataInscricao, dataPrazo]
+        );
+
+        if (matriculaResult.affectedRows === 0) {
+            throw new Error('Erro ao cadastrar matrícula');
         }
 
         return {
@@ -212,7 +223,8 @@ class Usuarios {
             mae,
             endereco,
             numero,
-            historico
+            tipo,
+            foto
         };
     }
 
@@ -223,7 +235,7 @@ class Usuarios {
             throw new Error('RA já cadastrado');
         }
 
-        let permition = 1; 
+        let permition = 1;
         if (cargo && cargo.toLowerCase() === 'coordenador') {
             permition = 2;
         }
@@ -290,6 +302,56 @@ class Usuarios {
         return result.affectedRows > 0;
     }
 
+    static async matricularAluno({ senha, historico, anoLetivo, turma, idMatricula, email_educacional }) {
+
+        let [result] = await db.query(
+            'SELECT idAluno FROM matricula WHERE idMatricula = ?',
+            [idMatricula]
+        );
+        if (!result.length) {
+            return res.status(404).json({ message: 'Matrícula não encontrada' });
+        }
+        let idAluno = result[0].idAluno;
+
+        if (senha) {
+            await db.query(
+                'UPDATE usuarios SET senha = ?, email_educacional = ? WHERE idReferencia = ? AND tipo = "aluno"',
+                [senha, email_educacional, idAluno]
+            );
+        }
+
+        if (historico) {
+            await db.query(
+                'UPDATE alunos SET historico_escolar = ? WHERE idAluno = ?',
+                [historico, idAluno]
+            );
+        }
+
+        let [anoLetivoRow] = await db.query(
+            'SELECT data_fim FROM ano_letivo WHERE idAno_letivo = ?',
+            [anoLetivo]
+        );
+        if (anoLetivoRow.length === 0) {
+            throw new Error('Ano letivo não encontrado');
+        }
+        let dataFimAnoLetivo = new Date(anoLetivoRow[0].data_fim);
+
+        let dataFinal = new Date(dataFimAnoLetivo);
+        dataFinal.setMonth(dataFinal.getMonth() + 1);
+        dataFinal.setDate(dataFinal.getDate() + 15);
+        dataFinal = dataFinal.toISOString().slice(0, 19).replace('T', ' ');
+
+        let dataMatricula = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+        // Atualiza matrícula para "ativa" e define a turma
+        await db.query(
+            'UPDATE matricula SET status = "ativa", data_validade = ?, data_matricula = ?, idTurma = ?, idAno_letivo = ? WHERE idMatricula = ?',
+            [dataFinal, dataMatricula, turma, anoLetivo, idMatricula]
+        );
+
+        return { success: true, idMatricula, turma };
+    }
+
     static async buscarMaiorRAFuncionario(ano) {
         let prefixo = "10" + ano;
         let [rows] = await db.query(`
@@ -302,12 +364,38 @@ class Usuarios {
 
     static async listarAlunos() {
         let [rows] = await db.query(`
-            SELECT u.email_pessoal, u.email_educacional, a.idAluno, u.nome, u.ra, u.cpf, u.contato, u.endereco, a.pai, a.mae, u.data_nascimento, u.idUsuario
+            SELECT u.email_pessoal, u.email_educacional, a.idAluno, u.nome, u.ra, u.cpf, u.contato, u.cep, a.pai, a.mae, u.data_nascimento, u.idUsuario
             FROM alunos a
             JOIN usuarios u ON a.idAluno = u.idReferencia AND u.tipo = 'aluno'
             ORDER BY u.nome ASC
         `);
         return rows;
+    }
+
+    static async listarMatriculasPendentes() {
+        let [rows] = await db.query(`
+            SELECT 
+            m.idMatricula,
+            m.idAluno,
+            u.idUsuario,
+            u.nome AS nome,
+            u.ra,
+            u.rg,
+            u.cpf,
+            u.email_pessoal,
+            u.email_educacional,
+            u.contato,
+            m.status,
+            m.tipo,
+            m.data_inscricao,
+            m.data_prazo
+            FROM matricula m
+            JOIN alunos a ON m.idAluno = a.idAluno
+            JOIN usuarios u ON u.idReferencia = a.idAluno AND u.tipo = 'aluno'
+            WHERE m.status = 'pendente'
+            ORDER BY u.nome ASC
+        `);
+        return rows && rows.length > 0 ? rows : [];
     }
 
     static async atualizarAluno(id, { nome, ra, email_pessoal, email_educacional, contato, cpf, data_nascimento, pai, mae, endereco }) {
@@ -321,7 +409,7 @@ class Usuarios {
                 u.email_educacional = ?, 
                 u.contato = ?, 
                 u.cpf = ?, 
-                u.endereco = ?, 
+                u.cep = ?, 
                 u.data_nascimento = ?, 
                 a.pai = ?, 
                 a.mae = ?
@@ -332,15 +420,16 @@ class Usuarios {
 
     static async verificarAssociacaoTurmaAluno(id) {
         let [rows] = await db.query(`
-            SELECT * FROM alunos_turma WHERE idAluno = ?
+            SELECT * FROM matricula WHERE idAluno = ?
         `, [id]);
         return rows.length > 0;
     }
 
     static async excluirAluno(id) {
         let [result] = await db.query(`
-            DELETE u, a FROM usuarios u
+            DELETE u, a, m FROM usuarios u
             JOIN alunos a ON u.idReferencia = a.idAluno AND u.tipo = 'aluno'
+            JOIN matricula m ON a.idAluno = m.idAluno
             WHERE u.idUsuario = ?
         `, [id]);
         return result.affectedRows > 0;

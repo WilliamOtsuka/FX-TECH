@@ -79,7 +79,7 @@
       </div>
     </header>
     <main style="padding: 16px">
-      <form action="" id="matriculaForm">
+      <form action="" id="inscricaoForm">
         <div class="q-card">
           <div class="q-card-section bg-grey">
             <span class="screenTitle">FORMULARIO DE MATRICULA</span>
@@ -118,7 +118,7 @@
               <div class="col col-xs-12 col-md-6 col-lg-4">
                 <div class="flex column">
                   <label>Telefone</label>
-                  <input placeholder="(XX) XXXX-XXXX" class="input" id="contato" />
+                  <input placeholder="(XX) XXXX-XXXX" class="input" id="contato" maxlength="15" />
                 </div>
               </div>
 
@@ -150,13 +150,6 @@
                 </div>
               </div>
 
-              <div class="col col-xs-12 col-md-6 col-lg-4">
-                <div class="flex column">
-                  <label>Anexar Histórico Escolar</label>
-                  <input type="file" class="input" id="historico" required />
-                </div>
-              </div>
-
               <div class="col col-xs-12 col-md-12 col-lg-6">
                 <div class="flex column">
                   <label>Pai</label>
@@ -170,11 +163,21 @@
                   <input placeholder="Mãe" class="input" id="mae" />
                 </div>
               </div>
+
+              <div class="col col-xs-12 col-md-6 col-lg-4">
+                <div class="flex column">
+                  <label for="tipo">Tipo</label>
+                  <select id="tipo" class="input">
+                    <option value="inicial">Matrícula</option>
+                    <option value="rematricula">Rematrícula</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
           <hr />
           <div class="q-card-section flex justify-end">
-            <button class="btn-default flex items-center gap-sm" id="matriculaBtn" type="submit">
+            <button class="btn-default flex items-center gap-sm" id="inscricaoBtn" type="submit">
               <i data-lucide="send" style="width: 20px"></i>
               Enviar
             </button>

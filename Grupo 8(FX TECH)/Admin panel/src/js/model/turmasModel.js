@@ -1,9 +1,61 @@
 import db from '../../../connection-db.js';
 
 class Turmas {
+    static async criarTurma(turma) {
+        if (!turma.nome || !turma.anoLetivo || !turma.ensino || !turma.codigo) {
+            throw new Error("Nome, ano letivo e ensino são obrigatórios.");
+        }
+
+        let [anos] = await db.query(
+            `SELECT * FROM ano_letivo WHERE ano = ?`,
+            [turma.anoLetivo]
+        );
+        if (anos.length === 0) {
+            throw new Error("Ano letivo não encontrado.");
+        }
+        let idAno_letivo = anos[0].idAno_letivo;
+
+        // Verifica se já existe uma turma com o mesmo nome e ano letivo
+        // Busca o idSerie correspondente ao nome informado
+        let [series] = await db.query(
+            `SELECT idSerie FROM serie WHERE nome = ?`,
+            [turma.nome]
+        );
+        if (series.length === 0) {
+            throw new Error("Série não encontrada.");
+        }
+        let idSerie = series[0].idSerie;
+
+        // Verifica se já existe uma turma com o mesmo idSerie e ano letivo
+        let [turmasExistentes] = await db.query(
+            `SELECT idTurma FROM turmas WHERE idSerie = ? AND codigo = ? AND idAno_letivo = ?`,
+            [idSerie, turma.codigo, idAno_letivo]
+        );
+        if (turmasExistentes.length > 0) {
+            throw new Error("Já existe uma turma com esse nome e ano letivo.");
+        }
+
+        // Cria a turma
+        let [resultado] = await db.query(
+            `INSERT INTO turmas (idSerie, idAno_letivo, codigo, turno) VALUES (?, ?, ?, ?)`,
+            [idSerie, idAno_letivo, turma.codigo, turma.turno]
+        );
+
+        // Se houver disciplinas selecionadas, insere na tabela turma_disciplinas
+        if (turma.disciplinas && Array.isArray(turma.disciplinas) && turma.disciplinas.length > 0) {
+            const values = turma.disciplinas.map(idDisciplina => [resultado.insertId, idDisciplina]);
+            await db.query(
+                `INSERT INTO turma_disciplinas (idTurma, idDisciplina) VALUES ?`,
+                [values]
+            );
+        }
+
+        return resultado;
+    }
+
     static async listarTurmas() {
         let [rows] = await db.query(`
-            SELECT t.idTurma, s.nome, t.codigo, t.turno, al.ano AS anoLetivo, s.ensino
+            SELECT t.idTurma, s.nome, t.codigo, t.turno, al.idAno_letivo, al.ano AS anoLetivo, s.ensino
             FROM turmas t
             JOIN serie s ON t.idSerie = s.idSerie
             JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
@@ -100,9 +152,9 @@ class Turmas {
             WHERE idTurma = ?
         `, [idTurma]);
 
-        // Deleta referências na tabela alunos_turma
+        // Deleta referências na tabela matricula
         await db.query(`
-            DELETE FROM alunos_turma 
+            DELETE FROM matricula 
             WHERE idTurma = ?
         `, [idTurma]);
 
@@ -159,10 +211,10 @@ class Turmas {
                 u.email_pessoal,
                 u.ra AS ra, 
                 'aluno' AS tipo
-                FROM alunos_turma at
-                JOIN alunos a ON at.idAluno = a.idAluno
+                FROM matricula m
+                JOIN alunos a ON m.idAluno = a.idAluno
                 JOIN usuarios u ON a.idAluno = u.idReferencia AND u.tipo = 'aluno'
-                WHERE at.idTurma = ?
+                WHERE m.idTurma = ?
                 ORDER BY u.nome ASC;
             `, [idTurma]);
 
@@ -182,10 +234,10 @@ class Turmas {
             u.email_pessoal,
             u.ra AS ra, 
             'aluno' AS tipo
-            FROM alunos_turma at
-            JOIN alunos a ON at.idAluno = a.idAluno
+            FROM matricula m
+            JOIN alunos a ON m.idAluno = a.idAluno
             JOIN usuarios u ON a.idAluno = u.idReferencia AND u.tipo = 'aluno'
-            WHERE at.idTurma = ?
+            WHERE m.idTurma = ?
             ORDER BY u.nome ASC;
         `, [idTurma]);
 

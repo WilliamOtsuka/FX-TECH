@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Horizon</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../../styles/aside.css" />
+    <link rel="stylesheet" href="../../styles/header.css" />
+    <link rel="stylesheet" href="../../styles/icons.css" />
+    <link rel="stylesheet" href="../../styles/main.css" />
+    <link rel="stylesheet" href="../../styles/style.css" />
+    <link rel="stylesheet" href="../../styles/drawer.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+    <style>
+        .button-back {
+            border: none;
+            border-radius: 6px;
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            justify-items: center;
+            cursor: pointer;
+            color: #324960;
+        }
+
+        .button-back:hover {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+    <button class="button-back" onclick="window.location.href='../content-page/content-page.html'">
+      <i data-lucide="arrow-big-left-dash"></i>
+    </button>
+        Painel de Gerenciamento
+    </header>
+
+    <div class="container" id="matricula-list">
+        <div class="navbar">
+            <ul class="navbar-nav">
+                <li class="logo">
+                    <a href="#" class="nav-link">
+                        <span class="link-text logo-text">Horizon</span>
+                        <i data-lucide="square-menu"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="student-list.html" class="nav-link">
+                        <i data-lucide="user"></i>
+                        <span class="link-text">Listagem de Alunos</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="professional-list.html" class="nav-link">
+                        <i data-lucide="briefcase"></i>
+                        <span class="link-text">Listagem de Profissionais</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="class-list.html" class="nav-link">
+                        <i data-lucide="book"></i>
+                        <span class="link-text">Listagem de Turmas</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <aside class="asside-content">
+            <nav>
+                <ul>
+                    <li>
+                        <a href="./student-list.html" class="nav-aside-link">
+                            <i data-lucide="user"></i>
+                            Listagem de Alunos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./professional-list.html" class="nav-aside-link">
+                            <i data-lucide="briefcase"></i>
+                            Listagem de Profissionais
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./class-list.html" class="nav-aside-link">
+                            <i data-lucide="book"></i>
+                            Listagem de Turmas
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <main>
+            <div class="q-card">
+                <div class="q-card-section bg-grey">
+                    <span class="screenTitle">Matrículas Pendentes</span>
+                    <hr />
+                </div>
+                <div class="q-card-section">
+                    <div class="row">
+                        <div class="col col-xs-6 col-md-6 col-lg-6">
+                            <div class="flex column">
+                                <label>Ra:</label>
+                                <input id="raInput" placeholder="Ra..." class="input" />
+                            </div>
+                        </div>
+                        <div class="col col-xs-6 col-md-6 col-lg-6">
+                            <div class="flex column">
+                                <label>Nome:</label>
+                                <input id="nameInput" placeholder="Nome..." class="input" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 10px">
+                <table class="fl-table" id="matriculaTable">
+                    <thead>
+                        <tr>
+                            <th>RA</th>
+                            <th>Nome</th>
+                            <th>Matricula</th>
+                            <th>Email</th>
+                            <th>Data de Inscrição</th>
+                            <th>Data de Prazo</th>
+                            <th>RG</th>
+                            <th>CPF</th>
+                            <th>Contato</th>
+                            <th>Status</th>
+                            <th>Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    <tfoot id="tableFootContent"></tfoot>
+                </table>
+            </div>
+        </main>
+
+        <div id="matriculaDialog" class="dialog-overlay" style="display: none;">
+            <div class="dialog-box" id="matricula-box" style="min-width: 900px; min-height: auto;">
+                <div class="q-card-section bg-grey">
+                    <span class="screenTitle">Confirmar Matrícula</span>
+                    <hr />
+                </div>
+                <form id="form-matricula">
+                    <div class="q-card-section">
+                        <div class="row">
+                            <div class="col col-xs-12 col-md-12 col-lg-12">
+                                <div class="flex column">
+                                    <label for="enrollPassword">Senha:</label>
+                                    <input type="password" id="enrollPassword" class="input"
+                                        placeholder="Digite a senha..." />
+                                </div>
+                            </div>
+                            <div class="col col-xs-12 col-md-12 col-lg-12" style="margin-top: 16px;">
+                                <div class="flex column">
+                                    <label for="enrollTranscript">Histórico Escolar:</label>
+                                    <input type="file" id="enrollTranscript" class="input"
+                                        accept=".pdf,.jpg,.jpeg,.png" />
+                                </div>
+                            </div>
+                            <div class="col col-xs-12 col-md-6 col-lg-6" style="margin-top: 16px;">
+                                <div class="flex column">
+                                    <label for="enrollYear">Ano Letivo:</label>
+                                    <select id="enrollYear" class="input">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col col-xs-12 col-md-6 col-lg-6" style="margin-top: 16px;">
+                                <div class="flex column">
+                                    <label for="enrollClass">Turma:</label>
+                                    <select id="enrollClass" class="input">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="q-card-section flex justify-between">
+                        <div>
+                            <button class="btn-danger flex items-center gap-sm" id="closeEnrollDialog" type="button">
+                                <i data-lucide="ban" style="width: 20px"></i>
+                                Cancelar
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn-success flex items-center gap-sm" id="confirmEnroll" type="submit">
+                                <i data-lucide="save" style="width: 20px"></i>
+                                Confirmar Matrícula
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script src="../../js/view/usuario.js"></script>
+    </div>
+</body>
+
+</html>

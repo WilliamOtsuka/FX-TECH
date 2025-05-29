@@ -3,6 +3,7 @@ import TurmasController from '../controller/turmasController.js';
 
 let router = express.Router();
 
+router.post('/turmas', TurmasController.criarTurma);
 router.get('/turmas', TurmasController.listarTurmas);
 router.put('/turmas/:id', TurmasController.atualizarTurma);
 router.delete('/turmas/:id', TurmasController.deletarTurma);

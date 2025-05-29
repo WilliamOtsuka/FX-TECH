@@ -1,6 +1,31 @@
 import Turmas from "../model/turmasModel.js";
 
 class TurmasController {
+
+    static async criarTurma(req, res) {
+        try {
+            let { nome, anoLetivo, nivel, disciplinasSelecionadas, turno, codigo } = req.body;
+            if (!nome || !anoLetivo || !nivel || !codigo) {
+            return res.status(400).json({ message: "Nome, ano letivo, nível e código são obrigatórios." });
+            }
+
+            let turma = {
+            nome,
+            anoLetivo,
+            ensino: nivel,
+            disciplinas: disciplinasSelecionadas,
+            turno,
+            codigo
+            };
+            let resultado = await Turmas.criarTurma(turma);
+            res.status(201).json({ message: "Turma criada com sucesso.", idTurma: resultado.insertId });
+        }
+        catch (error) {
+            console.error("Erro ao criar turma:", error);
+            res.status(500).json({ error: "Erro ao criar turma." });
+        }
+    }
+
     static async listarTurmas(req, res) {
         try {
             let turmas = await Turmas.listarTurmas();

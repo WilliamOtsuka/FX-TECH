@@ -19,6 +19,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/(\d{3})(\d)/, "$1.$2")
       .replace(/(\d{3})(\d{1})$/, "$1-$2");
 
+    // Máscara para contato no formato (xx)xxxxx-xxxx
+    const applyContactMask = (value) =>
+      value
+        .replace(/\D/g, "")
+        .replace(/^(\d{2})(\d{5})(\d{0,4}).*/, "($1)$2-$3")
+        .replace(/(-)$/, ""); // Remove traço se não houver dígitos após
+
   // // Valida CPF
   // const isValidCpf = (cpf) => {
   //   cpf = cpf.replace(/\D/g, "");
@@ -47,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return selectedDate >= minDate && selectedDate <= maxDate;
   };
 
-  // Valida nome (mínimo 20 caracteres)
+  // Valida nome (mínimo 10 caracteres)
   const isValidName = (name) => name.trim().length >= 10;
 
   // Adiciona eventos de validação
@@ -85,9 +92,15 @@ document.addEventListener("DOMContentLoaded", () => {
   addValidation("#date", null, isValidDate, "Data inválida (1900-2024)");
   addValidation("#rg", applyRgMask, (rg) => rg.length > 6, "RG inválido");
   addValidation(
+    "#contato",
+    applyContactMask,
+    (contact) => contact.length === 15,
+    "Contato inválido"
+  );
+  addValidation(
     "#name",
     null,
     isValidName,
-    "O nome deve ter no mínimo 20 caracteres."
+    "O nome deve ter no mínimo 10 caracteres."
   );
 });

@@ -35,7 +35,7 @@
 
 <body>
   <header>
-    <button class="button-back" onclick="goTo('../content-page/content-page.html')">
+    <button class="button-back" onclick="window.location.href='../content-page/content-page.html'">
       <i data-lucide="arrow-big-left-dash"></i>
     </button>
     Painel de Gerenciamento
@@ -115,9 +115,9 @@
               </div>
 
               <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
-                <button class="btn" style="margin-right: 5px" id="addStudent">
-                  <i data-lucide="plus"></i>
-                </button>
+                <a class="matricula-btn" style="margin-right: 5px" id="matriculaBtn" href="matriculas-pendentes.html">
+                  Matrículas Pendentes
+                </a>
               </div>
             </div>
           </div>
@@ -136,7 +136,7 @@
               <th>DATA NASCIMENTO</th>
               <th>PAI</th>
               <th>MÃE</th>
-              <th>ENDEREÇO</th>
+              <th>CEP</th>
               <th>OPÇÕES</th>
             </tr>
           </thead>
@@ -146,7 +146,6 @@
       </div>
     </main>
 
-    <!-- Diálogo completo para edição -->
     <div id="editDialog" class="dialog-overlay">
       <div class="dialog-box" style="min-width: 90%; min-height: auto">
         <div class="q-card-section bg-grey">
@@ -207,7 +206,7 @@
             <div class="col col-xs-6 col-md-6 col-lg-3">
               <div class="flex column">
                 <label for="editStudentRa">RA:</label>
-                <input placeholder="RA" class="input" id="editStudentRa" maxlength="14"/>
+                <input placeholder="RA" class="input" id="editStudentRa" maxlength="14" />
               </div>
             </div>
             <div class="col col-xs-6 col-md-6 col-lg-3">
@@ -233,6 +232,81 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div id="matriculaDialog" class="dialog-overlay" style="display: none;">
+      <div class="dialog-box" id="matricula-box" style="min-width: 900px; min-height: auto;">
+        <div class="q-card-section bg-grey">
+          <span class="screenTitle">Realizar Matrícula</span>
+          <hr />
+        </div>
+        <table class="fl-table" id="matriculaTable">
+          <thead>
+            <tr>
+              <th>RA</th>
+              <th>Nome</th>
+              <th>Tipo</th>
+              <th>Email</th>
+              <th>Data de Inscrição</th>
+              <th>Data de Prazo</th>
+              <th>RG</th>
+              <th>CPF</th>
+              <th>Contato</th>
+              <th>Tipo</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+        </table>
+        <!-- <form id="form-matricula"> -->
+        <!-- <div class="q-card-section">
+            <div class="row">
+              <div class="col col-xs-12 col-md-12 col-lg-12">
+                <div class="flex column">
+                  <label for="enrollPassword">Senha:</label>
+                  <input type="password" id="enrollPassword" class="input" placeholder="Digite a senha..." />
+                </div>
+              </div>
+              <div class="col col-xs-12 col-md-12 col-lg-12" style="margin-top: 16px;">
+                <div class="flex column">
+                  <label for="enrollTranscript">Histórico Escolar:</label>
+                  <input type="file" id="enrollTranscript" class="input" accept=".pdf,.jpg,.jpeg,.png" />
+                </div>
+              </div>
+              <div class="col col-xs-12 col-md-6 col-lg-6" style="margin-top: 16px;">
+                <div class="flex column">
+                  <label for="enrollYear">Ano Letivo:</label>
+                  <select id="enrollYear" class="input">
+                    <option value="">Selecione o ano letivo...</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col col-xs-12 col-md-6 col-lg-6" style="margin-top: 16px;">
+                <div class="flex column">
+                  <label for="enrollClass">Turma:</label>
+                  <select id="enrollClass" class="input">
+                    <option value="">Selecione a turma...</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div class="q-card-section flex justify-between">
+            <div>
+              <button class="btn-danger flex items-center gap-sm" id="closeEnrollDialog">
+                <i data-lucide="ban" style="width: 20px"></i>
+                Cancelar
+              </button>
+            </div>
+            <div>
+              <button class="btn-success flex items-center gap-sm" id="confirmEnroll">
+                <i data-lucide="save" style="width: 20px"></i>
+                Matricular
+              </button>
+            </div>
+          </div>
+        </form> -->
       </div>
     </div>
     <script src="../../js/view/usuario.js"></script>

@@ -29,16 +29,15 @@ class UsuariosController {
         }
     }
 
-    static async matricularAluno(req, res) {
+    static async cadastrarAluno(req, res) {
         try {
-            let { nome, email_pessoal, contato, cpf, rg, data_nascimento, pai, mae, endereco, numero } = req.body;
+            let { nome, email_pessoal, contato, cpf, rg, data_nascimento, pai, mae, endereco, numero, tipo } = req.body;
 
-            if (!nome || !email_pessoal || !contato || !cpf || !rg || !data_nascimento || !pai || !mae || !endereco || !numero) {
+            if (!nome || !email_pessoal || !contato || !cpf || !rg || !data_nascimento || !pai || !mae || !endereco || !numero || !tipo) {
                 return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
             }
 
-            // let foto = req.files && req.files.foto ? req.files.foto[0] : null;
-            let historico = req.files && req.files.historico ? req.files.historico[0] : null;
+            let foto = req.file?.filename || null;
 
             let novoAluno = {
                 nome,
@@ -51,8 +50,8 @@ class UsuariosController {
                 mae,
                 endereco,
                 numero,
-                // foto: foto ? foto.filename : null,
-                historico: historico ? historico.filename : null
+                tipo,
+                foto: foto 
             };
 
             let aluno = await Usuarios.cadastrarAluno(novoAluno);
@@ -146,6 +145,45 @@ class UsuariosController {
         }
     }
 
+    static async matricularAluno(req, res) {
+        try {
+            let { senha, anoLetivo, turma, idMatricula, email_educacional } = req.body;
+
+            if (!senha || !anoLetivo || !turma || !idMatricula) {
+                return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+            }
+
+        let historico = req.file?.filename || null;
+
+            let novaMatricula = {
+                senha,
+                historico: historico,
+                anoLetivo,
+                turma,
+                idMatricula,
+                email_educacional: email_educacional || null
+            };
+
+            let matricula = await Usuarios.matricularAluno(novaMatricula);
+            return res.status(201).json(matricula);
+        } catch (error) {
+            console.error("Erro ao matricular aluno:", error);
+            return res.status(500).json({ error: 'Erro ao matricular o aluno' });
+        }
+    }
+    static async listarMatriculasPendentes(req, res) {
+        try {
+            let matriculasPendentes = await Usuarios.listarMatriculasPendentes();
+            if (!matriculasPendentes || matriculasPendentes.length === 0) {
+                return res.status(200).json([]);
+            }
+            return res.status(200).json(matriculasPendentes);
+        } catch (error) {
+            console.error("Erro ao listar matrículas pendentes:", error);
+            return res.status(500).json({ error: 'Erro ao listar matrículas pendentes' });
+        }
+    }
+
     static async listarAlunos(req, res) {
         try {
             let alunos = await Usuarios.listarAlunos();
@@ -217,10 +255,10 @@ class UsuariosController {
 
     static async buscarMaiorRAFuncionario(req, res) {
         try {
-            const { ano } = req.params;
+            let { ano } = req.params;
 
             // Busca o maior RA já cadastrado para o ano informado
-            const maiorRA = await Usuarios.buscarMaiorRAFuncionario(ano);
+            let maiorRA = await Usuarios.buscarMaiorRAFuncionario(ano);
             let ultimoRA = maiorRA || "";
             let prefixo = "10" + ano;
             let sequencial = 1;

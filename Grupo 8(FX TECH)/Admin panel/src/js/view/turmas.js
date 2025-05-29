@@ -430,7 +430,7 @@ async function tabelaClasse() {
         });
     } catch (error) {
         console.error(error);
-        alert("Erro ao carregar as turmas.");
+        // alert("Erro ao carregar as turmas.");
     }
 }
 
@@ -527,6 +527,147 @@ function aplicarFiltrosTurma() {
     });
 }
 
+async function adicionarClasse() {
+    let token = localStorage.getItem("token");
+    try {
+        let response = await fetch("http://localhost:3000/ano_letivo", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("Erro ao buscar anos letivos");
+        }
+        let anos = await response.json();
+        let anoSelect = document.querySelector("#addClassYear");
+        if (anoSelect) {
+            anoSelect.innerHTML = "";
+            anos.forEach(ano => {
+                let option = document.createElement("option");
+                option.value = ano.idAno_letivo;
+                option.textContent = ano.ano;
+                anoSelect.appendChild(option);
+            });
+        }
+
+        // Carrega disciplinas para seleção
+        let disciplinas = [];
+        try {
+            let disciplinasResponse = await fetch("http://localhost:3000/disciplinas", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if (!disciplinasResponse.ok) {
+                throw new Error("Erro ao buscar disciplinas");
+            }
+            disciplinas = await disciplinasResponse.json();
+            let disciplinaSelect = document.querySelector("#addClassDisciplinas");
+            if (disciplinaSelect) {
+                disciplinaSelect.innerHTML = "";
+                disciplinas.forEach(disciplina => {
+                    let label = document.createElement("label");
+                    let checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.name = "disciplinas";
+                    checkbox.value = disciplina.idDisciplina;
+                    label.appendChild(checkbox);
+                    label.appendChild(document.createTextNode(" " + disciplina.nome));
+                    disciplinaSelect.appendChild(label);
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao carregar disciplinas:", error);
+            alert("Erro ao carregar disciplinas. Tente novamente mais tarde.");
+        }
+
+        // // Carrega professores para seleção
+        // let professores = [];
+        // try {
+        //     let professoresResponse = await fetch("http://localhost:3000/professores", {
+        //         headers: {
+        //             Authorization: `Bearer ${token}`
+        //         }
+        //     });
+        //     if (professoresResponse.ok) {
+        //         professores = await professoresResponse.json();
+        //         let professorSelect = document.querySelector("#addClassProfessores");
+        //         if (professorSelect) {
+        //             professorSelect.innerHTML = "";
+        //             professores.forEach(prof => {
+        //                 let option = document.createElement("option");
+        //                 option.value = prof.idProfessor;
+        //                 option.textContent = prof.nome;
+        //                 professorSelect.appendChild(option);
+        //             });
+        //         }
+        //     }
+        // } catch (error) {
+        //     // Não bloqueia o fluxo se não houver professores
+        //     console.warn("Erro ao carregar professores:", error);
+        // }
+
+        // Evento de confirmação de adição de turma
+        let confirmBtn = document.querySelector("#confirmAdd");
+        if (confirmBtn) {
+            confirmBtn.onclick = async () => {
+                let nome = document.querySelector("#addClassName").value;
+                let anoLetivo = anoSelect.selectedOptions[0]?.textContent || "";
+                let nivel = document.querySelector("#addClassLevel").value;
+
+                // Disciplinas selecionadas
+                let disciplinasSelecionadas = [];
+                let disciplinaCheckboxes = document.querySelectorAll("#addClassDisciplinas input[type='checkbox']:checked");
+                disciplinaCheckboxes.forEach(cb => disciplinasSelecionadas.push(cb.value));
+
+                // // Professores selecionados (caso seja select múltiplo)
+                // let professoresSelecionados = [];
+                // let professorSelect = document.querySelector("#addClassProfessores");
+                // if (professorSelect && professorSelect.selectedOptions) {
+                //     Array.from(professorSelect.selectedOptions).forEach(opt => professoresSelecionados.push(opt.value));
+                // }
+                let turno = document.querySelector("#addClassTurno").value;
+                let codigo = document.querySelector("#addClassCodigo").value;
+                let turma = {
+                    nome: nome,
+                    anoLetivo: anoLetivo,
+                    nivel: nivel,
+                    disciplinasSelecionadas: disciplinasSelecionadas,
+                    turno: turno,
+                    codigo
+                    // professores: professoresSelecionados
+                };
+                try {
+                    let res = await fetch("http://localhost:3000/turmas", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify(turma)
+                    });
+                    if (!res.ok) {
+                        throw new Error("Erro ao adicionar turma");
+                    }
+                    alert("Turma adicionada com sucesso!");
+                    let dialogOverlay = document.querySelector("#addDialog");
+                    if (dialogOverlay) {
+                        dialogOverlay.style.display = "none";
+                        dialogOverlay.classList.remove("fade-in");
+                    }
+                    window.location.reload();
+                } catch (error) {
+                    console.error(error);
+                    alert("Erro ao adicionar turma.");
+                }
+            };
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Erro ao carregar anos letivos.");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     let containerParticipantes = document.querySelector('.list-participantes');
     if (containerParticipantes) {
@@ -537,6 +678,23 @@ document.addEventListener("DOMContentLoaded", function () {
     if (listTurma) {
         lucide.createIcons();
         aplicarFiltrosTurma();
+        let btnAdicionar = document.querySelector("#addClass");
+        adicionarClasse();
         tabelaClasse();
+        btnAdicionar.addEventListener("click", () => {
+            let dialogOverlay = document.querySelector("#addDialog");
+            dialogOverlay.style.display = "flex";
+            dialogOverlay.classList.add("fade-in");
+
+            // Fecha a modal ao clicar no botão de fechar
+            let closeModalBtn = document.querySelector("#closeAddDialog");
+            if (closeModalBtn) {
+                closeModalBtn.onclick = () => {
+                    dialogOverlay.style.display = "none";
+                };
+            }
+
+            adicionarClasse();
+        });
     }
 });
