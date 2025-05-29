@@ -19,22 +19,22 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/(\d{3})(\d)/, "$1.$2")
       .replace(/(\d{3})(\d{1})$/, "$1-$2");
 
-  // Valida CPF
-  const isValidCpf = (cpf) => {
-    cpf = cpf.replace(/\D/g, "");
-    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
-    let sum = 0,
-      rest;
-    for (let i = 1; i <= 9; i++) sum += parseInt(cpf[i - 1]) * (11 - i);
-    rest = (sum * 10) % 11;
-    if (rest === 10 || rest === 11) rest = 0;
-    if (rest !== parseInt(cpf[9])) return false;
-    sum = 0;
-    for (let i = 1; i <= 10; i++) sum += parseInt(cpf[i - 1]) * (12 - i);
-    rest = (sum * 10) % 11;
-    if (rest === 10 || rest === 11) rest = 0;
-    return rest === parseInt(cpf[10]);
-  };
+  // // Valida CPF
+  // const isValidCpf = (cpf) => {
+  //   cpf = cpf.replace(/\D/g, "");
+  //   if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+  //   let sum = 0,
+  //     rest;
+  //   for (let i = 1; i <= 9; i++) sum += parseInt(cpf[i - 1]) * (11 - i);
+  //   rest = (sum * 10) % 11;
+  //   if (rest === 10 || rest === 11) rest = 0;
+  //   if (rest !== parseInt(cpf[9])) return false;
+  //   sum = 0;
+  //   for (let i = 1; i <= 10; i++) sum += parseInt(cpf[i - 1]) * (12 - i);
+  //   rest = (sum * 10) % 11;
+  //   if (rest === 10 || rest === 11) rest = 0;
+  //   return rest === parseInt(cpf[10]);
+  // };
 
   // Valida CEP
   const isValidCep = (cep) => /^[0-9]{5}-[0-9]{3}$/.test(cep);
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Valida nome (mínimo 20 caracteres)
-  const isValidName = (name) => name.trim().length >= 20;
+  const isValidName = (name) => name.trim().length >= 10;
 
   // Adiciona eventos de validação
   const addValidation = (selector, maskFunc, validationFunc, errorMessage) => {
@@ -79,7 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  addValidation("#cpf", applyCpfMask, isValidCpf, "CPF inválido");
+  // addValidation("#cpf", applyCpfMask, isValidCpf, "CPF inválido");
+  addValidation("#cpf", applyCpfMask, (cpf) => cpf.length === 14, "CPF inválido");
   addValidation("#cep", applyCepMask, isValidCep, "CEP inválido");
   addValidation("#date", null, isValidDate, "Data inválida (1900-2024)");
   addValidation("#rg", applyRgMask, (rg) => rg.length > 6, "RG inválido");

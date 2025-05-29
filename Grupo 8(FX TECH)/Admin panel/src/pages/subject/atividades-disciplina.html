@@ -124,9 +124,38 @@
         <main style="padding: 16px; width: 50%;">
           <div class="screenTitle" style="font-size: 2rem" id="titulo-disciplina">Lista de Atividades</div>
           <hr />
-          <div class="list-atividades">
-          </div>
+          <div class="conteudo-principal">
+            <div class="list-atividades">
+              <!-- Atividades serão carregadas aqui via JS -->
+            </div>
 
+            <div id="calendario" class="calendario-container">
+              <table class="calendario-table">
+                <thead>
+                  <tr class="calendario-header">
+                    <th colspan="7" id="calendario-month-year"></th>
+                  </tr>
+                  <tr class="calendario-weekdays">
+                    <th>Dom</th>
+                    <th>Seg</th>
+                    <th>Ter</th>
+                    <th>Qua</th>
+                    <th>Qui</th>
+                    <th>Sex</th>
+                    <th>Sáb</th>
+                  </tr>
+                </thead>
+                <tbody id="calendario-body">
+                  <!-- Dias serão inseridos via JS -->
+                </tbody>
+              </table>
+              <div class="calendario-controles">
+                <button id="prev-month" class="calendario-btn">&#8592; Anterior</button>
+                <button id="next-month" class="calendario-btn">Próximo &#8594;</button>
+              </div>
+              <div id="atividade-info"></div>
+            </div>
+          </div>
         </main>
       </div>
     </div>

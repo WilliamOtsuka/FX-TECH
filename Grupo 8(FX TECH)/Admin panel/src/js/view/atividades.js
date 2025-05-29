@@ -185,10 +185,10 @@ async function enviarFormulario(event) {
 }
 
 function formatarData(dataISO) {
-    let data = new Date(dataISO);
-    let dia = String(data.getDate()).padStart(2, '0');
-    let mes = String(data.getMonth() + 1).padStart(2, '0');
-    let ano = data.getFullYear();
+    const data = new Date(dataISO);
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const ano = data.getFullYear();
     return `${dia}/${mes}/${ano}`;
 }
 
@@ -215,6 +215,8 @@ async function carregarAtividades() {
         let resPeriodo = await fetch(`http://localhost:3000/turmas/${idTurma}/periodos`);
         if (!resPeriodo.ok) throw new Error(`Erro ao buscar períodos: ${resPeriodo.statusText}`);
         let periodos = await resPeriodo.json();
+
+        criarFiltroBimestre(periodos);
 
         let listaAtividades = document.querySelector('.list-atividades');
         if (!listaAtividades) return console.error("Elemento .list-atividades não encontrado!");
@@ -252,6 +254,7 @@ async function carregarAtividades() {
 
             let titulo = document.createElement('h3');
             titulo.textContent = nomePeriodo;
+            titulo.dataset.periodo = nomePeriodo; // <-- Adicione esta linha
             listaAtividades.appendChild(titulo);
 
             atividadesPeriodo.forEach(atividade => {
@@ -314,6 +317,7 @@ async function carregarAtividades() {
         alert("Erro ao carregar atividades. Verifique sua conexão ou tente novamente mais tarde.");
     }
 }
+
 let modal = document.querySelector(".modal-container");
 
 function closeModal() {
@@ -634,8 +638,8 @@ function renderFormularioNota() {
 }
 
 function renderRespostaNota({ nota, feedback }) {
-    const notaEncoded = encodeURIComponent(nota);
-    const feedbackEncoded = encodeURIComponent(feedback);
+    let notaEncoded = encodeURIComponent(nota);
+    let feedbackEncoded = encodeURIComponent(feedback);
 
     return `
         <div class="form-groupCorrecao" id="nota-container">
@@ -757,7 +761,7 @@ async function carregarAtividadeEntregue() {
         let anexoHTML = "";
         if (atividade.arquivo) {
             // Remove tudo antes e incluindo o primeiro '-' do nome do arquivo
-            const nomeOriginal = atividade.arquivo.substring(atividade.arquivo.indexOf('-') + 1);
+            let nomeOriginal = atividade.arquivo.substring(atividade.arquivo.indexOf('-') + 1);
             anexoHTML = `<a href="http://localhost:3000/uploads/${atividade.arquivo}" class="anexo" target="_blank" download="${nomeOriginal}">${nomeOriginal}</a><br/>`;
         }
 
@@ -850,7 +854,7 @@ async function carregarAtividade(idAtividade) {
         if (respostaContainer && user.tipo === "aluno") {
             let anexoHTML = "";
             if (resposta.arquivo) {
-                const nomeOriginal = resposta.arquivo.substring(resposta.arquivo.indexOf('-') + 1);
+                let nomeOriginal = resposta.arquivo.substring(resposta.arquivo.indexOf('-') + 1);
                 anexoHTML = `<a href="http://localhost:3000/uploads/${resposta.arquivo}" download="${nomeOriginal}" class="anexo" target="_blank">${nomeOriginal}</a><br/>`;
             }
             if (resposta.descricaoAluno === null) {
@@ -882,6 +886,187 @@ async function carregarAtividade(idAtividade) {
     } catch (error) {
         console.error("Erro ao carregar atividade:", error);
     }
+}
+
+function mostrarAtividades(atividades, data) {
+    const container = document.getElementById('atividade-info');
+        if (!atividades.length) {
+        container.innerHTML = `<p>Sem atividades para ${data}</p>`;
+        return;
+    }
+    
+    let html = `<h4>Atividades para ${data}:</h4><ul style="padding-left: 0; list-style-type: none;">`;
+    atividades.forEach(atividade => {
+        html += `
+            <li style="margin-top: 0;">
+                <strong>${atividade.titulo}</strong> (${atividade.tipo})
+                <br>
+                Disciplina: ${atividade.nome} 
+                <br>
+                Peso: ${atividade.peso}
+                <br>
+                Status: ${atividade.status} 
+                <br>
+                Hora da Entrega: ${formatarHora(atividade.hora)}
+            </li><hr>`;
+    });
+    html += "</ul>";
+    
+    container.innerHTML = html;
+}
+
+function renderizarCalendario(mes, ano) {
+    let corpoCalendario = document.getElementById('calendario-body');
+    let mesAno = document.getElementById('calendario-month-year');
+    let meses = [
+        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    let primeiroDia = new Date(ano, mes, 1).getDay();
+    let diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+    mesAno.textContent = `${meses[mes]} ${ano}`;
+    corpoCalendario.innerHTML = '';
+
+    let dia = 1;
+    for (let i = 0; i < 6; i++) {
+        let linha = document.createElement('tr');
+        linha.classList.add("calendario-linha");
+        for (let j = 0; j < 7; j++) {
+            let celula = document.createElement('td');
+            celula.classList.add("calendario-celula");
+            if (i === 0 && j < primeiroDia) {
+                celula.textContent = '';
+            } else if (dia > diasNoMes) {
+                celula.textContent = '';
+            } else {
+                celula.textContent = dia;
+                // Destaca o dia de hoje
+                let hoje = new Date();
+
+                let dataSelecionada = new Date(ano, mes, dia);
+                celula.dataset.data = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+
+
+                if (
+                    dia === hoje.getDate() &&
+                    mes === hoje.getMonth() &&
+                    ano === hoje.getFullYear()
+                ) {
+                    celula.classList.add("today");
+                }
+
+                dia++; // Só incremente depois de usar o valor
+                celula.addEventListener("click", async function () {
+                    let data = this.dataset.data;
+
+                    try {
+                        let response = await fetch(`http://localhost:3000/atividades/turma/${idTurma}/disciplina/${idDisciplina}/data/${data}`);
+                        if (!response.ok) {
+                            throw new Error(`Erro ao buscar atividade: ${response.statusText}`);
+                        }
+
+
+                        let formatarData = (data) => {
+                            let partes = data.split('-');
+                            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+                        };
+                        console.log(formatarData(data));
+
+                        let atividades = await response.json();
+                        mostrarAtividades(atividades, formatarData(data));
+                    } catch (error) {
+                        console.error("Erro:", error);
+                        document.getElementById('atividade-info').innerHTML = `<p>Erro ao carregar atividades para ${data}</p>`;
+                    }
+                });
+            }
+            linha.appendChild(celula);
+        }
+        corpoCalendario.appendChild(linha);
+        if (dia > diasNoMes)
+            break;
+    }
+}
+
+function filtrarAtividades() {
+    let filtro = document.createElement('input');
+    filtro.type = 'text';
+    filtro.placeholder = 'Filtrar atividades...';
+    filtro.classList.add('filtro-atividades');
+
+    let listaAtividades = document.querySelector('.conteudo-principal');
+    if (listaAtividades && !document.querySelector('.filtro-atividades')) {
+        listaAtividades.insertAdjacentElement('beforebegin', filtro);
+    }
+
+    filtro.addEventListener('input', function () {
+        let termo = filtro.value.toLowerCase();
+        let periodos = document.querySelectorAll('.list-atividades > h3');
+
+        periodos.forEach(periodo => {
+            let divs = [];
+            let el = periodo.nextElementSibling;
+            while (el && el.classList.contains('div-atividade')) {
+                divs.push(el);
+                el = el.nextElementSibling;
+            }
+
+            let algumVisivel = false;
+            divs.forEach(div => {
+                let link = div.querySelector('.atividade');
+                if (!link) return;
+                let texto = link.textContent.toLowerCase();
+                if (texto.includes(termo)) {
+                    div.style.display = '';
+                    algumVisivel = true;
+                } else {
+                    div.style.display = 'none';
+                }
+            });
+
+            // Esconde o título do período se não houver atividades visíveis
+            periodo.style.display = algumVisivel ? '' : 'none';
+        });
+    });
+}
+
+function criarFiltroBimestre(periodos) {
+    if (document.querySelector('.filtro-bimestre')) return;
+
+    const filtro = document.createElement('select');
+    filtro.classList.add('filtro-bimestre');
+
+    const opcaoTodos = document.createElement('option');
+    opcaoTodos.value = 'todos';
+    opcaoTodos.textContent = 'Todos os bimestres';
+    filtro.appendChild(opcaoTodos);
+
+    periodos.forEach(periodo => {
+        const option = document.createElement('option');
+        option.value = periodo.nome;
+        option.textContent = periodo.nome;
+        filtro.appendChild(option);
+    });
+
+    filtro.addEventListener('change', () => {
+        const valor = filtro.value;
+
+        document.querySelectorAll('.list-atividades > h3').forEach(titulo => {
+            const periodo = titulo.dataset.periodo;
+            const mostrar = valor === 'todos' || periodo === valor;
+            titulo.style.display = mostrar ? '' : 'none';
+
+            let el = titulo.nextElementSibling;
+            while (el && el.classList.contains('div-atividade')) {
+                el.style.display = mostrar ? '' : 'none';
+                el = el.nextElementSibling;
+            }
+        });
+    });
+
+    const listaAtividades = document.querySelector('.list-atividades');
+    listaAtividades.insertAdjacentElement('beforebegin', filtro);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -945,7 +1130,37 @@ document.addEventListener("DOMContentLoaded", function () {
         link.textContent = `Adicionar Atividades +`;
 
         // Insere o link antes da lista de atividades
-        containerAtividades.insertAdjacentElement('beforebegin', link);
+        let container = document.querySelector('.list-atividades');
+        container.insertAdjacentElement('beforebegin', link);
+    }
+    
+    filtrarAtividades();
+
+    let calendario = document.querySelector('#calendario');
+    if (calendario) {
+        let hoje = new Date();
+        let mesAtual = hoje.getMonth();
+        let anoAtual = hoje.getFullYear();
+
+        renderizarCalendario(mesAtual, anoAtual);
+
+        document.getElementById('prev-month').onclick = function () {
+            mesAtual--;
+            if (mesAtual < 0) {
+                mesAtual = 11;
+                anoAtual--;
+            }
+            renderizarCalendario(mesAtual, anoAtual);
+        };
+
+        document.getElementById('next-month').onclick = function () {
+            mesAtual++;
+            if (mesAtual > 11) {
+                mesAtual = 0;
+                anoAtual++;
+            }
+            renderizarCalendario(mesAtual, anoAtual);
+        };
     }
 
     // -------------------------------------------------------------------------
@@ -985,10 +1200,10 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('entregaForm').addEventListener('submit', async function (event) {
             event.preventDefault();
 
-            let idAluno = user.idReferencia; // ID do aluno (colaborador)
+            let idAluno = user.idReferencia;
             let descricao = document.getElementById('descricao').value.trim() || "Sem descrição";
             let dataEntrega = new Date().toISOString().split('T')[0];
-            let arquivo = document.getElementById('arquivo').files[0]; // <- captura do arquivo
+            let arquivo = document.getElementById('arquivo').files[0];
 
             if (!idAluno || !idAtividade || !dataEntrega) {
                 alert('Dados obrigatórios ausentes.');
@@ -1002,13 +1217,13 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("dataEntrega", dataEntrega);
 
             if (arquivo) {
-                formData.append("arquivo", arquivo); // <- adiciona o arquivo ao FormData
+                formData.append("arquivo", arquivo);
             }
 
             try {
                 let response = await fetch('http://localhost:3000/atividades/aluno', {
                     method: 'POST',
-                    body: formData, // <- agora é o FormData, não mais JSON
+                    body: formData,
                 });
 
                 if (response.ok) {

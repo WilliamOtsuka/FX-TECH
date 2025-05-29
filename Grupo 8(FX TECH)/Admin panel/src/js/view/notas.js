@@ -76,6 +76,7 @@ async function buscarNotasAluno() {
         if (!response.ok) throw new Error("Erro ao buscar notas");
 
         let dados = await response.json();
+        console.log("dados:", dados);
 
         // Filtrar apenas as notas do aluno
         let notasAluno = dados.filter(item => item.idAluno === idAluno);
@@ -279,6 +280,25 @@ async function exibirNotasAlunoP(dados, nomeDisciplina) {
         '4º Bimestre': [],
     };
 
+     tabela.innerHTML = `
+        <thead>
+            <tr>
+                <th>Disciplina</th>
+                <th>1º Bimestre</th>
+                <th>2º Bimestre</th>
+                <th>3º Bimestre</th>
+                <th>4º Bimestre</th>
+                <th>Média Final</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${nomeDisciplina}</td>
+                <td></td><td></td><td></td><td></td><td></td>
+            </tr>
+        </tbody>
+    `;
+
     // Agrupa as atividades por bimestre
     dados.forEach(item => {
         if (bimestres[item.bimestre]) {
@@ -293,14 +313,6 @@ async function exibirNotasAlunoP(dados, nomeDisciplina) {
     if (!linha) return console.error("Linha da tabela não encontrada!");
 
     let celulas = linha.querySelectorAll("td");
-
-    // Define o nome da disciplina na primeira célula
-    if (celulas[0]) {
-        let divs = celulas[0].querySelectorAll("div");
-        if (divs.length > 0) {
-            divs[0].textContent = nomeDisciplina;
-        }
-    }
 
     let index = 1;
     for (let [bimestre, atividades] of Object.entries(bimestres)) {
@@ -322,7 +334,7 @@ async function exibirNotasAlunoP(dados, nomeDisciplina) {
             return soma + ativs.reduce((acc, { nota, peso }) => acc + (nota * (peso / 100)), 0);
         }, 0);
 
-        let qtdBimestres = Object.values(bimestres).filter(ativs => ativs.length > 0).length;
+        let qtdBimestres = 4;
         if (qtdBimestres > 0) {
             let mediaFinal = somaNotas / qtdBimestres;
             celulas[5].textContent = mediaFinal.toFixed(2);
@@ -330,6 +342,49 @@ async function exibirNotasAlunoP(dados, nomeDisciplina) {
     }
 }
 
+function tabelaAlunosGeral(idTurma, idDisciplina) {
+    const tabela = document.querySelector(".fl-table");
+
+    tabela.innerHTML = `
+        <thead>
+            <tr>
+                <th>Aluno</th>
+                <th>1º Bimestre</th>
+                <th>2º Bimestre</th>
+                <th>3º Bimestre</th>
+                <th>4º Bimestre</th>
+                <th>Média Final</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    `;
+
+    const tbody = tabela.querySelector("tbody");
+
+    fetch(`http://localhost:3000/notas/turma/${idTurma}/disciplina/${idDisciplina}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => res.json())
+    .then(data => {
+        data.forEach(({ nome_aluno, bimestres }) => {
+            let notaFinal = 0;
+            let row = `<tr><td>${nome_aluno}</td>`;
+            for (let i = 1; i <= 4; i++) {
+                let notas = bimestres[i] || [];
+                let soma = 0;
+                notas.forEach(({ nota, peso }) => {
+                    if (!isNaN(nota) && !isNaN(peso)) {
+                        soma += nota * (peso / 100);
+                    }
+                });
+                notaFinal += soma;
+                row += `<td>${soma.toFixed(2)}</td>`;
+            }
+            row += `<td>${notaFinal.toFixed(2)}</td></tr>`;
+            tbody.innerHTML += row;
+        });
+    });
+}
 
 // Disciplinas gerais
 async function tabelaNotasProfessor(idTurma) {
@@ -363,11 +418,9 @@ async function tabelaNotasProfessor(idTurma) {
     selectAluno.id = "alunoSelect";
     selectAluno.innerHTML = `<option value="">-- Selecione um Aluno --</option>`;
 
-    // Evento: Quando selecionar uma turma
     if (idTurma) {
         document.querySelectorAll(".nota").forEach(tabela => (tabela.innerHTML = ""));
 
-        // Limpa selects
         selectDisciplina.innerHTML = `<option value="">-- Selecione uma Disciplina --</option>`;
         selectAluno.innerHTML = `<option value="">-- Selecione um Aluno --</option>`;
 
@@ -383,16 +436,15 @@ async function tabelaNotasProfessor(idTurma) {
         }
     }
 
-    // Evento: Quando selecionar uma disciplina
     selectDisciplina.addEventListener("change", async () => {
         let idDisciplina = selectDisciplina.value;
 
-        // Limpa o select de alunos
+        tabelaAlunosGeral(idTurma, idDisciplina);
+
         selectAluno.innerHTML = `<option value="">-- Selecione um Aluno --</option>`;
+        if (!idDisciplina) 
+            return;
 
-        if (!idDisciplina) return;
-
-        // Buscar alunos da turma e disciplina selecionada
         try {
             // let response = await fetch(`http://localhost:3000/disciplinas/${idDisciplina}/participantes/${idTurma}`);
             let response = await fetch(`http://localhost:3000/turmas/${idTurma}/disciplina/${idDisciplina}/participantes`);
@@ -415,7 +467,6 @@ async function tabelaNotasProfessor(idTurma) {
         }
     });
 
-    // Montar estrutura na tela
     ddTurmas.appendChild(disciplinaWrapper);
     ddTurmas.appendChild(alunoWrapper);
 
@@ -425,7 +476,6 @@ async function tabelaNotasProfessor(idTurma) {
     alunoWrapper.appendChild(labelAluno);
     alunoWrapper.appendChild(selectAluno);
 
-    // Evento: Quando selecionar um aluno
     selectAluno.addEventListener("change", async () => {
         let idAluno = selectAluno.value;
         if (idAluno) {
@@ -437,9 +487,10 @@ async function tabelaNotasProfessor(idTurma) {
                     `http://localhost:3000/notas/aluno/${idAluno}/disciplina/${idDisciplina}/turma/${idTurma}`
                 );
                 if (!response.ok) throw new Error("Erro ao buscar notas do aluno");
+                
                 let dados = await response.json();
-                // Aqui você pode chamar a função para exibir as notas do aluno
                 console.log("Notas do aluno:", dados);
+
                 let nomeDisciplina = selectDisciplina.options[selectDisciplina.selectedIndex].textContent;
                 exibirNotasAlunoP(dados, nomeDisciplina);
             } catch (err) {
@@ -662,21 +713,30 @@ document.addEventListener("DOMContentLoaded", async function () {
         let idTurma = document.getElementById("turmaSelect").value;
         if (user.tipo === "colaborador") {
             let selectTurma = document.getElementById("turmaSelect");
+
             if (selectTurma) {
                 selectTurma.addEventListener("change", () => {
                     let idTurma = selectTurma.value;
                     if (idTurma === "") {
-                        flTable.style.display = "none"; // Esconde a tabela se nenhuma turma for selecionada
+                        flTable.style.display = "none";
                         let dropdownDisciplinas = document.querySelector("#disciplinaSelect");
-                        if (dropdownDisciplinas) dropdownDisciplinas.parentElement.remove(); // Remove o dropdown de disciplinas
+                        if (dropdownDisciplinas) 
+                            dropdownDisciplinas.parentElement.remove();
+
                         let dropdownAlunos = document.querySelector("#alunoSelect");
-                        if (dropdownAlunos) dropdownAlunos.parentElement.remove(); // Remove o dropdown de alunos
+                        
+                        if (dropdownAlunos) 
+                            dropdownAlunos.parentElement.remove();
                     } else {
-                        flTable.style.display = "table"; // Mostra a tabela se uma turma for selecionada
+                        flTable.style.display = "table";
                         let dropdownDisciplinas = document.querySelector("#disciplinaSelect");
-                        if (dropdownDisciplinas) dropdownDisciplinas.parentElement.remove(); // Remove o dropdown de disciplinas duplicado
+                        if (dropdownDisciplinas) 
+                            dropdownDisciplinas.parentElement.remove();
+
                         let dropdownAlunos = document.querySelector("#alunoSelect");
-                        if (dropdownAlunos) dropdownAlunos.parentElement.remove(); // Remove o dropdown de alunos duplicado
+                        if (dropdownAlunos) 
+                            dropdownAlunos.parentElement.remove();
+
                         tabelaNotasProfessor(idTurma);
                     }
                 });
@@ -691,7 +751,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         flTable.style.display = "none"; // Esconde a tabela se nenhuma turma for selecionada
                         let dropdownDisciplinas = document.querySelector(".disciplinaSelect");
                         if (dropdownDisciplinas) dropdownDisciplinas.remove(); // Remove o dropdown de disciplinas
-                        let  dropdownAlunos = document.querySelector(".alunoSelect");
+                        let dropdownAlunos = document.querySelector(".alunoSelect");
                         if (dropdownAlunos) dropdownAlunos.remove(); // Remove o dropdown de alunos
                     } else if (idTurma)
                         flTable.style.display = "table"; // Mostra a tabela se uma turma for selecionada

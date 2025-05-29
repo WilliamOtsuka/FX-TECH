@@ -29,6 +29,40 @@ class UsuariosController {
         }
     }
 
+    static async matricularAluno(req, res) {
+        try {
+            let { nome, email_pessoal, contato, cpf, rg, data_nascimento, pai, mae, endereco, numero } = req.body;
+
+            if (!nome || !email_pessoal || !contato || !cpf || !rg || !data_nascimento || !pai || !mae || !endereco || !numero) {
+                return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+            }
+
+            // let foto = req.files && req.files.foto ? req.files.foto[0] : null;
+            let historico = req.files && req.files.historico ? req.files.historico[0] : null;
+
+            let novoAluno = {
+                nome,
+                email_pessoal,
+                contato,
+                cpf,
+                rg,
+                data_nascimento,
+                pai,
+                mae,
+                endereco,
+                numero,
+                // foto: foto ? foto.filename : null,
+                historico: historico ? historico.filename : null
+            };
+
+            let aluno = await Usuarios.cadastrarAluno(novoAluno);
+            return res.status(201).json(aluno);
+        } catch (error) {
+            console.error("Erro ao cadastrar aluno:", error);
+            return res.status(500).json({ error: 'Erro ao cadastrar o aluno' });
+        }
+    }
+
     static async cadastrarFuncionario(req, res) {
         try {
             let { nome, senha, cargo, email_pessoal, email_educacional, contato, cpf, RA } = req.body;

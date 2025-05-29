@@ -3,18 +3,18 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 
-const router = express.Router();
+let router = express.Router();
 
-const storage = multer.diskStorage({
+let storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, 'atividades/');
     },
     filename: (req, file, cb) => {
-        const uniqueName = Date.now() + '-' + file.originalname;
+        let uniqueName = Date.now() + '-' + file.originalname;
         cb(null, uniqueName);
     }
 });
-const upload = multer({ storage });
+let upload = multer({ storage });
 
 
 router.post('/atividades/aluno', upload.single('arquivo'), AtividadesController.enviarAtividade);
@@ -31,5 +31,6 @@ router.put('/atividades/:id/correcao/aluno/:idAluno', AtividadesController.atual
 router.delete('/atividades/:id/correcao/aluno/:idAluno', AtividadesController.excluirCorrecao);
 router.get('/atividades/:id/feedback/aluno/:idAluno', AtividadesController.buscarCorrecaoDaAtividadeDoAluno);
 router.get('/atividades/:id/resposta/aluno/:idAluno', AtividadesController.buscarRespostaDoAluno);
+router.get('/atividades/turma/:idTurma/disciplina/:idDisciplina/data/:data', AtividadesController.buscarAtividadesPorData);
 
 export default router;

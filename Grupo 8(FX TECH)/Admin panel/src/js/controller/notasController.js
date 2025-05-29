@@ -22,6 +22,17 @@ class NotasController {
             res.status(500).json({ error: 'Erro ao buscar notas do aluno por turma' });
         }
     }
+
+    static async getNotasPorTurmaEDisciplina(req, res) {
+        try {
+            let { idTurma, idDisciplina } = req.params;
+            let notas = await Notas.buscarNotasPorTurmaEDisciplina(idTurma, idDisciplina);
+            res.json(notas);
+        } catch (error) {
+            console.error("Erro ao buscar notas por turma e disciplina:", error);
+            res.status(500).json({ error: 'Erro ao buscar notas por turma e disciplina' });
+        }
+    }
 }
 
 export default NotasController;

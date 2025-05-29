@@ -5,7 +5,7 @@ class AtividadesController {
     static async enviarAtividade(req, res) {
         // try {
         //     let { idAluno, idAtividade, descricao, dataEntrega } = req.body;
-        //     const atividade = await Atividades.enviarAtividade(idAluno, idAtividade, descricao, dataEntrega);
+        //     let atividade = await Atividades.enviarAtividade(idAluno, idAtividade, descricao, dataEntrega);
         //     if (atividade) {
         //         res.status(201).json({ message: 'Atividade enviada com sucesso', atividade });
         //     } else {
@@ -16,10 +16,10 @@ class AtividadesController {
         //     res.status(500).json({ error: 'Erro ao enviar atividade' });
         // }
         try {
-            const { idAluno, idAtividade, descricao, dataEntrega } = req.body;
-            const nomeArquivo = req.file ? req.file.filename : null;
+            let { idAluno, idAtividade, descricao, dataEntrega } = req.body;
+            let nomeArquivo = req.file ? req.file.filename : null;
 
-            const resultado = await Atividades.enviarAtividade(idAluno, idAtividade, descricao, dataEntrega, nomeArquivo);
+            let resultado = await Atividades.enviarAtividade(idAluno, idAtividade, descricao, dataEntrega, nomeArquivo);
             res.status(200).json(resultado);
         } catch (err) {
             console.error(err);
@@ -29,8 +29,8 @@ class AtividadesController {
 
     static async cadastrarAtividade(req, res) {
         try {
-            const { titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo } = req.body;
-            const atividade = await Atividades.cadastrarAtividade(titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo);
+            let { titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo } = req.body;
+            let atividade = await Atividades.cadastrarAtividade(titulo, descricao, dataEntrega, hora, peso, idDisciplina, idTurma, tipo);
             if (atividade) {
                 res.status(201).json({ message: 'Atividade cadastrada com sucesso', atividade });
             } else {
@@ -44,8 +44,8 @@ class AtividadesController {
 
     static async buscarAtividadesDisciplinasTurmas(req, res) {
         try {
-            const { idDisciplina, idT } = req.params;
-            const atividades = await Atividades.buscarAtividades(idDisciplina, idT);
+            let { idDisciplina, idT } = req.params;
+            let atividades = await Atividades.buscarAtividades(idDisciplina, idT);
             res.json(atividades);
         } catch (error) {
             console.error('Erro ao buscar atividades:', error);
@@ -55,8 +55,8 @@ class AtividadesController {
 
     static async buscarAtividade(req, res) {
         try {
-            const { id } = req.params;
-            const atividade = await Atividades.buscarAtividadePorId(id);
+            let { id } = req.params;
+            let atividade = await Atividades.buscarAtividadePorId(id);
             if (!atividade) {
                 return res.status(404).json({ message: 'Atividade não encontrada' });
             }
@@ -69,8 +69,8 @@ class AtividadesController {
 
     static async excluirAtividade(req, res) {
         try {
-            const { id } = req.params;
-            const sucesso = await Atividades.excluirAtividade(id);
+            let { id } = req.params;
+            let sucesso = await Atividades.excluirAtividade(id);
             if (sucesso) {
                 res.status(200).json({ message: 'Atividade excluída com sucesso' });
             } else {
@@ -84,9 +84,9 @@ class AtividadesController {
 
     static async atualizarAtividade(req, res) {
         try {
-            const { id } = req.params;
-            const { titulo, descricao, dataEntrega, hora, peso } = req.body;
-            const sucesso = await Atividades.atualizarAtividade(id, { titulo, descricao, dataEntrega, hora, peso });
+            let { id } = req.params;
+            let { titulo, descricao, dataEntrega, hora, peso } = req.body;
+            let sucesso = await Atividades.atualizarAtividade(id, { titulo, descricao, dataEntrega, hora, peso });
             if (sucesso) {
                 res.status(200).json({ message: 'Atividade atualizada com sucesso' });
             } else {
@@ -100,8 +100,8 @@ class AtividadesController {
 
     static async buscarAtividadesNaoEntregues(req, res) {
         try {
-            const { id } = req.params;
-            const alunos = await Atividades.buscarNaoEntregues(id);
+            let { id } = req.params;
+            let alunos = await Atividades.buscarNaoEntregues(id);
             res.json(alunos);
         } catch (error) {
             console.error('Erro ao buscar atividades não entregues:', error);
@@ -111,8 +111,8 @@ class AtividadesController {
 
     static async buscarAtividadesNaoCorrigidas(req, res) {
         try {
-            const { id } = req.params;
-            const alunos = await Atividades.buscarNaoCorrigidas(id);
+            let { id } = req.params;
+            let alunos = await Atividades.buscarNaoCorrigidas(id);
             res.json(alunos);
         } catch (error) {
             console.error('Erro ao buscar atividades não corrigidas:', error);
@@ -122,8 +122,8 @@ class AtividadesController {
 
     static async buscarAtividadeCorrigidas(req, res) {
         try {
-            const { id } = req.params;
-            const alunos = await Atividades.buscarCorrigidas(id);
+            let { id } = req.params;
+            let alunos = await Atividades.buscarCorrigidas(id);
             res.json(alunos);
         } catch (error) {
             console.error('Erro ao buscar atividades corrigidas:', error);
@@ -133,17 +133,17 @@ class AtividadesController {
     
     static async enviarCorrecao(req, res) {
         try {
-            const { id, idAluno } = req.params;
-            const { nota, feedback } = req.body;
+            let { id, idAluno } = req.params;
+            let { nota, feedback } = req.body;
 
             // Verificar o status da atividade
-            const atividade = await Atividades.buscarAtividadePorId(id);
+            let atividade = await Atividades.buscarAtividadePorId(id);
             if (atividade.status === 'disponivel') {
                 return res.status(403).json({ message: 'Não é possível corrigir uma atividade ainda disponível.' });
             }
 
             // Enviar a correção
-            const sucesso = await Atividades.enviarCorrecao(id, idAluno, { nota, feedback });
+            let sucesso = await Atividades.enviarCorrecao(id, idAluno, { nota, feedback });
             if (sucesso) {
                 res.status(200).json({ message: 'Correção enviada com sucesso' });
             } else {
@@ -157,9 +157,9 @@ class AtividadesController {
 
     static async atualizarCorrecao(req, res) {
         try {
-            const { id, idAluno } = req.params;
-            const { nota, feedback } = req.body;
-            const sucesso = await Atividades.atualizarCorrecao(id, idAluno, { nota, feedback });
+            let { id, idAluno } = req.params;
+            let { nota, feedback } = req.body;
+            let sucesso = await Atividades.atualizarCorrecao(id, idAluno, { nota, feedback });
             if (sucesso) {
                 res.status(200).json({ message: 'Correção atualizada com sucesso' });
             } else {
@@ -173,8 +173,8 @@ class AtividadesController {
 
     static async excluirCorrecao(req, res) {
         try {
-            const { id, idAluno } = req.params;
-            const sucesso = await Atividades.excluirCorrecao(id, idAluno);
+            let { id, idAluno } = req.params;
+            let sucesso = await Atividades.excluirCorrecao(id, idAluno);
             if (sucesso) {
                 res.status(200).json({ message: 'Correção excluída com sucesso' });
             } else {
@@ -188,8 +188,8 @@ class AtividadesController {
 
     static async buscarCorrecaoDaAtividadeDoAluno(req, res) {
         try {
-            const { id, idAluno } = req.params;
-            const correcao = await Atividades.buscarCorrecao(id, idAluno);
+            let { id, idAluno } = req.params;
+            let correcao = await Atividades.buscarCorrecao(id, idAluno);
             if (correcao) {
                 res.json(correcao);
             } else {
@@ -203,8 +203,8 @@ class AtividadesController {
 
     static async buscarRespostaDoAluno(req, res) {
         try {
-            const { id, idAluno } = req.params;
-            const resposta = await Atividades.buscarResposta(id, idAluno);
+            let { id, idAluno } = req.params;
+            let resposta = await Atividades.buscarResposta(id, idAluno);
             if (resposta) {
                 res.json(resposta);
             } else {
@@ -215,5 +215,16 @@ class AtividadesController {
             res.json(null);
         }
     }
+
+    static async buscarAtividadesPorData(req, res) {
+    try {
+        let { data } = req.params;
+        let atividades = await Atividades.buscarPorData(data);
+        res.json(atividades);
+    } catch (error) {
+        console.error('Erro ao buscar atividades por data:', error);
+        res.status(500).json({ error: 'Erro ao buscar atividades' });
+    }
+}
 }
 export default AtividadesController;

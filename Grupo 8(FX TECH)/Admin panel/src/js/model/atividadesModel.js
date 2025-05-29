@@ -336,6 +336,25 @@ class Atividades {
 
         return result.insertId;
     }
+    static async buscarPorData(data) {
+        let [rows] = await db.query(
+            `SELECT 
+                d.nome,
+                a.titulo,
+                a.descricao,
+                a.dataEntrega,
+                a.hora,
+                a.peso,
+                a.tipo,
+                a.status
+            FROM atividades a
+            JOIN disciplinas d ON a.idDisciplina = d.idDisciplina
+            WHERE DATE(a.dataEntrega) = ?`,
+            [data]
+        );
+        return rows;
+    }
+
 }
 
 export default Atividades;

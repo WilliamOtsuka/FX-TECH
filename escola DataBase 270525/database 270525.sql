@@ -28,8 +28,9 @@ CREATE TABLE `alunos` (
   `idAluno` int NOT NULL AUTO_INCREMENT,
   `pai` varchar(45) DEFAULT NULL,
   `mae` varchar(45) DEFAULT NULL,
+  `historico_escolar` varchar(225) NOT NULL,
   PRIMARY KEY (`idAluno`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +39,7 @@ CREATE TABLE `alunos` (
 
 LOCK TABLES `alunos` WRITE;
 /*!40000 ALTER TABLE `alunos` DISABLE KEYS */;
-INSERT INTO `alunos` VALUES (1,'Gilberto Otsuka','Lucy Otsuka'),(2,'Carlos Silva','Ana Silva'),(3,'Roberto Oliveira','Cláudia Oliveira'),(4,'Eduardo Souza','Patrícia Souza'),(5,'Fernando Fernandes','Juliana Fernandes'),(6,'Marcelo Ramos','Eliane Ramos'),(7,'Paulo Costa','Renata Costa'),(8,'Ricardo Lima','Gabriela Lima'),(9,'André Rocha','Camila Rocha'),(10,'Bruno Martins','Isabela Martins'),(11,'João Almeida','Sônia Almeida'),(12,'Luiz Monteiro','Karla Monteiro'),(13,'Lucas Batista','Fernanda Batista'),(14,'Marcos Dias','Mariana Dias'),(15,'Sérgio Teixeira','Nathalia Teixeira'),(16,'Rafael Figueiredo','Olivia Figueiredo'),(17,'Pedro Henrique','Larissa Henrique'),(18,'Antônio Barbosa','Quésia Barbosa'),(19,'José Nogueira','Rafaela Nogueira'),(20,'Carlos Carvalho','Sabrina Carvalho'),(21,'Thiago Menezes','Luciana Menezes');
+INSERT INTO `alunos` VALUES (1,'Gilberto Otsuka','Lucy Otsuka',''),(2,'Carlos Silva','Ana Silva',''),(3,'Roberto Oliveira','Cláudia Oliveira',''),(4,'Eduardo Souza','Patrícia Souza',''),(5,'Fernando Fernandes','Juliana Fernandes',''),(6,'Marcelo Ramos','Eliane Ramos',''),(7,'Paulo Costa','Renata Costa',''),(8,'Ricardo Lima','Gabriela Lima',''),(9,'André Rocha','Camila Rocha',''),(10,'Bruno Martins','Isabela Martins',''),(11,'João Almeida','Sônia Almeida',''),(12,'Luiz Monteiro','Karla Monteiro',''),(13,'Lucas Batista','Fernanda Batista',''),(14,'Marcos Dias','Mariana Dias',''),(15,'Sérgio Teixeira','Nathalia Teixeira',''),(16,'Rafael Figueiredo','Olivia Figueiredo',''),(17,'Pedro Henrique','Larissa Henrique',''),(18,'Antônio Barbosa','Quésia Barbosa',''),(19,'José Nogueira','Rafaela Nogueira',''),(20,'Carlos Carvalho','Sabrina Carvalho',''),(21,'Thiago Menezes','Luciana Menezes',''),(30,'Gilberto Otsuka','Lucy Otsuka','1748477680572-Historico.jpg');
 /*!40000 ALTER TABLE `alunos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -62,7 +63,7 @@ CREATE TABLE `alunos_turma` (
 
 LOCK TABLES `alunos_turma` WRITE;
 /*!40000 ALTER TABLE `alunos_turma` DISABLE KEYS */;
-INSERT INTO `alunos_turma` VALUES (1,1),(1,6),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,2),(9,2),(10,2),(11,2),(12,2),(13,2),(14,2),(15,3),(16,3),(17,3),(18,3),(19,3),(20,3),(21,3);
+INSERT INTO `alunos_turma` VALUES (1,1),(1,7),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,2),(9,2),(10,2),(11,2),(12,2),(13,2),(14,2),(15,3),(16,3),(17,3),(18,3),(19,3),(20,3),(21,3);
 /*!40000 ALTER TABLE `alunos_turma` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -115,7 +116,7 @@ CREATE TABLE `atividades` (
   PRIMARY KEY (`idAtividade`),
   KEY `atividade_ibfk_1` (`idDisciplina`),
   CONSTRAINT `atividades_ibfk_1` FOREIGN KEY (`idDisciplina`) REFERENCES `disciplinas` (`idDisciplina`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -124,7 +125,7 @@ CREATE TABLE `atividades` (
 
 LOCK TABLES `atividades` WRITE;
 /*!40000 ALTER TABLE `atividades` DISABLE KEYS */;
-INSERT INTO `atividades` VALUES (21,'Trabalho de Física 2º Bimestre','Teste Trabalho 1','2025-05-06','18:08:00',10,1,'indisponivel',1,'atividade'),(25,'teste prova','prova','2025-09-18','18:25:00',70,1,'disponivel',1,'avaliativa'),(28,'asdfasdasdasdsad','teste','2025-05-13','14:29:00',11,1,'indisponivel',1,'atividade'),(31,'teste atbsadsadsa','sdsadasdas','2025-09-20','14:05:00',4,1,'disponivel',1,'atividade');
+INSERT INTO `atividades` VALUES (21,'Trabalho de Física 2º Bimestre','Teste Trabalho 1','2025-05-06','18:08:00',10,1,'indisponivel',1,'atividade'),(25,'teste prova','prova','2025-09-18','18:25:00',70,1,'disponivel',1,'avaliativa'),(28,'asdfasdasdasdsad','teste','2025-05-13','14:29:00',11,1,'indisponivel',1,'atividade'),(31,'teste atbsadsadsa','sdsadasdas','2025-09-20','14:05:00',4,1,'disponivel',1,'atividade'),(32,'atividade teste 30','teste teste teste','2025-09-20','23:59:00',30,1,'disponivel',1,'atividade');
 /*!40000 ALTER TABLE `atividades` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -379,16 +380,19 @@ CREATE TABLE `usuarios` (
   `nome` varchar(45) DEFAULT NULL,
   `RA` varchar(20) DEFAULT NULL,
   `senha` text NOT NULL,
+  `rg` varchar(12) NOT NULL,
   `cpf` varchar(14) DEFAULT NULL,
   `email_pessoal` varchar(255) DEFAULT NULL,
   `email_educacional` varchar(255) DEFAULT NULL,
   `contato` varchar(15) DEFAULT NULL,
   `tipo` enum('aluno','colaborador') NOT NULL,
-  `endereco` varchar(100) DEFAULT NULL,
+  `cep` varchar(100) DEFAULT NULL,
+  `numero` int DEFAULT NULL,
   `data_nascimento` date DEFAULT NULL,
   `idReferencia` int NOT NULL,
+  `foto` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`idUsuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -397,7 +401,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'William Otsuka','202300021','123456','000.000.000-01','william.otsuka60@hotmail.com','william.otsuka@horizon.com.br','(11) 90000-0001','aluno','Rua das Flores, 123','2006-01-10',1),(2,'Coordenador','102300001','139980','000.000.000-02','coordenador@email.com','coordenador.coord@horizon.br','(11) 90000-0002','colaborador','Avenida Central, 456','1980-02-15',1),(3,'Professor de Física','102400001','111111','000.000.000-03','professorFísica@gmail.com','professorFísica.prof@horizon.br','(11) 90000-0003','colaborador','Rua do Professor, 789','1985-03-20',2),(4,'Professor2','102500001','222222','000.000.000-04','professor2@hotmail.com','professor2.professor2@horizon.br','(11) 90000-0004','colaborador','Rua dos Mestres, 101','1987-04-25',3),(5,'Ana Silva','202300001','234567','000.000.000-05','ana_silva23@yahoo.com','ana.silva@horizon.com.br','(11) 90000-0005','aluno','Rua das Acácias, 202','2006-05-05',2),(6,'Bruno Oliveira','202300002','345678','000.000.000-06','bruno.oliveira13@outlook.com','bruno.oliveira@horizon.com.br','(11) 90000-0006','aluno','Rua dos Estudantes, 303','2006-06-12',3),(7,'Carla Souza','202300003','456789','000.000.000-07','carla_souza79@gmail.com','carla.souza@horizon.com.br','(11) 90000-0007','aluno','Rua das Palmeiras, 404','2006-07-18',4),(8,'Diego Fernandes','202300004','567890','000.000.000-08','diego.fernandes76@hotmail.com','diego.fernandes@horizon.com.br','(11) 90000-0008','aluno','Rua das Laranjeiras, 505','2006-08-22',5),(9,'Elisa Ramos','202300005','678901','000.000.000-09','elisa_ramos43@yahoo.com','elisa.ramos@horizon.com.br','(11) 90000-0009','aluno','Rua das Oliveiras, 606','2006-09-30',6),(10,'Felipe Costa','202300006','789012','000.000.000-10','felipe.costa69@outlook.com','felipe.costa@horizon.com.br','(11) 90000-0010','aluno','Rua das Hortências, 707','2006-10-11',7),(11,'Gabriela Lima','202300007','890123','000.000.000-11','gabriela_lima25@gmail.com','gabriela.lima@horizon.com.br','(11) 90000-0011','aluno','Rua das Rosas, 808','2006-11-03',8),(12,'Henrique Rocha','202300008','901234','000.000.000-12','henrique.rocha90@hotmail.com','henrique.rocha@horizon.com.br','(11) 90000-0012','aluno','Rua das Violetas, 909','2006-12-14',9),(13,'Isabela Martins','202300009','112233','000.000.000-13','isabela_martins94@yahoo.com','isabela.martins@horizon.com.br','(11) 90000-0013','aluno','Rua das Margaridas, 111','2007-01-09',10),(14,'João Almeida','202300010','223344','000.000.000-14','joão.almeida11@outlook.com','joão.almeida@horizon.com.br','(11) 90000-0014','aluno','Rua das Tulipas, 222','2007-02-17',11),(15,'Karla Monteiro','202300011','334455','000.000.000-15','karla_monteiro33@gmail.com','karla.monteiro@horizon.com.br','(11) 90000-0015','aluno','Rua das Orquídeas, 333','2007-03-23',12),(16,'Lucas Batista','202300012','445566','000.000.000-16','lucas.batista34@hotmail.com','lucas.batista@horizon.com.br','(11) 90000-0016','aluno','Rua das Azaleias, 444','2007-04-28',13),(17,'Mariana Dias','202300013','556677','000.000.000-17','mariana_dias59@yahoo.com','mariana.dias@horizon.com.br','(11) 90000-0017','aluno','Rua das Bromélias, 555','2007-05-06',14),(18,'Nicolas Teixeira','202300014','667788','000.000.000-18','nicolas.teixeira95@outlook.com','nicolas.teixeira@horizon.com.br','(11) 90000-0018','aluno','Rua das Dalias, 666','2007-06-13',15),(19,'Olivia Figueiredo','202300015','778899','000.000.000-19','olivia_figueiredo19@gmail.com','olivia.figueiredo@horizon.com.br','(11) 90000-0019','aluno','Rua das Camélias, 777','2007-07-21',16),(20,'Pedro Henrique','202300016','889900','000.000.000-20','pedro.henrique69@hotmail.com','pedro.henrique@horizon.com.br','(11) 90000-0020','aluno','Rua das Begônias, 888','2007-08-29',17),(21,'Quésia Barbosa','202300017','990011','000.000.000-21','quésia_barbosa98@yahoo.com','quésia.barbosa@horizon.com.br','(11) 90000-0021','aluno','Rua das Petúnias, 999','2007-09-30',18),(22,'Rafael Nogueira','202300018','101010','000.000.000-22','rafael.nogueira95@outlook.com','rafael.nogueira@horizon.com.br','(11) 90000-0022','aluno','Rua das Amarílis, 100','2007-10-15',19),(23,'Sabrina Carvalho','202300019','202020','000.000.000-23','sabrina_carvalho83@gmail.com','sabrina.carvalho@horizon.com.br','(11) 90000-0023','aluno','Rua das Gardênias, 200','2007-11-20',20),(24,'Thiago Menezes','202300020','303030','000.000.000-24','thiago.menezes28@hotmail.com','thiago.menezes@horizon.com.br','(11) 90000-0024','aluno','Rua das Magnólias, 300','2007-12-25',21),(26,'Professor de PT','102300002','333333','000.000.000-25','professorPT@gmail.com','professorPT.prof@horizon.br','(11) 90000-0025','colaborador','Rua dos Professores, 400','1988-05-10',4),(27,'Professor História','102400002','historia','000.000.000-26','professor_história@gmail.com','professor.historia@horizon.com.br','1899913271','colaborador',NULL,NULL,7),(29,'Professor História','102500002','sdasdasda','321.312.312-31','dsadsadadsa','professor.historia@horizon.com.br','(32) 13213-1231','colaborador',NULL,NULL,9);
+INSERT INTO `usuarios` VALUES (1,'William Otsuka','202300021','123456','','000.000.000-01','william.otsuka60@hotmail.com','william.otsuka@horizon.com.br','(11) 90000-0001','aluno','Rua das Flores, 123',NULL,'2006-01-10',1,NULL),(2,'Coordenador','102300001','139980','','000.000.000-02','coordenador@email.com','coordenador.coord@horizon.br','(11) 90000-0002','colaborador','Avenida Central, 456',NULL,'1980-02-15',1,NULL),(3,'Professor de Física','102400001','111111','','000.000.000-03','professorFísica@gmail.com','professorFísica.prof@horizon.br','(11) 90000-0003','colaborador','Rua do Professor, 789',NULL,'1985-03-20',2,NULL),(4,'Professor2','102500001','222222','','000.000.000-04','professor2@hotmail.com','professor2.professor2@horizon.br','(11) 90000-0004','colaborador','Rua dos Mestres, 101',NULL,'1987-04-25',3,NULL),(5,'Ana Silva','202300001','234567','','000.000.000-05','ana_silva23@yahoo.com','ana.silva@horizon.com.br','(11) 90000-0005','aluno','Rua das Acácias, 202',NULL,'2006-05-05',2,NULL),(6,'Bruno Oliveira','202300002','345678','','000.000.000-06','bruno.oliveira13@outlook.com','bruno.oliveira@horizon.com.br','(11) 90000-0006','aluno','Rua dos Estudantes, 303',NULL,'2006-06-12',3,NULL),(7,'Carla Souza','202300003','456789','','000.000.000-07','carla_souza79@gmail.com','carla.souza@horizon.com.br','(11) 90000-0007','aluno','Rua das Palmeiras, 404',NULL,'2006-07-18',4,NULL),(8,'Diego Fernandes','202300004','567890','','000.000.000-08','diego.fernandes76@hotmail.com','diego.fernandes@horizon.com.br','(11) 90000-0008','aluno','Rua das Laranjeiras, 505',NULL,'2006-08-22',5,NULL),(9,'Elisa Ramos','202300005','678901','','000.000.000-09','elisa_ramos43@yahoo.com','elisa.ramos@horizon.com.br','(11) 90000-0009','aluno','Rua das Oliveiras, 606',NULL,'2006-09-30',6,NULL),(10,'Felipe Costa','202300006','789012','','000.000.000-10','felipe.costa69@outlook.com','felipe.costa@horizon.com.br','(11) 90000-0010','aluno','Rua das Hortências, 707',NULL,'2006-10-11',7,NULL),(11,'Gabriela Lima','202300007','890123','','000.000.000-11','gabriela_lima25@gmail.com','gabriela.lima@horizon.com.br','(11) 90000-0011','aluno','Rua das Rosas, 808',NULL,'2006-11-03',8,NULL),(12,'Henrique Rocha','202300008','901234','','000.000.000-12','henrique.rocha90@hotmail.com','henrique.rocha@horizon.com.br','(11) 90000-0012','aluno','Rua das Violetas, 909',NULL,'2006-12-14',9,NULL),(13,'Isabela Martins','202300009','112233','','000.000.000-13','isabela_martins94@yahoo.com','isabela.martins@horizon.com.br','(11) 90000-0013','aluno','Rua das Margaridas, 111',NULL,'2007-01-09',10,NULL),(14,'João Almeida','202300010','223344','','000.000.000-14','joão.almeida11@outlook.com','joão.almeida@horizon.com.br','(11) 90000-0014','aluno','Rua das Tulipas, 222',NULL,'2007-02-17',11,NULL),(15,'Karla Monteiro','202300011','334455','','000.000.000-15','karla_monteiro33@gmail.com','karla.monteiro@horizon.com.br','(11) 90000-0015','aluno','Rua das Orquídeas, 333',NULL,'2007-03-23',12,NULL),(16,'Lucas Batista','202300012','445566','','000.000.000-16','lucas.batista34@hotmail.com','lucas.batista@horizon.com.br','(11) 90000-0016','aluno','Rua das Azaleias, 444',NULL,'2007-04-28',13,NULL),(17,'Mariana Dias','202300013','556677','','000.000.000-17','mariana_dias59@yahoo.com','mariana.dias@horizon.com.br','(11) 90000-0017','aluno','Rua das Bromélias, 555',NULL,'2007-05-06',14,NULL),(18,'Nicolas Teixeira','202300014','667788','','000.000.000-18','nicolas.teixeira95@outlook.com','nicolas.teixeira@horizon.com.br','(11) 90000-0018','aluno','Rua das Dalias, 666',NULL,'2007-06-13',15,NULL),(19,'Olivia Figueiredo','202300015','778899','','000.000.000-19','olivia_figueiredo19@gmail.com','olivia.figueiredo@horizon.com.br','(11) 90000-0019','aluno','Rua das Camélias, 777',NULL,'2007-07-21',16,NULL),(20,'Pedro Henrique','202300016','889900','','000.000.000-20','pedro.henrique69@hotmail.com','pedro.henrique@horizon.com.br','(11) 90000-0020','aluno','Rua das Begônias, 888',NULL,'2007-08-29',17,NULL),(21,'Quésia Barbosa','202300017','990011','','000.000.000-21','quésia_barbosa98@yahoo.com','quésia.barbosa@horizon.com.br','(11) 90000-0021','aluno','Rua das Petúnias, 999',NULL,'2007-09-30',18,NULL),(22,'Rafael Nogueira','202300018','101010','','000.000.000-22','rafael.nogueira95@outlook.com','rafael.nogueira@horizon.com.br','(11) 90000-0022','aluno','Rua das Amarílis, 100',NULL,'2007-10-15',19,NULL),(23,'Sabrina Carvalho','202300019','202020','','000.000.000-23','sabrina_carvalho83@gmail.com','sabrina.carvalho@horizon.com.br','(11) 90000-0023','aluno','Rua das Gardênias, 200',NULL,'2007-11-20',20,NULL),(24,'Thiago Menezes','202300020','303030','','000.000.000-24','thiago.menezes28@hotmail.com','thiago.menezes@horizon.com.br','(11) 90000-0024','aluno','Rua das Magnólias, 300',NULL,'2007-12-25',21,NULL),(26,'Professor de PT','102300002','333333','','000.000.000-25','professorPT@gmail.com','professorPT.prof@horizon.br','(11) 90000-0025','colaborador','Rua dos Professores, 400',NULL,'1988-05-10',4,NULL),(27,'Professor História','102400002','historia','','000.000.000-26','professor_história@gmail.com','professor.historia@horizon.com.br','1899913271','colaborador',NULL,NULL,NULL,7,NULL),(30,'William Akio Otsuka','20250001','111.111.111-11','11.111.111-1','111.111.111-11','wotsuka@unoeste.edu.br',NULL,'18988085361','aluno','19042-040',NULL,'2003-11-21',30,NULL);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -410,4 +414,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-27 19:08:33
+-- Dump completed on 2025-05-28 21:51:51

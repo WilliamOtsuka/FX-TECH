@@ -144,6 +144,78 @@ class Usuarios {
         return { user, perfil, turmas, token };
     }
 
+    static async cadastrarAluno({ nome, email_pessoal, contato, cpf, rg, data_nascimento, pai, mae, endereco, historico }) {
+        // Verifica se o aluno já existe pelo CPF
+        let [existing] = await db.query(
+            'SELECT * FROM usuarios WHERE (cpf = ?) AND tipo = "aluno"',
+            [cpf]
+        );
+        if (existing.length > 0) {
+            throw new Error('Aluno já cadastrado');
+        }
+
+        // Geração do RA
+        let anoAtual = new Date().getFullYear().toString().slice(-2);
+        let prefixo = "20" + anoAtual;
+        let [raRow] = await db.query(
+            'SELECT MAX(ra) as maiorRA FROM usuarios WHERE tipo = "aluno" AND ra LIKE ?',
+            [`${prefixo}%`]
+        );
+        let maiorRA = raRow[0]?.maiorRA || `${prefixo}0000`;
+        let novoRA = (parseInt(maiorRA) + 1).toString();
+
+        // Cria o aluno
+        let [alunoResult] = await db.query(
+            `INSERT INTO alunos (pai, mae, historico_escolar) VALUES (?, ?, ?)`,
+            [pai, mae, historico]
+        );
+        if (alunoResult.affectedRows === 0) {
+            throw new Error('Erro ao cadastrar aluno');
+        }
+        let idAluno = alunoResult.insertId;
+
+        // Cria o usuário com idReferencia apontando para o aluno criado
+        let [usuarioResult] = await db.query(
+            `INSERT INTO usuarios (
+                nome, ra, senha, rg, cpf, email_pessoal, contato, tipo, cep, numero, data_nascimento, idReferencia
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?, ?, 'aluno', ?, ?, ?, ?
+            )`,
+            [
+                nome,
+                novoRA,
+                cpf,
+                rg,
+                cpf,
+                email_pessoal,
+                contato,
+                endereco,
+                numero,
+                data_nascimento,
+                idAluno
+            ]
+        );
+        if (usuarioResult.affectedRows === 0) {
+            throw new Error('Erro ao cadastrar usuário');
+        }
+
+        return {
+            idAluno,
+            nome,
+            ra: novoRA,
+            email_pessoal,
+            contato,
+            cpf,
+            rg,
+            data_nascimento,
+            pai,
+            mae,
+            endereco,
+            numero,
+            historico
+        };
+    }
+
     static async cadastrarFuncionario({ nome, senha, cargo, email_pessoal, email_educacional, contato, cpf, RA }) {
         // Verifica se o RA já existe
         let [existing] = await db.query('SELECT * FROM usuarios WHERE ra = ? AND tipo = "colaborador"', [RA]);

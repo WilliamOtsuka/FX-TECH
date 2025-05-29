@@ -80,6 +80,79 @@ function showPass() {
     eyeBtn.classList.toggle("visible");
 }
 
+async function loginForm() {
+    // Funções de validação
+    let isValidRa = (ra) => /^\d{5,10}$/.test(ra);
+    let isValidPassword = (pass) => /^\d{6}$/.test(pass);
+    let isValidPersonType = (type) => ["aluno", "colaborador"].includes(type);
+
+    // Aplica validação visual ao input
+    let addValidation = (selector, validate, message) => {
+        let input = document.querySelector(selector);
+        if (!input) return;
+
+        let errorDiv = document.createElement("div");
+        errorDiv.style.color = "red";
+        errorDiv.style.fontSize = "12px";
+        errorDiv.style.marginTop = "4px";
+        input.insertAdjacentElement("afterend", errorDiv);
+
+        input.addEventListener("input", (e) => {
+            if (!validate(e.target.value)) {
+                errorDiv.textContent = message;
+                input.style.borderColor = "red";
+            } else {
+                errorDiv.textContent = "";
+                input.style.borderColor = "green";
+            }
+        });
+    };
+
+    // Adiciona validações
+    addValidation("#ra", isValidRa, "O RA deve conter entre 5 e 10 números.");
+
+    // Lógica de envio do formulário de login
+    let form = document.querySelector("#loginForm");
+    if (form) {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            let ra = document.querySelector("#ra")?.value;
+            let senha = document.querySelector("#password")?.value;
+            let tipo = document.querySelector("#personType")?.value;
+
+            if (isValidRa(ra) && isValidPassword(senha) && isValidPersonType(tipo)) {
+                fetch("http://localhost:3000/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ ra, tipo, senha }),
+                })
+                    .then((response) => {
+                        if (!response.ok) throw new Error("Erro ao fazer login.");
+                        return response.json();
+                    })
+                    .then((data) => {
+                        if (data.token) {
+                            localStorage.setItem("token", data.token);
+                            localStorage.setItem("user", JSON.stringify(data.user));
+                            window.location.href = "../content-page/content-page.html";
+                        } else {
+                            alert("Erro ao logar. Dados inválidos.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Erro:", error);
+                        alert("Erro ao fazer login. Verifique suas credenciais.");
+                    });
+            } else {
+                alert("Por favor, preencha todos os campos corretamente.");
+            }
+        });
+    }
+}
+
 
 async function deleteFuncionario(id, token) {
     try {
@@ -498,12 +571,11 @@ async function adicionarFuncionario() {
     let anoInput = document.querySelector("#professionalAno");
 
     document.querySelector("#confirmAdd").onclick = async () => {
-        if (!isValidEmail(emailInput))
-        {
+        if (!isValidEmail(emailInput)) {
             alert("Por favor, insira um email válido.");
             return;
         }
-        
+
         let anoFormatado = "";
         if (anoInput) {
             anoFormatado = anoInput.value ? anoInput.value.slice(-2) : "";
@@ -592,6 +664,98 @@ async function adicionarFuncionario() {
     };
 }
 
+async function realizarMatricula() {
+    // Seleciona os inputs pelo id ou pelo seletor adequado
+    let nameInput = document.querySelector("#name");
+    let emailInput = document.querySelector('#email');
+    let contactInput = document.querySelector('#contato');
+    let rgInput = document.querySelector('#rg');
+    let cpfInput = document.querySelector("#cpf");
+    let birthDateInput = document.querySelector("#date");
+    let addressInput = document.querySelector("#cep");
+    let numeroInput = document.querySelector("#numero");
+    let fatherNameInput = document.querySelector("#pai");
+    let motherNameInput = document.querySelector('#mae');
+
+    // Botão de envio
+    let btn = document.querySelector("#matriculaBtn");
+    if (!btn) return;
+
+    btn.onclick = async (e) => {
+        e.preventDefault();
+
+        if (!emailInput || !isValidEmail(emailInput.value)) {
+            alert("Por favor, insira um email válido.");
+            return;
+        }
+
+        let nome = nameInput?.value.trim();
+        let email = emailInput?.value.trim();
+        let contato = contactInput?.value.trim();
+        let cpf = cpfInput?.value.trim();
+        let data_nascimento = birthDateInput?.value.trim();
+        let endereco = addressInput?.value.trim();
+        let numero = numeroInput?.value.trim();
+        let pai = fatherNameInput?.value.trim();
+        let mae = motherNameInput?.value.trim();
+        // let foto = document.querySelector('#foto').files[0];
+        let historicoFile = document.querySelector('#historico').files[0];
+
+        let rg = rgInput?.value.trim();        
+
+        console.log("Dados do aluno:", {
+            nome,
+            email,
+            contato,
+            rg,
+            cpf,
+            data_nascimento,
+            endereco,
+            numero,
+            pai,
+            mae,
+            historicoFile
+        });
+
+        if (!nome || !email || !contato || !rg || !cpf || !data_nascimento || !endereco || !numero || !pai || !mae || !historicoFile) {
+            alert("Por favor, preencha todos os campos obrigatórios.");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append("nome", nome);
+        formData.append("email_pessoal", email);
+        formData.append("contato", contato);
+        formData.append("rg", rg);
+        formData.append("cpf", cpf);
+        formData.append("data_nascimento", data_nascimento);
+        formData.append("endereco", endereco);
+        formData.append("numero", numero);
+        formData.append("pai", pai);
+        formData.append("mae", mae);
+        formData.append("foto", foto);
+        formData.append("historico", historicoFile);
+
+
+        try {
+            let response = await fetch("http://localhost:3000/usuario/aluno", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao realizar matrícula");
+            }
+
+            alert("Matrícula realizada com sucesso!");
+            window.location.reload();
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao realizar matrícula.");
+        }
+    }
+}
+
 // Executa após o carregamento completo da página
 document.addEventListener("DOMContentLoaded", async () => {
     // Inicializa ícones se a biblioteca estiver disponível
@@ -601,75 +765,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.warn("Biblioteca Lucide não encontrada.");
     }
 
-    // Funções de validação
-    let isValidRa = (ra) => /^\d{5,10}$/.test(ra);
-    let isValidPassword = (pass) => /^\d{6}$/.test(pass);
-    let isValidPersonType = (type) => ["aluno", "colaborador"].includes(type);
-
-    // Aplica validação visual ao input
-    let addValidation = (selector, validate, message) => {
-        let input = document.querySelector(selector);
-        if (!input) return;
-
-        let errorDiv = document.createElement("div");
-        errorDiv.style.color = "red";
-        errorDiv.style.fontSize = "12px";
-        errorDiv.style.marginTop = "4px";
-        input.insertAdjacentElement("afterend", errorDiv);
-
-        input.addEventListener("input", (e) => {
-            if (!validate(e.target.value)) {
-                errorDiv.textContent = message;
-                input.style.borderColor = "red";
-            } else {
-                errorDiv.textContent = "";
-                input.style.borderColor = "green";
-            }
-        });
-    };
-
-    // Adiciona validações
-    addValidation("#ra", isValidRa, "O RA deve conter entre 5 e 10 números.");
-
-    // Lógica de envio do formulário de login
-    let form = document.querySelector("#loginForm");
-    if (form) {
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-
-            let ra = document.querySelector("#ra")?.value;
-            let senha = document.querySelector("#password")?.value;
-            let tipo = document.querySelector("#personType")?.value;
-
-            if (isValidRa(ra) && isValidPassword(senha) && isValidPersonType(tipo)) {
-                fetch("http://localhost:3000/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ ra, tipo, senha }),
-                })
-                    .then((response) => {
-                        if (!response.ok) throw new Error("Erro ao fazer login.");
-                        return response.json();
-                    })
-                    .then((data) => {
-                        if (data.token) {
-                            localStorage.setItem("token", data.token);
-                            localStorage.setItem("user", JSON.stringify(data.user));
-                            window.location.href = "../content-page/content-page.html";
-                        } else {
-                            alert("Erro ao logar. Dados inválidos.");
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Erro:", error);
-                        alert("Erro ao fazer login. Verifique suas credenciais.");
-                    });
-            } else {
-                alert("Por favor, preencha todos os campos corretamente.");
-            }
-        });
+    let login = document.querySelector("#loginForm");
+    if (login) {
+        loginForm();
     }
 
     // Exibir o card do painel caso permissão do usuário seja suficiente
@@ -739,10 +837,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    validarCamposFuncionario();
 
     let listProfessional = document.querySelector("#professional-list");
     if (listProfessional) {
+        validarCamposFuncionario();
         let btnAdd = document.querySelector("#addProfessional");
         btnAdd.addEventListener("click", () => {
             let dialogOverlay = document.querySelector(".dialog-overlay");
@@ -782,5 +880,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         nameInput.addEventListener("input", aplicarFiltrosAluno);
+    }
+
+    let matricula = document.querySelector("#matriculaForm");
+    if (matricula) {
+        realizarMatricula();
     }
 });

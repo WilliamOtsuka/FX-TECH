@@ -22,7 +22,8 @@ app.use('/', turmasRoutes);
 app.use('/', disciplinasRoutes);
 app.use('/', notasRouter);
 app.use('/', anoLetivoRoutes);
-app.use('/uploads', express.static('uploads'));
+app.use('/atividades', express.static('atividades'));
+app.use('/matricula', express.static('matricula'));
 
 // atualiza o status da atividade para indisponivel se o prazo de entrega já tiver passado
 cron.schedule('* * * * *', async () => {
