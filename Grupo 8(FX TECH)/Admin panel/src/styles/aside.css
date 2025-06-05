@@ -1,5 +1,5 @@
 /* Estilo do aside (drawer) */
-.asside-content {
+.aside-content {
   background-color: #eee;
   width: 275px;
   min-height: 100%;
@@ -40,14 +40,28 @@ nav ul li:hover {
 }
 
 @media only screen and (max-width: 1201px) {
-  .asside-content {
+  .aside-content {
     display: none;
   }
 }
 
 @media only screen and (min-width: 1201px) {
-  .asside-content {
+  .aside-content {
     display: flex;
     flex-direction: column;
+  }
+}
+
+@media print {
+  .aside-content {
+    display: none;
+  }
+  
+  header {
+    display: none !important;
+  }
+
+  .navbar {
+    display: none !important;
   }
 }

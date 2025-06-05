@@ -697,4 +697,11 @@ document.addEventListener("DOMContentLoaded", function () {
             adicionarClasse();
         });
     }
+
+    let prntButton = document.querySelector("#prnt-button");
+    if (prntButton) {
+        prntButton.addEventListener("click", () => {
+            window.print();
+        });
+    }
 });

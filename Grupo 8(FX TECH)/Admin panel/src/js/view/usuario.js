@@ -1148,4 +1148,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         nameInput.addEventListener("input", aplicarFiltrosAluno);
     }
+
+    let prntButton = document.querySelector("#prnt-button");
+    if (prntButton) {
+        prntButton.addEventListener("click", () => {
+            window.print();
+        });
+    }
 });
