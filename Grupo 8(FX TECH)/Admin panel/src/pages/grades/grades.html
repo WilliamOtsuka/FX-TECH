@@ -173,51 +173,50 @@
 
       <div style="margin-top: 50px; border: 1px solid #eee; padding: 16px">
         <div class="list-turmas" style="margin-bottom: 20px">
-            <div class="dropdown"></div>
+          <div class="dropdown"></div>
           <label for="turmaSelect">Selecione a turma: </label>
           <select id="turmaSelect">
-              <option value="">-- Selecione uma Turma --</option>
+            <option value="">-- Selecione uma Turma --</option>
           </select>
-            </div>
         </div>
-        <div style="font-size: 20px; margin-bottom: 20px">Notas</div>
-        <table class="fl-table" style="display: none;">
-          <thead>
-            <tr>
-              <th style="text-align: left">Disciplina</th>
-              <th>1º Bimestre</th>
-              <th>2º Bimestre</th>
-              <th>3º Bimestre</th>
-              <th>4º Bimestre</th>
-              <th>Média F.</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="text-align: left">
-                <div></div>
-                <div></div>
-              </td>
-              <td class="nota"></td>
-              <td class="nota"></td>
-              <td class="nota"></td>
-              <td class="nota"></td>
-              <td class="nota"></td>
-            </tr>
-          </tbody>
-          <tfoot class="tfoot-notas">
-            <tr>
-              <td style="text-align: left">Média do bimestre</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tfoot>
-        </table>
-
-        <!-- <div style="font-size: 20px; margin-bottom: 20px">Faltas</div>
+      </div>
+      <div style="font-size: 20px; margin-bottom: 20px">Notas</div>
+      <table class="fl-table" style="display: none;">
+        <thead>
+          <tr>
+            <th style="text-align: left">Disciplina</th>
+            <th>1º Bimestre</th>
+            <th>2º Bimestre</th>
+            <th>3º Bimestre</th>
+            <th>4º Bimestre</th>
+            <th>Média F.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align: left">
+              <div></div>
+              <div></div>
+            </td>
+            <td class="nota"></td>
+            <td class="nota"></td>
+            <td class="nota"></td>
+            <td class="nota"></td>
+            <td class="nota"></td>
+          </tr>
+        </tbody>
+        <tfoot class="tfoot-notas">
+          <tr>
+            <td style="text-align: left">Média do bimestre</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+      <!-- <div style="font-size: 20px; margin-bottom: 20px">Faltas</div>
         <table class="fl-table">
           <thead>
             <tr>
@@ -241,8 +240,13 @@
             </tr>
           </tbody>
         </table> -->
-      </div>
     </main>
+  </div>
+  <div class="row flex justify-between align-center">
+    <div class="col col-xs-8 col-md-8 col-lg-8 flex items-end justify-end">
+      <button class="btn" id="prnt-button">
+        <i data-lucide="printer"></i>
+    </div>
   </div>
 
   <div vw class="enabled">

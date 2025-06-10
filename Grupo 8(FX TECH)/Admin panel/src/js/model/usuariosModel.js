@@ -38,11 +38,11 @@ class Usuarios {
 
             let [turmasAluno] = await db.query(`
                 SELECT t.idTurma, s.nome, t.codigo, t.turno, t.idAno_letivo, al.ano AS anoLetivo
-                FROM matricula m 
-                JOIN turmas t ON m.idTurma = t.idTurma
+                FROM alunos_turma at
+                JOIN turmas t ON at.idTurma = t.idTurma
                 JOIN serie s ON t.idSerie = s.idSerie
                 JOIN ano_letivo al ON t.idAno_letivo = al.idAno_letivo
-                WHERE m.idAluno = ?
+                WHERE at.idAluno = ?
             `, [user.idReferencia]);
 
             for (let turma of turmasAluno) {

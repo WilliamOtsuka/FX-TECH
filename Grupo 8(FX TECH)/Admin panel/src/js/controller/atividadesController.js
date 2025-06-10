@@ -135,6 +135,8 @@ class AtividadesController {
         try {
             let { id, idAluno } = req.params;
             let { nota, feedback } = req.body;
+            let nomeArquivo = req.file ? req.file.filename : null;
+            console.log('Nome do arquivo:', nomeArquivo);
 
             // Verificar o status da atividade
             let atividade = await Atividades.buscarAtividadePorId(id);
@@ -143,7 +145,7 @@ class AtividadesController {
             }
 
             // Enviar a correção
-            let sucesso = await Atividades.enviarCorrecao(id, idAluno, { nota, feedback });
+            let sucesso = await Atividades.enviarCorrecao(id, idAluno, { nota, feedback }, nomeArquivo);
             if (sucesso) {
                 res.status(200).json({ message: 'Correção enviada com sucesso' });
             } else {
@@ -159,7 +161,11 @@ class AtividadesController {
         try {
             let { id, idAluno } = req.params;
             let { nota, feedback } = req.body;
-            let sucesso = await Atividades.atualizarCorrecao(id, idAluno, { nota, feedback });
+            let nomeArquivo = req.file ? req.file.filename : null;
+            console.log('Nome do arquivo:', nomeArquivo);
+
+            // Atualizar a correção
+            let sucesso = await Atividades.atualizarCorrecao(id, idAluno, { nota, feedback }, nomeArquivo);
             if (sucesso) {
                 res.status(200).json({ message: 'Correção atualizada com sucesso' });
             } else {

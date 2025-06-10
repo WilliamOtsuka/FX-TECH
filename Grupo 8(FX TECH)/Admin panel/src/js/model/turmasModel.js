@@ -234,10 +234,10 @@ class Turmas {
             u.email_pessoal,
             u.ra AS ra, 
             'aluno' AS tipo
-            FROM matricula m
-            JOIN alunos a ON m.idAluno = a.idAluno
+            FROM alunos_turma at
+            JOIN alunos a ON at.idAluno = a.idAluno
             JOIN usuarios u ON a.idAluno = u.idReferencia AND u.tipo = 'aluno'
-            WHERE m.idTurma = ?
+            WHERE at.idTurma = ?
             ORDER BY u.nome ASC;
         `, [idTurma]);
 

@@ -593,14 +593,28 @@ async function salvarCorrecao(event) {
 
     let nota = parseFloat(document.getElementById("nota").value);
     let feedback = document.getElementById("feedback").value;
+    let arquivo = document.getElementById('arquivo-correcao').files[0];
+
+    let formData = new FormData();
+    formData.append("nota", nota);
+    formData.append("feedback", feedback);
+
+    if (arquivo) {
+        formData.append("arquivo", arquivo);
+    }
+
+    console.log("Dados da correção:", {
+        idAtividade,
+        idAluno,
+        nota,
+        feedback,
+        arquivo: arquivo ? arquivo.name : "Nenhum arquivo anexado"
+    });
 
     try {
         let response = await fetch(`http://localhost:3000/atividades/${idAtividade}/correcao/aluno/${idAluno}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ nota, feedback })
+            body: formData
         });
 
         let data = await response.json();
@@ -628,6 +642,9 @@ function renderFormularioNota() {
         <div class="form-groupCorrecao">
             <label for="nota">Nota:</label>
             <input type="number" id="nota" name="nota" min="0" max="10" step="0.01" required>
+            
+            <label for="arquivo-correcao">Anexar arquivo (opcional):</label>
+            <input type="file" id="arquivo-correcao" name="arquivo-correcao" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
         </div>
         <div class="form-groupCorrecao">
             <label for="feedback">Feedback (opcional):</label>
@@ -637,7 +654,7 @@ function renderFormularioNota() {
     `;
 }
 
-function renderRespostaNota({ nota, feedback }) {
+function renderRespostaNota({ nota, feedback, arquivo_feedback }) {
     let notaEncoded = encodeURIComponent(nota);
     let feedbackEncoded = encodeURIComponent(feedback);
 
@@ -645,6 +662,10 @@ function renderRespostaNota({ nota, feedback }) {
         <div class="form-groupCorrecao" id="nota-container">
             <label>Nota:</label>
             <p id="nota-text">${nota}</p>
+        </div>
+        <div class="form-groupCorrecao" id="arquivo-container">
+            <label for="arquivo-correcao">Anexo:</label>    
+            <a href="http://localhost:3000/feedback/${arquivo_feedback}" class="anexo" target="_blank" download="${arquivo_feedback}">${arquivo_feedback}</a>
         </div>
         <div class="form-groupCorrecao" id="feedback-container">
             <label>Feedback:</label>
@@ -674,12 +695,17 @@ function ativarEdicao(nota, feedback) {
     `;
     let notaInput = document.getElementById("nota");
     notaInput.addEventListener("input", function () {
-        if (notaInput.value < 0) {
+        if (notaInput.value < 0) {  
             notaInput.value = 0;
         } else if (notaInput.value > 10) {
             notaInput.value = 10;
         }
     });
+    document.getElementById("arquivo-container").innerHTML = `
+        <label for="arquivo-correcao">Anexar arquivo (opcional):</label>
+        <input type="file" id="arquivo-correcao" name="arquivo-correcao" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">  
+    `;
+
     document.getElementById("feedback-container").innerHTML = `
         <label for="feedback-edit">Feedback:</label>
         <textarea id="feedback-edit" rows="4">${feedback}</textarea>
@@ -694,15 +720,23 @@ function ativarEdicao(nota, feedback) {
 async function salvarEdicaoFeedback() {
     let nota = document.getElementById("nota").value;
     let feedback = document.getElementById("feedback-edit").value;
+    let arquivo = document.getElementById('arquivo-correcao').files[0];
     let idAluno = urlParams.get('idAluno');
     let idAtividade = urlParams.get('idAtividade');
+
+    formData = new FormData();
+    formData.append("nota", nota);
+    formData.append("feedback", feedback);
+    if (arquivo) {
+        formData.append("arquivo", arquivo);
+    }
+
 
     try {
         // let response = await fetch(`http://localhost:3000/atividade/${idAtividade}/tarefa/${idAluno}/corrigir`, {
         let response = await fetch(`http://localhost:3000/atividades/${idAtividade}/correcao/aluno/${idAluno}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nota, feedback })
+            body: formData
         });
 
         if (!response.ok) throw new Error("Erro ao atualizar correção");
@@ -762,26 +796,27 @@ async function carregarAtividadeEntregue() {
         if (atividade.arquivo) {
             // Remove tudo antes e incluindo o primeiro '-' do nome do arquivo
             let nomeOriginal = atividade.arquivo.substring(atividade.arquivo.indexOf('-') + 1);
-            anexoHTML = `<a href="http://localhost:3000/uploads/${atividade.arquivo}" class="anexo" target="_blank" download="${nomeOriginal}">${nomeOriginal}</a><br/>`;
+            anexoHTML = `<a href="http://localhost:3000/atividades/${atividade.arquivo}" class="anexo" target="_blank" download="${nomeOriginal}">${nomeOriginal}</a><br/>`;
         }
 
         let formHTML = `
             <form id="form-correcao" class="form-correcao">
             <h2>Correção de Atividade</h2>
             <div class="flex-container">
-                <div class="flex-item">
-                <p><strong>Aluno:</strong> ${atividade.nome}</p>
-                <p><strong>RA:</strong> ${atividade.ra}</p>
-                </div>
-                <div class="flex-item">
-                <p><strong>Título da Tarefa:</strong> ${atividade.titulo}</p>
-                <p><strong>Descrição da Tarefa:</strong> ${atividade.descricaoAtividade}</p>
-                </div>
-                <div class="flex-item">
-                <p><strong>Descrição do Aluno:</strong> ${atividade.descricaoAluno}</p>
-                <p><strong>Peso da Atividade (%):</strong> ${atividade.peso}</p>
-                ${anexoHTML}
-                </div>
+            <div class="flex-item">
+            <p><strong>Aluno:</strong> ${atividade.nome}</p>
+            <p><strong>RA:</strong> ${atividade.ra}</p>
+            </div>
+            <div class="flex-item">
+            <p><strong>Título da Tarefa:</strong> ${atividade.titulo}</p>
+            <p><strong>Descrição da Tarefa:</strong> ${atividade.descricaoAtividade}</p>
+            </div>
+            <div class="flex-item">
+            <p><strong>Descrição do Aluno:</strong> ${atividade.descricaoAluno}</p>
+            <p><strong>Peso da Atividade (%):</strong> ${atividade.peso}</p>
+            <p><strong>Anexo do Aluno:</strong></p>
+            ${anexoHTML}
+            </div>
             </div>
         `;
 
@@ -855,7 +890,7 @@ async function carregarAtividade(idAtividade) {
             let anexoHTML = "";
             if (resposta.arquivo) {
                 let nomeOriginal = resposta.arquivo.substring(resposta.arquivo.indexOf('-') + 1);
-                anexoHTML = `<a href="http://localhost:3000/uploads/${resposta.arquivo}" download="${nomeOriginal}" class="anexo" target="_blank">${nomeOriginal}</a><br/>`;
+                anexoHTML = `<a href="http://localhost:3000/atividades/${resposta.arquivo}" download="${nomeOriginal}" class="anexo" target="_blank">${nomeOriginal}</a><br/>`;
             }
             if (resposta.descricaoAluno === null) {
                 resposta.descricaoAluno = "Nenhuma descrição fornecida."
@@ -890,11 +925,11 @@ async function carregarAtividade(idAtividade) {
 
 function mostrarAtividades(atividades, data) {
     const container = document.getElementById('atividade-info');
-        if (!atividades.length) {
+    if (!atividades.length) {
         container.innerHTML = `<p>Sem atividades para ${data}</p>`;
         return;
     }
-    
+
     let html = `<h4>Atividades para ${data}:</h4><ul style="padding-left: 0; list-style-type: none;">`;
     atividades.forEach(atividade => {
         html += `
@@ -911,7 +946,7 @@ function mostrarAtividades(atividades, data) {
             </li><hr>`;
     });
     html += "</ul>";
-    
+
     container.innerHTML = html;
 }
 
@@ -1133,7 +1168,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let container = document.querySelector('.list-atividades');
         container.insertAdjacentElement('beforebegin', link);
     }
-    
+
     filtrarAtividades();
 
     let calendario = document.querySelector('#calendario');

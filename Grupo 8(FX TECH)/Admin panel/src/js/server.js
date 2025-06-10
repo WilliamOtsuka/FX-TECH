@@ -14,7 +14,12 @@ import cron from 'node-cron';
 
 let app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
+
+app.use('/atividades', express.static('atividades'));
+app.use('/matricula', express.static('matricula'));
+app.use('/aluno', express.static('aluno'));
+app.use('/feedback', express.static('feedback'));
 
 app.use('/', usuariosRoutes);
 app.use('/', atividadesRoutes);
@@ -22,9 +27,6 @@ app.use('/', turmasRoutes);
 app.use('/', disciplinasRoutes);
 app.use('/', notasRouter);
 app.use('/', anoLetivoRoutes);
-app.use('/atividades', express.static('atividades'));
-app.use('/matricula', express.static('matricula'));
-app.use('/aluno', express.static('aluno'));
 
 // atualiza o status da atividade para indisponivel se o prazo de entrega já tiver passado
 cron.schedule('* * * * *', async () => {
@@ -65,40 +67,32 @@ cron.schedule('* * * * *', async () => {
         for (let atividade of atividades) {
             // Busca todos os alunos da turma dessa atividade
             let [alunosDaTurma] = await db.query(`
-        SELECT at.idAluno
-        FROM alunos_turma at
-        WHERE at.idTurma = ?
-      `, [atividade.idTurma]);
+                SELECT at.idAluno
+                    FROM alunos_turma at
+                    WHERE at.idTurma = ?
+            `, [atividade.idTurma]);
+
+            console.log(`Alunos da turma ${atividade.idTurma} para atividade ${atividade.idAtividade}:`, alunosDaTurma.length);
 
             // Para cada aluno, verificar se ele entregou
             for (let aluno of alunosDaTurma) {
+                // Verifica se existe entrega na tabela notas para este aluno e atividade
                 let [entregas] = await db.query(`
-                    SELECT idEntrega
-                    FROM atividades_entregues
+                    SELECT idNota
+                    FROM notas
                     WHERE idAluno = ? AND idAtividade = ?
                 `, [aluno.idAluno, atividade.idAtividade]);
 
-                // Se não achou o aluno, atribuir nota 0
+                // Se não encontrou nenhuma entrega, insere nota 0 com os campos solicitados
                 if (entregas.length === 0) {
                     try {
-                        // Verifica se já não tem correção
-                        let [correcaoExistente] = await db.query(`
-                            SELECT idNota
-                            FROM notas
-                            WHERE idAluno = ? AND idAtividade = ?
+                        await db.query(`
+                            INSERT INTO notas (idAluno, idAtividade, feedback, nota, entregue, correcao)
+                            VALUES (?, ?, 'Não entregue', 0, 'nao', 'corrigida')
                         `, [aluno.idAluno, atividade.idAtividade]);
-                        
-                        // Se não existe correção, insere a correção automática
-                        if (correcaoExistente.length === 0) {
-                            await db.query(`
-                                INSERT INTO notas (idAluno, idAtividade, feedback, nota, entregue)
-                                VALUES (?, ?, 'Não entregue', 0, 'nao')
-                            `, [aluno.idAluno, atividade.idAtividade]);
-
-                            totalInseridos++;
-                        }
+                        totalInseridos++;
                     } catch (error) {
-                        console.error(`Erro ao processar correção automática para aluno ${aluno.idAluno} e atividade ${atividade.idAtividade}:`, error);
+                        console.error(`Erro ao inserir nota automática para aluno ${aluno.idAluno} e atividade ${atividade.idAtividade}:`, error);
                     }
                 }
             }

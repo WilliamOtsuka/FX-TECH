@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
   addValidation(
     "#contato",
     applyContactMask,
-    (contact) => contact.length === 15,
+    (contact) => contact.length === 14,
     "Contato inválido"
   );
   addValidation(

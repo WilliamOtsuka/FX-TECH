@@ -4,12 +4,20 @@ class Notas {
     static async buscarNotasPorAlunoDisciplinaETurma(idAluno, idDisciplina, idTurma) {
     let [rows] = await db.query(`
         SELECT 
+            n.idNota,
             n.idAluno,
-            a.titulo AS nomeAtividade,
+            n.idAtividade,
+            n.feedback,
             COALESCE(n.nota, 0) AS nota,
+            n.entregue,
+            n.arquivo_feedback,
+            n.descricao,
+            n.dataEntrega,
+            n.correcao,
+            n.arquivo,
+            a.titulo AS nomeAtividade,
             a.peso,
             pl.nome AS bimestre,
-            ae.dataEntrega,
             a.dataEntrega AS dataEntregaAtividade
         FROM atividades a
         JOIN turma_disciplinas td ON a.idDisciplina = td.idDisciplina AND td.idTurma = ?
@@ -17,13 +25,11 @@ class Notas {
         JOIN periodo_letivo pl 
             ON pl.idAno_letivo = t.idAno_letivo 
             AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
-        LEFT JOIN atividades_entregues ae 
-            ON ae.idAtividade = a.idAtividade AND ae.idAluno = ?
         LEFT JOIN notas n 
             ON n.idAtividade = a.idAtividade AND n.idAluno = ?
         WHERE a.idDisciplina = ?
-        ORDER BY dataEntregaAtividade ASC
-    `, [idTurma, idAluno, idAluno, idDisciplina]);
+        ORDER BY a.dataEntrega ASC
+    `, [idTurma, idAluno, idDisciplina]);
 
     return rows;
 }
@@ -32,19 +38,19 @@ class Notas {
     static async buscarNotasPorAlunoETurma(idAluno, idTurma) {
         let [rows] = await db.query(`
             SELECT 
-                td.idDisciplina,
-                d.nome AS nomeDisciplina,
-                pl.nome AS bimestre,
-                COALESCE(SUM(n.nota * (a.peso / 100)), 0) AS nota
+            td.idDisciplina,
+            d.nome AS nomeDisciplina,
+            pl.nome AS bimestre,
+            COALESCE(SUM(COALESCE(n.nota, 0) * (a.peso / 100)), 0) AS nota
             FROM turma_disciplinas td
             JOIN disciplinas d ON d.idDisciplina = td.idDisciplina
             JOIN turmas t ON t.idTurma = td.idTurma
             LEFT JOIN atividades a ON a.idDisciplina = td.idDisciplina
             LEFT JOIN periodo_letivo pl 
-                ON pl.idAno_letivo = t.idAno_letivo 
-                AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
+            ON pl.idAno_letivo = t.idAno_letivo 
+            AND a.dataEntrega BETWEEN pl.data_inicio AND pl.data_fim
             LEFT JOIN notas n 
-                ON n.idAtividade = a.idAtividade AND n.idAluno = ?
+            ON n.idAtividade = a.idAtividade AND n.idAluno = ?
             WHERE td.idTurma = ?
             GROUP BY td.idDisciplina, d.nome, pl.nome
             ORDER BY nomeDisciplina, bimestre;
@@ -54,7 +60,7 @@ class Notas {
 
         static async buscarNotasPorTurmaEDisciplina(idTurma, idDisciplina) {
             let [rows] = await db.query(`
-                                SELECT DISTINCT
+                SELECT DISTINCT
                     m.idAluno,
                     u.nome AS nome_aluno,
                     a.titulo AS nomeAtividade,
@@ -62,7 +68,7 @@ class Notas {
                     a.peso,
                     pl.nome AS bimestre,
                     pl.idPeriodo_letivo,
-                    ae.dataEntrega,
+                    n.dataEntrega,
                     a.dataEntrega AS dataEntregaAtividade
                 FROM atividades a
                 JOIN turma_disciplinas td ON a.idDisciplina = td.idDisciplina AND td.idTurma = ?
@@ -75,9 +81,9 @@ class Notas {
                 LEFT JOIN notas n ON n.idAtividade = a.idAtividade AND n.idAluno = m.idAluno
                 LEFT JOIN (
                     SELECT idAtividade, idAluno, MIN(dataEntrega) as dataEntrega
-                    FROM atividades_entregues
+                    FROM notas
                     GROUP BY idAtividade, idAluno
-                ) ae ON ae.idAtividade = a.idAtividade AND ae.idAluno = m.idAluno
+                ) n_min ON n_min.idAtividade = a.idAtividade AND n_min.idAluno = m.idAluno
                 WHERE a.idDisciplina = ?
                 ORDER BY m.idAluno, pl.idPeriodo_letivo, a.dataEntrega;
             `, [idTurma, idDisciplina]);
